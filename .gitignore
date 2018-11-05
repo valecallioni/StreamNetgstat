@@ -1,0 +1,13 @@
+*.o
+*.a
+*.so
+.DS_Store
+/mydev
+main
+/data/topsecret
+*.Rhistory
+.idea
+cmake-build-debug
+*.pdf
+*.dll
+main.R
