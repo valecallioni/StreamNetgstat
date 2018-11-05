@@ -3,12 +3,9 @@
 
 #include <iostream>
 #include <vector>
-#include <list>
+#include <string>
 #include <Eigen/Dense>
-#include <cmath>
-#include "Coordinates.hpp"
-#include "Point.hpp"
-#include "StreamSegment.hpp"
+#include "Points.hpp"
 #include "Helpers.hpp"
 
 class Network{
@@ -16,27 +13,18 @@ class Network{
 private:
     unsigned int ID;
 
-    std::vector<Point> obspoints;
-    std::vector<Point> predpoints;
+    Points obspoints;
+    Points predpoints;
 
     std::map<std::string, StreamSegment> segments;
 
     unsigned int nObs;
     unsigned int nPred;
 
-    Eigen::MatrixXi flowMatOO;
     Eigen::MatrixXi flowMatOP;
-    Eigen::MatrixXi flowMatPP;
-
-    Eigen::MatrixXd Noo;
-    Eigen::MatrixXd Nop;
-    Eigen::MatrixXd Npo;
-    Eigen::MatrixXd Npp;
-
-    Eigen::MatrixXd distGeoOO;
+    Eigen::MatrixXd distHydroOP;
+    Eigen::MatrixXd distHydroPO;
     Eigen::MatrixXd distGeoOP;
-    Eigen::MatrixXd distGeoPP;
-
 
 public:
     Network() = default;
@@ -47,18 +35,21 @@ public:
     const unsigned int getID() const {return ID;};
     const unsigned int getNObs() const {return nObs;};
     const unsigned int getNPred() const {return nPred;};
-    const Eigen::MatrixXi& getFlowMatOO() const {return flowMatOO;};
+    const Eigen::MatrixXi& getFlowMatOO() const {return obspoints.getFlowMat();};
     const Eigen::MatrixXi& getFlowMatOP() const {return flowMatOP;};
-    const Eigen::MatrixXi& getFlowMatPP() const {return flowMatPP;};
-    const std::vector<Point>& getObsPoints() const {return obspoints;};
-    const std::vector<Point>& getPredPoints() const {return predpoints;};
-    const Eigen::MatrixXd& getDistGeoOO() const {return distGeoOO;};
+    const Eigen::MatrixXi& getFlowMatPP() const {return predpoints.getFlowMat();};
+    //const std::vector<Point>& getObsPoints() const {return obspoints.getPoints();};
+    //const std::vector<Point>& getPredPoints() const {return predpoints.getPoints();};
+    const Eigen::MatrixXd& getDistGeoOO() const {return obspoints.getDistGeo();};
     const Eigen::MatrixXd& getDistGeoOP() const {return distGeoOP;};
-    const Eigen::MatrixXd& getDistGeoPP() const {return distGeoPP;};
-    const Eigen::MatrixXd& getNoo() const {return Noo;};
-    const Eigen::MatrixXd& getNop() const {return Nop;};
-    const Eigen::MatrixXd& getNpo() const {return Npo;};
-    const Eigen::MatrixXd& getNpp() const {return Npp;};
+    const Eigen::MatrixXd& getDistGeoPP() const {return predpoints.getDistGeo();};
+    const Eigen::MatrixXd& getDistHydroOO() const {return obspoints.getDistHydro();};
+    const Eigen::MatrixXd& getDistHydroOP() const {return distHydroOP;};
+    const Eigen::MatrixXd& getDistHydroPO() const {return distHydroPO;};
+    const Eigen::MatrixXd& getDistHydroPP() const {return predpoints.getDistHydro();};
+    const Points& getObsPoints() const {return obspoints;};
+    const Points& getPredPoints() const {return predpoints;};
+
 
     void computeDistances();
 
