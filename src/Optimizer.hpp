@@ -43,11 +43,11 @@ private:
   Eigen::MatrixXd covMat;
 
   unsigned int iter = 0;
-  unsigned int maxIter = 1000;
+  unsigned int maxIter = 500;
   unsigned int funEvals = 0;
   unsigned int maxFunEvals = 1e6;
   unsigned int restart = 0;
-  unsigned int maxRestart = 120;
+  unsigned int maxRestart = 100;
   double tolTheta = 1e-3;
   double tolFun = 1e-3;
 

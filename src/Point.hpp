@@ -1,11 +1,8 @@
 #ifndef PACSPROJECT_POINT_HPP
 #define PACSPROJECT_POINT_HPP
 
-#include "StreamSegment.hpp"
-#include "Coordinates.hpp"
-#include "Dataframe.hpp"
-#include <Eigen/Dense>
 #include <string>
+#include <vector>
 #include <iostream>
 
 class Point{
@@ -15,7 +12,6 @@ protected:
     unsigned int rid;   // index of the segment
     unsigned int pid;   // index of the point
     std::vector<char> binaryID;
-    Coordinates coordinates;
     std::string ID = "obs";
     double x1;
     double x2;

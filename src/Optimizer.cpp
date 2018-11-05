@@ -66,7 +66,7 @@ Eigen::VectorXd Optimizer::thetaInit() {
   if (i < 2*nModels && euclidModel){
     theta(i) = std::log(0.9/double(nModels) * varResid);
     i++;
-    theta(i) = std::log(helpers::meanMat(*distGeo+distGeo->transpose()));
+    theta(i) = std::log(helpers::meanMat(*distGeo));
     i++;
   }
 
@@ -121,12 +121,9 @@ double Optimizer::computeLogL(Eigen::VectorXd& theta){
   Eigen::VectorXd values(eig.eigenvalues().real());
   for (unsigned int i=0; i<values.size(); i++){
     if (values(i) < 0.0){
-      //std::cerr << "Covariance matrix not positive definite" << std::endl;
-      //std::cout << "lambda = " << values(i) << std::endl;
-      //std::cout << "Current theta: \n" << theta.array().exp() << std::endl;
-      //break;
-      //Stop
+      std::cerr << "Covariance matrix not positive definite" << std::endl;
       checkPD = false;
+      break;
     }
   }
 
@@ -158,12 +155,11 @@ std::vector<std::pair<double, Eigen::VectorXd>> Optimizer::simplexInit(const Eig
   unsigned int nParam(theta0.size());
   std::vector<std::pair<double,Eigen::VectorXd>> simplex(nParam+1, std::make_pair(0.0, theta0));
   simplex[0].first = computeLogL(simplex[0].second);
+  std::cout << "Theta: \n" << simplex[0].second.array().exp() << "with logl = " << simplex[0].first << std::endl;
   for (unsigned int i=1; i<nParam+1; i++){
-    //double tau(0.05);
-    //if (theta0(i-1) == 0.0) tau = 0.00025;
-
     simplex[i].second(i-1) = theta0(i-1) + tau;
     simplex[i].first = computeLogL(simplex[i].second);
+    std::cout << "Theta: \n" << simplex[i].second.array().exp() << "with logl = " << simplex[i].first << std::endl;
   }
   return simplex;
 }
@@ -361,7 +357,6 @@ void Optimizer::computeThetaPaper(){
   bool crit4 = (max > tolTheta);
   bool crit5 = (restart <= maxRestart);
 
-  //std::cout << "Simplex terminating criteria: " << crit3 && crit4 << std::endl;
   std::cout << "f(x(n+1)) = " << simplex[nParam].first << ", f(x(1)) = " << simplex[0].first << std::endl;
   std::cout << "Difference = " << simplex[nParam].first - simplex[0].first << std::endl;
 
@@ -496,10 +491,6 @@ void Optimizer::computeThetaPaper(){
     }
 
     std::sort(simplex.begin(), simplex.end(), helpers::operandPair);
-    //std::cout << "New LogL values: \n";
-    //for (unsigned int i=0; i<nParam+1; i++){
-      //std::cout << simplex[i].first << std::endl;
-    //}
 
     max = (simplex[1].second-simplex[0].second).lpNorm<Eigen::Infinity>();
     for (unsigned int i=2; i<nParam+1; i++){

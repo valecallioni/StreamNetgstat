@@ -5,8 +5,6 @@
 #include <list>
 #include <Rcpp.h>
 #include <RcppEigen.h>
-#include "StreamSegment.hpp"
-#include "Point.hpp"
 #include "Dataframe.hpp"
 #include "Network.hpp"
 #include "Factory.hpp"
@@ -25,59 +23,6 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
   SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names) {
 
     BEGIN_RCPP
-
-    /* Old
-    Eigen::MatrixXd networkData = Rcpp::as<Eigen::MatrixXd> (network_data);
-    std::vector<std::string> binTable = Rcpp::as<std::vector<std::string>> (bin_table);
-    std::vector<StreamSegment> segments(networkData.rows());
-    std::map<unsigned int, std::string> segmentsMap;
-    for (unsigned int i=0; i<networkData.rows(); i++){
-        segments[i].setSegmentID(networkData(i,0));
-        segments[i].setDistUpstream(networkData(i,1));
-        segments[i].setBinaryID(binTable[i]);
-        segmentsMap[networkData(i,0)] = binTable[i];
-    }
-
-    networkData.resize(0,0);
-    binTable.clear();
-
-    Eigen::MatrixXd obsPointsMat = Rcpp::as<Eigen::Map<Eigen::MatrixXd>> (obs_points);
-    std::vector<Point> obsPoints(obsPointsMat.rows());
-    for (unsigned int i=0; i<obsPointsMat.rows(); i++){
-        obsPoints[i].setPid(i);
-        obsPoints[i].setRid(obsPointsMat(i,0));
-        obsPoints[i].setDistUpstream(obsPointsMat(i,1));
-        obsPoints[i].setCoordinates(obsPointsMat(i,2), obsPointsMat(i,3));
-        auto it = segmentsMap.find(obsPointsMat(i,0));
-        obsPoints[i].setBinaryID(it->second);
-    }
-    obsPointsMat.resize(0,0);
-
-    Eigen::MatrixXd predPointsMat = Rcpp::as<Eigen::MatrixXd> (pred_points);
-    std::vector<Point> predPoints(predPointsMat.rows());
-    for (unsigned int i=0; i<predPointsMat.rows(); i++){
-        predPoints[i].setPid(i);
-        predPoints[i].setRid(predPointsMat(i,0));
-        predPoints[i].setDistUpstream(predPointsMat(i,1));
-        predPoints[i].setCoordinates(predPointsMat(i,2), predPointsMat(i,3));
-        predPoints[i].setID("pred");
-        auto it = segmentsMap.find(predPointsMat(i,0));
-        predPoints[i].setBinaryID(it->second);
-    }
-    predPointsMat.resize(0,0);
-
-    Network net(obsPoints, predPoints, segments);
-    obsPoints.clear();
-    predPoints.clear();
-    segments.clear();
-
-    //net.print();
-    net.computeDistances();
-
-    */
-
-
-    //NUOVO, CON DIVERSE NETWORKS
 
     // Stream segments storage
     int netNum = Rcpp::as<int> (net_num);
@@ -113,52 +58,15 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
     // Observed points storage
     Eigen::MatrixXd obsPointsMat = Rcpp::as<Eigen::Map<Eigen::MatrixXd>> (obs_points);
     std::vector<std::vector<Point>> obsPoints(netNum);
-    j = 0;
-    for (unsigned int k=0; k<netNum; k++){
-        unsigned int currentNet = k+1;
-        unsigned int i = 0;
-        std::vector<Point> points;
-        while (j<obsPointsMat.rows() && obsPointsMat(j,0)==currentNet){
-          Point p;
-          p.setPid(i);
-          p.setRid(obsPointsMat(j,1));
-          p.setDistUpstream(obsPointsMat(j,2));
-          p.setCoordinates(obsPointsMat(j,3), obsPointsMat(j,4));
-          auto it = segmentsMaps[k].find(obsPointsMat(j,1));
-          p.setBinaryID(it->second);
-          points.push_back(p);
-          i++;
-          j++;
-        }
-        obsPoints[k] = points;
-    }
-    Rcpp::Rcout << "ObsPoints OK. j = " << j << "\n";
+    helpers::pointsStorage(segmentsMaps, obsPointsMat, obsPoints);
+    Rcpp::Rcout << "ObsPoints OK. \n";
     obsPointsMat.resize(0,0);
 
 
     // Predicted points (points for prediction) storage
     Eigen::MatrixXd predPointsMat = Rcpp::as<Eigen::MatrixXd> (pred_points);
     std::vector<std::vector<Point>> predPoints(netNum);
-    j = 0;
-    for (unsigned int k=0; k<netNum; k++){
-        unsigned int currentNet = k+1;
-        unsigned int i = 0;
-        std::vector<Point> points;
-        while (j<predPointsMat.rows() && predPointsMat(j,0)==currentNet){
-          Point p;
-          p.setPid(i);
-          p.setRid(predPointsMat(j,1));
-          p.setDistUpstream(predPointsMat(j,2));
-          p.setCoordinates(predPointsMat(j,3), predPointsMat(j,4));
-          p.setID("pred");
-          auto it = segmentsMaps[k].find(predPointsMat(j,1));
-          p.setBinaryID(it->second);
-          points.push_back(p);
-          i++;
-          j++;
-        }
-        predPoints[k] = points;
-    }
+    helpers::pointsStorage(segmentsMaps, predPointsMat, predPoints);
     Rcpp::Rcout << "PredPoints OK. \n";
     predPointsMat.resize(0,0);
     segmentsMaps.clear();
@@ -174,10 +82,10 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
       obsPoints[k].clear();
       predPoints[k].clear();
       segments[k].clear();
+      //networks[k].print();
       networks[k].computeDistances();
       nObsTot += networks[k].getNObs();
       nPredTot += networks[k].getNPred();
-      //networks[k].print();
     }
     Rcpp::Rcout << "Networks OK. Numero Networks = " << networks.size() << "\n";
     obsPoints.clear();
@@ -190,6 +98,7 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
     std::string weightVar(varNames.back());
     std::vector<std::string> covNames(varNames.begin()+1, varNames.end());
 
+
     // Dataframe for fitting the model, regarding the observed points
     Dataframe dataObs(varNames, Rcpp::as<Eigen::MatrixXd> (obs_data));
     // Matrices of observed points only, about connection, distances and weight built using block matrices
@@ -197,10 +106,11 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
     Eigen::MatrixXd flowMatOO(nObsTot, nObsTot);
     Eigen::MatrixXd distHydroOO(nObsTot, nObsTot);
     Eigen::MatrixXd distGeoOO(nObsTot, nObsTot);
-    std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatricesObs(networks));
+    std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatrices("obs", networks, nObsTot));
     flowMatOO = matrices[0];
     distHydroOO = matrices[1];
     distGeoOO = matrices[2];
+    //Rcpp::Rcout << "Final distGeo: \n" << distGeoOO << "\n";
     matrices.clear();
     weightMatOO = weightMatOO.cwiseProduct(flowMatOO);
 
@@ -212,31 +122,25 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
     Eigen::MatrixXd flowMatPP(nPredTot, nPredTot);
     Eigen::MatrixXd distHydroPP(nPredTot, nPredTot);
     Eigen::MatrixXd distGeoPP(nPredTot, nPredTot);
-    matrices = helpers::createDistMatricesPred(networks);
+    matrices = helpers::createDistMatrices("pred", networks, nPredTot);
     flowMatPP = matrices[0];
     distHydroPP = matrices[1];
     distGeoPP = matrices[2];
     matrices.clear();
     weightMatPP = weightMatPP.cwiseProduct(flowMatPP);
-    Rcpp::Rcout << "weightMatPP and flowMatPP OK. \n";
 
 
     //Matrices about connection, distances and weight between observed and predicion points built using block matrices
     Eigen::MatrixXd weightMatOP(dataObs.computeWeightMat(weightVar, dataPred[weightVar]));
-
-
-    // Eigen::MatrixXd weightMatOP(dataObs.computeWeightMat(weightVar, dataPred[weightVar]));
-    // Eigen::MatrixXi flowMatOP(nObsTot, nPredTot);
-    // flowMatOP.fill(0);
-    // unsigned int countObs = 0;
-    // countPred = 0;
-    // for (int k=0; k<netNum; k++){
-    //     flowMatOP.block(countObs, countPred, networks[k].getNObs(), networks[k].getNPred()) = networks[k].getFlowMatOP();
-    //     countObs += networks[k].getNObs();
-    //     countPred += networks[k].getNPred();
-    // }
-    // weightMatOP = weightMatOP.cwiseProduct(flowMatOP.cast<double>());
-    // Rcpp::Rcout << "weightMatOP and flowMatOP OK. \n";
+    Eigen::MatrixXd flowMatOP(nObsTot, nPredTot);
+    Eigen::MatrixXd distHydroOP(nObsTot, nPredTot);
+    Eigen::MatrixXd distGeoOP(nObsTot, nPredTot);
+    matrices = helpers::createDistMatricesOP(networks, nObsTot, nPredTot);
+    flowMatOP = matrices[0];
+    distHydroOP = matrices[1];
+    distGeoOP = matrices[2];
+    matrices.clear();
+    weightMatOP = weightMatOP.cwiseProduct(flowMatOP);
 
 
     //varNames.pop_back();
@@ -292,6 +196,7 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
     }
     Rcpp::Rcout << "Modelli creati \n";
 
+
     // Design matrix
     Eigen::MatrixXd designMat;
     designMat.resize(nObsTot, varNames.size()-1);
@@ -299,24 +204,15 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
     for (unsigned int i=1; i<designMat.cols(); i++){
       designMat.col(i) = dataObs[varNames[i]];
     }
+
+
+    // Optimizer
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, TRUE, up+down+euclid,
       dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>());
 
-    /*
-    Eigen::VectorXd theta0(7);
-    theta0(0) = log(0.0000799567);
-    theta0(1) = log(0.04062299957);
-    theta0(2) = log(0.00000692808);
-    theta0(3) = log(0.00202477962);
-    theta0(4) = log(0.00000000718);
-    theta0(5) = log(18174.14152965304);
-    theta0(6) = log(0.02484021114);
-    solver.computeLogL(theta0);
-    */
     //Eigen::VectorXd theta0(solver.thetaInit());
     //solver.computeLogL(theta0);
-
-    //solver.glmssn();
+    solver.glmssn();
 
 
     Rcpp::List result = Rcpp::List::create(Rcpp::Named("optTheta") = solver.getOptimTheta(),
@@ -324,7 +220,7 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
                                            Rcpp::Named("covMatrix") = solver.getCovMat());
 
 
-    return Rcpp::wrap(1);
+    return Rcpp::wrap(result);
     END_RCPP
 
 }
