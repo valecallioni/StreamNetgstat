@@ -34,14 +34,11 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
     std::vector<std::map<unsigned int, std::string>> segmentsMaps(netNum);
     unsigned int j = 0;
     for (unsigned int k=0; k<netNum; k++){
-        //Rcpp::Rcout << "Ciclo for \n";
         unsigned int currentNet = k+1;
         unsigned int i = 0;
         std::vector<StreamSegment> seg;
         while (j<networkDataTot.rows() && networkDataTot(j,0)==currentNet){
-          //Rcpp::Rcout << "While loop, iteration j = " << j << "\n";
           StreamSegment s(currentNet, networkDataTot(j,1), networkDataTot(j,2), binTables.front()[i]);
-          //Rcpp::Rcout << "Elemento i = " << i << " del bin.table della net n. " << k+1 << "letto \n";
           seg.push_back(s);
           segmentsMaps[k][networkDataTot(j,1)] = binTables.front()[i];
           i++;
@@ -110,7 +107,6 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
     flowMatOO = matrices[0];
     distHydroOO = matrices[1];
     distGeoOO = matrices[2];
-    //Rcpp::Rcout << "Final distGeo: \n" << distGeoOO << "\n";
     matrices.clear();
     weightMatOO = weightMatOO.cwiseProduct(flowMatOO);
 
@@ -209,11 +205,7 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
     // Optimizer
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, TRUE, up+down+euclid,
       dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>());
-
-    //Eigen::VectorXd theta0(solver.thetaInit());
-    //solver.computeLogL(theta0);
     solver.glmssn();
-
 
     Rcpp::List result = Rcpp::List::create(Rcpp::Named("optTheta") = solver.getOptimTheta(),
                                            Rcpp::Named("betaValues") = solver.getBeta(),

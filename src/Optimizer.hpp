@@ -43,13 +43,16 @@ private:
   Eigen::MatrixXd covMat;
 
   unsigned int iter = 0;
-  unsigned int maxIter = 500;
+  unsigned int maxIter = 1e4;
   unsigned int funEvals = 0;
   unsigned int maxFunEvals = 1e6;
   unsigned int restart = 0;
   unsigned int maxRestart = 100;
   double tolTheta = 1e-3;
   double tolFun = 1e-3;
+
+  double maxDistHydro = 1e+10;
+  double maxDistGeo = 1e+10;
 
 public:
   Optimizer(std::unique_ptr<TailUpModel>& tailup_ptr, std::unique_ptr<TailDownModel>& taildown_ptr, std::unique_ptr<EuclideanModel>& euclid_ptr, bool useNugg, int n_models,
@@ -65,6 +68,8 @@ public:
   void computeThetaPaper();
   void computeThetaWiki();
   void glmssn();
+
+  void test(Eigen::VectorXd& theta);
 };
 
 #endif

@@ -6,7 +6,7 @@ Dataframe::Dataframe(const std::vector<std::string>& colnames, const Eigen::Matr
         // STOP
     }
     n = data.rows();
-    p = data.cols();
+    p = colnames.size();
     for (int i=0; i<colnames.size(); i++){
         dataframe[colnames[i]] = data.col(i);
     }
@@ -23,15 +23,6 @@ unsigned int Dataframe::rows() const {
 const Eigen::VectorXd& Dataframe::operator[](const std::string& key) const{
     return dataframe.at(key);
 }
-
-// const Eigen::VectorXd& Dataframe::operator[](const unsigned int id) const{
-//     unsigned int i = 0;
-//     for (auto it = dataframe.cbegin(); it!=dataframe.cend(); ++it) {
-//         if (i == id)
-//             return it->second;
-//         i++;
-//     }
-// }
 
 Eigen::MatrixXd Dataframe::computeWeightMat(const std::string& weightVar){
     Eigen::VectorXd& addFuncVal(dataframe[weightVar]);
@@ -74,7 +65,7 @@ Eigen::MatrixXd Dataframe::computeWeightMat(const std::string& weightVar, const 
     return res;
 }
 
-void Dataframe::print()const {
+void Dataframe::print() const {
   std::cout << "Dataframe \n";
   for (auto it=dataframe.cbegin(); it!=dataframe.cend(); it++){
     std::cout << it->first;

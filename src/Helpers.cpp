@@ -4,14 +4,6 @@ double helpers::geoDist(const double x11, const double x12, const double x21, co
   return std::sqrt((x11-x21)*(x11-x21) + (x12-x22)*(x12-x22));
 }
 
-double helpers::meanVec(const Eigen::VectorXd& v){
-  return v.sum()/v.size();
-}
-
-double helpers::meanMat(const Eigen::MatrixXd& m){
-  return m.sum()/(m.rows()*m.cols());
-}
-
 bool helpers::operandPair(std::pair<double, Eigen::VectorXd> p1, std::pair<double, Eigen::VectorXd> p2){
   return (p1.first < p2.first);
 }
