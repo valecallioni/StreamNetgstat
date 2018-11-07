@@ -1,3 +1,7 @@
+#' get model
+#' @useDynLib StreamNetgstat
+#' @export
+
 #get_SSN_model = function(ssn, net.num, varNames, weightVar){
  
 get_SSN_model = function(varNames, weightVar, CorModels,

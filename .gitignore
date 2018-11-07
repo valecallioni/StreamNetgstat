@@ -10,4 +10,4 @@ main
 cmake-build-debug
 *.pdf
 *.dll
-main.R
+covMat.txt

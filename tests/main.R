@@ -4,9 +4,9 @@
 
 library(Rcpp)
 library(RcppEigen)
-dyn.load("/vagrant/PACSProject/src copia/interface.so")
-source("/vagrant/PACSProject/R/get_SSN_model.R")
-load("/vagrant/PACSProject/Data/middlefork.RData")
+dyn.load("/vagrant/PACSProject/StreamNetgstat/src/interface.so")
+source("/vagrant/PACSProject/StreamNetgstat/R/get_SSN_model.R")
+load("/vagrant/PACSProject/Data/middlefork_pred1km.RData")
 
 # library(SSN)
 # 
@@ -32,13 +32,14 @@ load("/vagrant/PACSProject/Data/middlefork.RData")
 # Missouri arguments: 17, c("STREAM_AUG", "ELEV", "SLOPE"), "afvArea"
 # MiddleFork arguments: 1 o 2c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), c("Summer_mn", "ELEV_DEM", "SLOPE"), "afvArea"
 
-modelParam = get_SSN_model(c("Summer_mn", "ELEV_DEM", "SLOPE"), "afvArea", 
+result = get_SSN_model(c("Summer_mn", "ELEV_DEM"), "afvArea", 
                             c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), 
                             bin_tables, network_data, obs_points, pred_points, obs_data, pred_data)
 
 print("Theta:")
-print(modelParam$optTheta)
+print(result$optTheta)
 print("Beta:")
-print(modelParam$betaValues)
-#print("Covariance matrix:")
-#print(modelParam$covMatrix)
+print(result$betaValues)
+setwd("/vagrant/PACSProject/")
+write(t(result$covMatrix), file = "covMat.txt", ncolumns = 45)
+write(t(result$predictions), file = "predData.txt", ncolumns = 2)

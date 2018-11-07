@@ -1,0 +1,15 @@
+Package: StreamNetgstat
+Type: Package
+Title: Spatial stream networks analysis
+Version: 1.0.0
+Authors@R: c(person("Valeria", "Callioni", role = c("aut", "cre"),
+	email = "valeria.callioni@mail.polimi.it"))
+Description: Prova
+Depends: R (>= 3.2.0), Rcpp (>= 0.12.16), RcppEigen (>= 0.3.3.4.0)
+LinkingTo: Rcpp, RcppEigen
+NeedsCompilation: yes
+SystemRequirements: C++11
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
