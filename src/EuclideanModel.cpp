@@ -7,12 +7,10 @@ Eigen::MatrixXd EuclideanModel::computeMatCov(const Eigen::MatrixXd& distGeo) {
   res.fill(0.0);
   for (unsigned int i=0; i<n; i++){
     for (unsigned int j=0; j<m; j++){
-      if (i == j)
+      if (i == j && n == m)
         res(i,j) = sigma2;
       else
         res(i,j) = computeCov(distGeo(i,j));
-      if (res(i,j)<0.0)
-        std::cout << "Cov Euclid negative between points " << i << " and " << j << std::endl;
     }
   }
   return res;
