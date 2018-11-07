@@ -538,7 +538,7 @@ void Optimizer::glmssn() {
   betaValues = invXVX*X->transpose()*invV*(*z);
 }
 
-void Optimizer::test(Eigen::VectorXd& theta){
+void Optimizer::test(const Eigen::VectorXd& theta){
   int j = 0;
   if (j < nModels*2 && tailUpModel){
     tailUpModel->setSigma2(std::exp(theta(j)));
@@ -571,11 +571,16 @@ void Optimizer::test(Eigen::VectorXd& theta){
   Id.setIdentity();
   Eigen::MatrixXd invV(solver.solve(Id));
 
-  solver = Eigen::LDLT<Eigen::MatrixXd>(p);
+  solver = Eigen::LDLT<Eigen::MatrixXd>(p+1);
   solver.compute(X->transpose()*invV*(*X));
   Id.resize(p+1,p+1);
   Id.setIdentity();
   Eigen::MatrixXd invXVX(solver.solve(Id));
 
   betaValues = invXVX*X->transpose()*invV*(*z);
+}
+
+void Optimizer::setTheta(const Eigen::VectorXd& theta){
+  optimTheta = theta;
+  test(theta.array().log());
 }

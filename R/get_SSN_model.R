@@ -64,10 +64,12 @@ get_SSN_model = function(varNames, weightVar, CorModels,
   # pred_points = NULL
   # pred_data = NULL
   # for (p in 1:length(ssn@predpoints@SSNPoints)){
-  #    tmp = cbind(ssn@predpoints@SSNPoints[[p]]@network.point.coords,
-  #                ssn@predpoints@SSNPoints[[p]]@point.coords)
-  #    pred_points = rbind(pred_points, tmp)
-  #    pred_data = rbind(pred_data, ssn@predpoints@SSNPoints[[p]]@point.data)
+  #   if (ssn@predpoints@ID[[p]] == "pred1km"){
+  #     tmp = cbind(ssn@predpoints@SSNPoints[[p]]@network.point.coords,
+  #                 ssn@predpoints@SSNPoints[[p]]@point.coords)
+  #     pred_points = rbind(pred_points, tmp)
+  #     pred_data = rbind(pred_data, ssn@predpoints@SSNPoints[[p]]@point.data)
+  #   }
   # }
   # indx <- sapply(pred_points, is.factor)
   # pred_points[indx] <- lapply(pred_points[indx], function(x) as.numeric(as.character(x)))

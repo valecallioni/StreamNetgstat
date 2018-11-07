@@ -7,14 +7,8 @@
 #include <RcppEigen.h>
 #include "Dataframe.hpp"
 #include "Network.hpp"
-#include "Factory.hpp"
-#include "FactoryHelpers.hpp"
-#include "Helpers.hpp"
-#include "Proxy.hpp"
-#include "TailUpModel.hpp"
-#include "TailDownModel.hpp"
-#include "EuclideanModel.hpp"
 #include "Optimizer.hpp"
+#include "Kriging.hpp"
 
 extern "C"{
 
@@ -27,9 +21,7 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
     // Stream segments storage
     int netNum = Rcpp::as<int> (net_num);
     Eigen::MatrixXd networkDataTot = Rcpp::as<Eigen::MatrixXd> (network_data);
-    Rcpp::Rcout << "Network data OK. \n";
     std::list<std::vector<std::string>> binTables = Rcpp::as<std::list<std::vector<std::string>>> (bin_tables);
-    Rcpp::Rcout << "binTables OK. Dimensions:" << binTables.size() << "\n";
     std::vector<std::vector<StreamSegment>> segments(netNum);
     std::vector<std::map<unsigned int, std::string>> segmentsMaps(netNum);
     unsigned int j = 0;
@@ -56,7 +48,6 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
     Eigen::MatrixXd obsPointsMat = Rcpp::as<Eigen::Map<Eigen::MatrixXd>> (obs_points);
     std::vector<std::vector<Point>> obsPoints(netNum);
     helpers::pointsStorage(segmentsMaps, obsPointsMat, obsPoints);
-    Rcpp::Rcout << "ObsPoints OK. \n";
     obsPointsMat.resize(0,0);
 
 
@@ -64,7 +55,6 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
     Eigen::MatrixXd predPointsMat = Rcpp::as<Eigen::MatrixXd> (pred_points);
     std::vector<std::vector<Point>> predPoints(netNum);
     helpers::pointsStorage(segmentsMaps, predPointsMat, predPoints);
-    Rcpp::Rcout << "PredPoints OK. \n";
     predPointsMat.resize(0,0);
     segmentsMaps.clear();
 
@@ -84,7 +74,6 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
       nObsTot += networks[k].getNObs();
       nPredTot += networks[k].getNPred();
     }
-    Rcpp::Rcout << "Networks OK. Numero Networks = " << networks.size() << "\n";
     obsPoints.clear();
     predPoints.clear();
     segments.clear();
@@ -130,17 +119,15 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
     Eigen::MatrixXd weightMatOP(dataObs.computeWeightMat(weightVar, dataPred[weightVar]));
     Eigen::MatrixXd flowMatOP(nObsTot, nPredTot);
     Eigen::MatrixXd distHydroOP(nObsTot, nPredTot);
+    Eigen::MatrixXd distHydroPO(nPredTot, nObsTot);
     Eigen::MatrixXd distGeoOP(nObsTot, nPredTot);
     matrices = helpers::createDistMatricesOP(networks, nObsTot, nPredTot);
     flowMatOP = matrices[0];
     distHydroOP = matrices[1];
-    distGeoOP = matrices[2];
+    distHydroPO = matrices[2].transpose();
+    distGeoOP = matrices[3];
     matrices.clear();
     weightMatOP = weightMatOP.cwiseProduct(flowMatOP);
-
-
-    //varNames.pop_back();
-    //covNames.pop_back();
 
 
     // Creation of the factories related to the covariance models chosen
@@ -202,14 +189,36 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
     }
 
 
-    // Optimizer
+
+    // -------------------------------------------------------------------------
+    // MODEL FITTING
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, TRUE, up+down+euclid,
       dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>());
     solver.glmssn();
 
+
+
+    // -------------------------------------------------------------------------
+    // KRIGING
+    Eigen::MatrixXd designMatPred;
+    designMatPred.resize(nPredTot, varNames.size()-1);
+    designMatPred.fill(1.0);
+    for (unsigned int i=1; i<designMatPred.cols(); i++){
+      designMatPred.col(i) = dataPred[varNames[i]];
+    }
+
+    Kriging universalKriging(designMatPred, designMat, solver.getCovMat(), distHydroOP, distHydroPO, distGeoOP,
+      weightMatOP, flowMatOP.cast<int>(), solver.getOptimTheta(), dataObs[varNames[0]],
+      solver.getTailUp(), solver.getTailDown(), solver.getEuclid(), up+down+euclid, TRUE);
+    universalKriging.predict();
+
+
+
+
     Rcpp::List result = Rcpp::List::create(Rcpp::Named("optTheta") = solver.getOptimTheta(),
                                            Rcpp::Named("betaValues") = solver.getBeta(),
-                                           Rcpp::Named("covMatrix") = solver.getCovMat());
+                                           Rcpp::Named("covMatrix") = solver.getCovMat(),
+                                           Rcpp::Named("predictions") = universalKriging.getPredictions());
 
 
     return Rcpp::wrap(result);

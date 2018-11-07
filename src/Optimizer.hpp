@@ -61,6 +61,9 @@ public:
   const Eigen::VectorXd& getOptimTheta() const {return optimTheta;};
   const Eigen::VectorXd& getBeta() const {return betaValues;};
   const Eigen::MatrixXd& getCovMat() const {return covMat;};
+  std::unique_ptr<TailUpModel>& getTailUp() {return tailUpModel;};
+  std::unique_ptr<TailDownModel>& getTailDown() {return tailDownModel;};
+  std::unique_ptr<EuclideanModel>& getEuclid() {return euclidModel;};
 
   Eigen::VectorXd thetaInit();
   double computeLogL(Eigen::VectorXd& theta);
@@ -69,7 +72,8 @@ public:
   void computeThetaWiki();
   void glmssn();
 
-  void test(Eigen::VectorXd& theta);
+  void setTheta(const Eigen::VectorXd& theta);
+  void test(const Eigen::VectorXd& theta);
 };
 
 #endif
