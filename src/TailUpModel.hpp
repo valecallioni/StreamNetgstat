@@ -16,6 +16,7 @@ public:
   TailUpModel(double s, double a): sigma2(s), alpha(a){};
   virtual double computeCov(double h) = 0;
   Eigen::MatrixXd computeMatCov(const Eigen::MatrixXd& weightMat, const Eigen::MatrixXd& distMat);
+  Eigen::MatrixXd computeMatCov(const Eigen::MatrixXd& weightMat, const Eigen::MatrixXd& distMatOP, const Eigen::MatrixXd& distMatPO);
 
   void setSigma2(double s) {sigma2 = s;};
   void setAlpha(double a) {alpha = a;};

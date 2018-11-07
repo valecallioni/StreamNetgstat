@@ -1,14 +1,12 @@
 #include "TailDownModel.hpp"
 
 Eigen::MatrixXd TailDownModel::computeMatCov(const Eigen::MatrixXi& flowMat, const Eigen::MatrixXd& distMat) {
-  //std::cout << "computeMatCov taildown" << std::endl;
   unsigned int n(flowMat.rows());
-  unsigned int m(flowMat.cols());
-  Eigen::MatrixXd res(n,m);
+  Eigen::MatrixXd res(n,n);
   res.fill(0.0);
   double h;
   for (unsigned int i=0; i<n; i++){
-    for (unsigned int j=0; j<m; j++){
+    for (unsigned int j=i; j<n; j++){
       if (flowMat(i,j) == 1){
         if (distMat(i,j) == 0.0 && distMat(j,i) != 0.0){
           h = distMat(j,i);
@@ -42,8 +40,44 @@ Eigen::MatrixXd TailDownModel::computeMatCov(const Eigen::MatrixXi& flowMat, con
           }
         }
       }
-      if (res(i,j) < 0.0)
-        std::cout << "Cov taildown negative between points " << i << " and " << j << std::endl;
+    }
+  }
+  return res;
+}
+
+Eigen::MatrixXd TailDownModel::computeMatCov(const Eigen::MatrixXi& flowMat, const Eigen::MatrixXd& distMatOP, const Eigen::MatrixXd& distMatPO) {
+  unsigned int n(distMatOP.rows());
+  unsigned int m(distMatOP.cols());
+  Eigen::MatrixXd res(n,m);
+  res.fill(0.0);
+  double h;
+  for (unsigned int i=0; i<n; i++){
+    for (unsigned int j=0; j<m; j++){
+      if (flowMat(i,j) == 1){
+        if (distMatOP(i,j) == 0.0 && distMatPO(j,i) != 0.0){
+          h = distMatPO(j,i);
+          res(i,j) = computeCov(h);
+        }
+        else if (distMatOP(i,j) != 0.0 && distMatPO(j,i) == 0.0){
+          h = distMatOP(i,j);
+          res(i,j) = computeCov(h);
+        }
+      }
+      else {
+        double a(0.0);
+        double b(0.0);
+        if (distMatOP(i,j) < distMatPO(j,i)){
+          a = distMatOP(i,j);
+          b = distMatPO(j,i);
+        }
+        else {
+          b = distMatOP(i,j);
+          a = distMatPO(j,i);
+        }
+        if (a != 0.0 && b != 0.0){
+          res(i,j) = computeCov(a, b);
+        }
+      }
     }
   }
   return res;

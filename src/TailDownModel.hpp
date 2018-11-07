@@ -17,6 +17,7 @@ public:
   virtual double computeCov(double, double) = 0;
   virtual double computeCov(double h) = 0;
   Eigen::MatrixXd computeMatCov(const Eigen::MatrixXi& flowMat, const Eigen::MatrixXd& distMat);
+  Eigen::MatrixXd computeMatCov(const Eigen::MatrixXi& flowMat, const Eigen::MatrixXd& distMatOP, const Eigen::MatrixXd& distMatPO);
 
   void setSigma2(double s) {sigma2 = s;};
   void setAlpha(double a) {alpha = a;};
