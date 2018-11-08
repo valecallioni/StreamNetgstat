@@ -8,29 +8,16 @@ dyn.load("/vagrant/PACSProject/StreamNetgstat/src/interface.so")
 source("/vagrant/PACSProject/StreamNetgstat/R/get_SSN_model.R")
 load("/vagrant/PACSProject/Data/middlefork_pred1km.RData")
 
-# library(SSN)
+# file.copy(system.file(file.path("lsndata", "MiddleFork04.ssn"), package = "SSN"), 
+#           to = tempdir(), recursive = TRUE, copy.mode = FALSE)
+# setwd(tempdir())
 # 
-# # Importing the Missouri data set
-# missourip = importSSN("MissouriHW.ssn")
-# 
-# # Importing prediction point data sets
-# missourip = importPredpts(missourip, "preds", "ssn")
-# 
-# # Compute the additive function value (to obtain the spatial weights)
-# # based on h2oAreaKm2 (the watershed area), which is a column of the dataframe data,
-# # slot of the SpatialStreamNetowrk class, if the variable afvArea is not yet present
-# if (!is.element("afvArea", colnames(missourip@data))){
-#   names(missourip@data)
-#   missourip = additive.function(missourip, "h2oAreaKm2", "computed.adf")
-#   names(missourip@data)
-# }
-
-# Create the matrix N, the matrix containing the distances among observed points, 
-# prediction points and among the two groups
-# .... call R function
+# mf04p = importSSN("MiddleFork04.ssn", predpts = "pred1km")
+# mf04p = importPredpts(mf04p, "Knapp", "ssn")
+# mf04p = importPredpts(mf04p, "CapeHorn", "ssn")
 
 # Missouri arguments: 17, c("STREAM_AUG", "ELEV", "SLOPE"), "afvArea"
-# MiddleFork arguments: 1 o 2c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), c("Summer_mn", "ELEV_DEM", "SLOPE"), "afvArea"
+
 
 result = get_SSN_model(c("Summer_mn", "ELEV_DEM"), "afvArea", 
                             c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), 
