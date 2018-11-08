@@ -45,8 +45,6 @@ private:
   unsigned int maxIter = 1e4;
   unsigned int funEvals = 0;
   unsigned int maxFunEvals = 1e6;
-  unsigned int restart = 0;
-  unsigned int maxRestart = 100;
   double tolTheta = 1e-3;
   double tolFun = 1e-3;
 

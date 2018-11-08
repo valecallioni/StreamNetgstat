@@ -1,15 +1,15 @@
 #include "Point.hpp"
 
 Point::Point(const unsigned int r, const std::string& binID, const double dist, const unsigned int p,
-             const double coord1, const double coord2): rid(r), distUpstream(dist), pid(p),
+             const double coord1, const double coord2): distUpstream(dist), rid(r), pid(p),
              x1(coord1), x2(coord2){
     for (auto c: binID)
         binaryID.push_back(c);
 }
 
 Point::Point(const unsigned int r, const std::string& binID, const double dist, const unsigned int p,
-             const double coord1, const double coord2, const std::string& id): rid(r), distUpstream(dist),
-             pid(p), x1(coord1), x2(coord2), ID(id){
+             const double coord1, const double coord2, const std::string& id): distUpstream(dist), rid(r),
+             pid(p), ID(id), x1(coord1), x2(coord2) {
     for (auto c: binID)
         binaryID.push_back(c);
 }
