@@ -1,10 +1,8 @@
 #include "Dataframe.hpp"
 
 Dataframe::Dataframe(const std::vector<std::string>& colnames, const Eigen::MatrixXd& data){
-    if (colnames.size() != data.cols()){
-        std::cerr << "The matrix data and the variable names have not the same dimensions" << std::endl;
-        // STOP
-    }
+    if (colnames.size() != data.cols())
+        throw std::length_error("The matrix data and the variable names have not the same dimensions");
     n = data.rows();
     p = colnames.size();
     for (int i=0; i<colnames.size(); i++){

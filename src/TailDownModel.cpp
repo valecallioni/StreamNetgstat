@@ -120,9 +120,6 @@ double SphericalTD::computeCov(double h) {
 }
 
 double ExponentialTD::computeCov(double a, double b) {
-  if(sigma2 < 0 ) std::cout << "MALissimo sigma2" << std::endl;
-  if(  exp(-3.0*(a+b)/alpha) < 0 ) std::cout << "MALissimo exp" << std::endl;
-  if(sigma2 < 0  || exp(-3.0*(a+b)/alpha) < 0 ) std::cout << "MALissimo " << std::endl;
   return sigma2 * exp(-3.0*(a+b)/alpha);
 }
 

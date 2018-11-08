@@ -13,6 +13,7 @@ protected:
 
 public:
   EuclideanModel() = default;
+  virtual ~EuclideanModel() =  default;
   EuclideanModel(double s, double a): sigma2(s), alpha(a){};
   virtual double computeCov(double h) = 0;
   Eigen::MatrixXd computeMatCov(const Eigen::MatrixXd& distGeo);
@@ -25,21 +26,25 @@ public:
 
 class CauchyEU : public EuclideanModel{
 public:
+  ~CauchyEU() =  default;
   double computeCov(double d) override;
 };
 
 class SphericalEU : public EuclideanModel{
 public:
+  ~SphericalEU() =  default;
   double computeCov(double d) override;
 };
 
 class ExponentialEU : public EuclideanModel{
 public:
+  ~ExponentialEU() =  default;
   double computeCov(double d) override;
 };
 
 class GaussianEU : public EuclideanModel{
 public:
+  ~GaussianEU() =  default;
   double computeCov(double d) override;
 };
 

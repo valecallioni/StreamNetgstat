@@ -42,4 +42,4 @@ public:
 
 };
 
-#endif //PACSPROJECT_POINT_HPP
+#endif

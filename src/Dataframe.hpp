@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <stdexcept>
 #include <Eigen/Dense>
 #include <iostream>
 #include <cmath>
@@ -23,7 +24,6 @@ public:
     unsigned int cols() const;
 
     const Eigen::VectorXd& operator[](const std::string& key) const;
-    //const Eigen::VectorXd& operator[](const unsigned int id) const;
 
     Eigen::MatrixXd computeWeightMat(const std::string& weightVar);
     Eigen::MatrixXd computeWeightMat(const std::string& weightVar, const Eigen::VectorXd& otherPoints);
@@ -31,4 +31,4 @@ public:
     void print() const;
 };
 
-#endif //PACSPROJECT_DATAFRAME_HPP
+#endif

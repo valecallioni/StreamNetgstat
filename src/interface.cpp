@@ -148,36 +148,17 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
       std::size_t found_euclid = name.find("Euclid");
       if (found_up!=std::string::npos){
         up++;
-        if (up>1){
-          std::cerr << "No more than one tail up model is allowed. \n";
-          //Stop
-        }
-        else {
-          tmp_tailUpModel = tailup_fac.create(name);
-        }
+         tmp_tailUpModel = tailup_fac.create(name);
       }
       if (found_down!=std::string::npos){
         down++;
-        if (down>1){
-          std::cerr << "No more than one tail down model is allowed. \n";
-          //Stop
-        }
-        else {
-          tmp_tailDownModel = taildown_fac.create(name);
-        }
+        tmp_tailDownModel = taildown_fac.create(name);
       }
       if (found_euclid!=std::string::npos){
         euclid++;
-        if (euclid>1){
-          std::cerr << "No more than one tail up model is allowed. \n";
-          //Stop
-        }
-        else {
-          tmp_euclidModel = euclid_fac.create(name);
-        }
+        tmp_euclidModel = euclid_fac.create(name);
       }
     }
-    Rcpp::Rcout << "Modelli creati \n";
 
 
     // Design matrix

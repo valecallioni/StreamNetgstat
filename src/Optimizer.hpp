@@ -8,8 +8,7 @@
 #include <Eigen/QR>
 #include <Eigen/Eigenvalues>
 #include <cmath>
-#include "Dataframe.hpp"
-#include "Network.hpp"
+#include <stdexcept>
 #include "Factory.hpp"
 #include "FactoryHelpers.hpp"
 #include "Helpers.hpp"
@@ -65,15 +64,15 @@ public:
   std::unique_ptr<TailDownModel>& getTailDown() {return tailDownModel;};
   std::unique_ptr<EuclideanModel>& getEuclid() {return euclidModel;};
 
+  bool updateParam(Eigen::VectorXd& theta);
   Eigen::VectorXd thetaInit();
   double computeLogL(Eigen::VectorXd& theta);
   std::vector<std::pair<double, Eigen::VectorXd>> simplexInit(const Eigen::VectorXd& theta0, const double tau);
+
   void computeThetaPaper();
   void computeThetaWiki();
   void glmssn();
 
-  void setTheta(const Eigen::VectorXd& theta);
-  void test(const Eigen::VectorXd& theta);
 };
 
 #endif

@@ -27,8 +27,34 @@ useNugget(useNugg), nModels(n_models){
   maxDistGeo = 4.0*distGeo->maxCoeff();
 }
 
+bool Optimizer::updateParam(Eigen::VectorXd& theta){
+  bool control = true;
+  int j = 0;
+  if (j < nModels*2 && tailUpModel){
+    tailUpModel->setSigma2(std::exp(theta(j)));
+    j++;
+    if (std::exp(theta(j)) > maxDistHydro) control = false;
+    tailUpModel->setAlpha(std::exp(theta(j)));
+    j++;
+  }
+  if (j < nModels*2 && tailDownModel){
+    tailDownModel->setSigma2(std::exp(theta(j)));
+    j++;
+    if (std::exp(theta(j)) > maxDistHydro) control = false;
+    tailDownModel->setAlpha(std::exp(theta(j)));
+    j++;
+  }
+  if (j < nModels*2 && euclidModel){
+    euclidModel->setSigma2(std::exp(theta(j)));
+    j++;
+    if (std::exp(theta(j)) > maxDistGeo) control = false;
+    euclidModel->setAlpha(std::exp(theta(j)));
+    j++;
+  }
+  return control;
+}
+
 Eigen::VectorXd Optimizer::thetaInit() {
-  const double eps(std::numeric_limits<double>::epsilon());
   Eigen::VectorXd theta(2*nModels + 1*useNugget);
 
   Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::NoQRPreconditioner> svd(p+1, p+1, Eigen::ComputeThinU | Eigen::ComputeThinV);
@@ -38,7 +64,6 @@ Eigen::VectorXd Optimizer::thetaInit() {
   for (unsigned int i=0; i< svd.singularValues().size(); i++){
     if (svd.singularValues()(i)>tol) nz++;
   }
-  std::cout << "nz = " << nz << std::endl;
   Eigen::VectorXd sv(nz);
   for (unsigned int i=0; i<nz; i++)
     sv(i) = svd.singularValues()(i);
@@ -47,11 +72,9 @@ Eigen::VectorXd Optimizer::thetaInit() {
 
   Eigen::MatrixXd tmp_inv = V * sv.asDiagonal().inverse() * U.transpose();
 
-  std::cout << "tmp_inv: \n" << tmp_inv << std::endl;
   Eigen::VectorXd resid(*z - (*X)*tmp_inv*X->transpose()*(*z));
   resid = resid.array().square();
   double varResid(resid.mean());
-  std::cout << "varResid = " << varResid << std::endl;
 
   int i = 0;
   if (i < 2*nModels && tailUpModel){
@@ -76,6 +99,7 @@ Eigen::VectorXd Optimizer::thetaInit() {
   if (useNugget){
     theta(i) = std::log(0.1 * varResid);
   }
+
   //log-scale for every parsill (sigma2) and every range (alpha)
   //log-scale also for the nugget
   return theta;
@@ -83,36 +107,14 @@ Eigen::VectorXd Optimizer::thetaInit() {
 
 double Optimizer::computeLogL(Eigen::VectorXd& theta){
   double logl(1e+32);
-  bool check = true;
-  int j = 0;
-  if (j < nModels*2 && tailUpModel){
-    tailUpModel->setSigma2(std::exp(theta(j)));
-    j++;
-    if (std::exp(theta(j)) > maxDistHydro) check = false;
-    tailUpModel->setAlpha(std::exp(theta(j)));
-    j++;
-  }
-  if (j < nModels*2 && tailDownModel){
-    tailDownModel->setSigma2(std::exp(theta(j)));
-    j++;
-    if (std::exp(theta(j)) > maxDistHydro) check = false;
-    tailDownModel->setAlpha(std::exp(theta(j)));
-    j++;
-  }
-  if (j < nModels*2 && euclidModel){
-    euclidModel->setSigma2(std::exp(theta(j)));
-    j++;
-    if (std::exp(theta(j)) > maxDistGeo) check = false;
-    euclidModel->setAlpha(std::exp(theta(j)));
-    j++;
-  }
+  bool check = updateParam(theta);
 
   Eigen::MatrixXd V(n,n);
   V.fill(0.0);
   if (tailUpModel) V += tailUpModel->computeMatCov(*weightMat, *distHydro);
   if (tailDownModel) V += tailDownModel->computeMatCov(*flowMat, *distHydro);
   if (euclidModel) V += euclidModel->computeMatCov(*distGeo);
-  if (useNugget) V += Eigen::MatrixXd::Identity(n,n)*std::exp(theta(j));
+  if (useNugget) V += Eigen::MatrixXd::Identity(n,n)*std::exp(theta(theta.size()-1));
 
   // Da correggere: posso usare solo isPositive() di LDLT
   Eigen::EigenSolver<Eigen::MatrixXd> eig(n);
@@ -120,9 +122,9 @@ double Optimizer::computeLogL(Eigen::VectorXd& theta){
   Eigen::VectorXd values(eig.eigenvalues().real());
   for (unsigned int i=0; i<values.size(); i++){
     if (values(i) < 0.0){
-      std::cerr << "Covariance matrix not positive definite" << std::endl;
+      throw std::domain_error("Covariance matrix not positive definite");
       check = false;
-      break;
+      //break;
     }
   }
 
@@ -152,11 +154,9 @@ std::vector<std::pair<double, Eigen::VectorXd>> Optimizer::simplexInit(const Eig
   unsigned int nParam(theta0.size());
   std::vector<std::pair<double,Eigen::VectorXd>> simplex(nParam+1, std::make_pair(0.0, theta0));
   simplex[0].first = computeLogL(simplex[0].second);
-  std::cout << "Theta: \n" << simplex[0].second.array().exp() << "with logl = " << simplex[0].first << std::endl;
   for (unsigned int i=1; i<nParam+1; i++){
     simplex[i].second(i-1) = theta0(i-1) + tau;
     simplex[i].first = computeLogL(simplex[i].second);
-    std::cout << "Theta: \n" << simplex[i].second.array().exp() << "with logl = " << simplex[i].first << std::endl;
   }
   return simplex;
 }
@@ -164,7 +164,6 @@ std::vector<std::pair<double, Eigen::VectorXd>> Optimizer::simplexInit(const Eig
 void Optimizer::computeThetaWiki(){
 
   Eigen::VectorXd theta0(thetaInit());
-  std::cout << "Initial theta : \n" << theta0.array().exp() << std::endl;
   unsigned int nParam(theta0.size());
   std::vector<std::pair<double,Eigen::VectorXd>> simplex = simplexInit(theta0, 0.05);
 
@@ -182,9 +181,6 @@ void Optimizer::computeThetaWiki(){
   double r(0.5);
   double s(0.5);
 
-  bool crit1 = (iter <= maxIter);
-  bool crit2 = (funEvals <= maxFunEvals);
-
   double max((simplex[1].second-simplex[0].second).lpNorm<Eigen::Infinity>());
   for (unsigned int i=2; i<nParam+1; i++){
     double norm((simplex[i].second-simplex[0].second).lpNorm<Eigen::Infinity>());
@@ -192,15 +188,13 @@ void Optimizer::computeThetaWiki(){
       max = norm;
   }
 
+  bool crit1 = (iter <= maxIter);
+  bool crit2 = (funEvals <= maxFunEvals);
   bool crit3 = ((simplex[nParam].first - simplex[0].first) > tolFun);
   bool crit4 = (max > tolTheta);
 
-  std::cout << "f(x(n+1)) = " << simplex[nParam].first << ", f(x(1)) = " << simplex[0].first << std::endl;
-  std::cout << "Difference = " << simplex[nParam].first - simplex[0].first << std::endl;
-
   // Nelder Mead algorithm
-  while (crit1 && crit2 && crit3){
-    std::cout << "Entered in the while loop" << std::endl;
+  while (crit1 && crit2 && crit3 && crit4){
     //Calcolo degli 8 theta
     //Calcolo Log-likelihood per tutti e 8
     //Passaggi NelderMead
@@ -226,11 +220,9 @@ void Optimizer::computeThetaWiki(){
     // than the best then obtain a new simplex by replacing the worst point
     // with the reflected point
     fR = computeLogL(thetaR);
-    std::cout << "fR = " << fR << std::endl;
     if (fR < simplex[nParam-1].first && fR >= simplex[0].first){
       simplex[nParam].second = thetaR;
       simplex[nParam].first = fR;
-      std::cout << "Reflection." << std::endl;
       // go to order
     }
 
@@ -239,19 +231,16 @@ void Optimizer::computeThetaWiki(){
       thetaE = theta0 + c*(theta0 - simplex[nParam].second);
       //thetaE = theta0 + c*(theta0 - simplex[nParam].second);
       fE = computeLogL(thetaE);
-      std::cout << "fE = " << fE << std::endl;
       if (fE < fR){
         simplex[nParam].second = thetaE;
         simplex[nParam].first = fE;
         funEvals++;
-        std::cout << "Expansion1." << std::endl;
         // go to order
       }
       else {
         simplex[nParam].second = thetaR;
         simplex[nParam].first = fR;
         funEvals++;
-        std::cout << "Expansion2." << std::endl;
         // go to order
       }
     }
@@ -265,7 +254,6 @@ void Optimizer::computeThetaWiki(){
         simplex[nParam].second = thetaC;
         simplex[nParam].first = fC;
         funEvals++;
-        std::cout << "Contraction." << std::endl;
         // go to order
       }
       else {
@@ -275,7 +263,6 @@ void Optimizer::computeThetaWiki(){
           simplex[i].first = computeLogL(simplex[i].second);
           funEvals++;
         }
-        std::cout << "Shrink." << std::endl;
         // go to order
       }
     }
@@ -294,12 +281,8 @@ void Optimizer::computeThetaWiki(){
     crit2 = (funEvals <= maxFunEvals);
     crit3 = std::abs(simplex[nParam].first - simplex[0].first) > 0.001;
     crit4 = max > tolTheta;
-    std::cout << "Best funEval = " << simplex[0].first << std::endl;
 
   }
-
-  std::cout << "Exited while loop. Iter = " << iter << ", funEvals = " << funEvals << std::endl;
-  std::cout << "Diff. simplex points = " << max << ", diff. LogL values = " << simplex[nParam].first - simplex[0].first << std::endl;
 
   optimTheta = simplex[0].second.array().exp();
 
@@ -308,7 +291,6 @@ void Optimizer::computeThetaWiki(){
 void Optimizer::computeThetaPaper(){
 
   Eigen::VectorXd theta0(thetaInit());
-  std::cout << "Initial theta : \n" << theta0.array().exp() << std::endl;
   unsigned int nParam(theta0.size());
   std::vector<std::pair<double,Eigen::VectorXd>> simplex = simplexInit(theta0, 0.05);
 
@@ -320,9 +302,6 @@ void Optimizer::computeThetaPaper(){
   double c(0.75 - 1.0/(2.0*double(nParam)));
   double d(1.0 - 1.0/double(nParam));
 
-  bool crit1 = (iter <= maxIter);
-  bool crit2 = (funEvals <= maxFunEvals);
-
   double max((simplex[1].second-simplex[0].second).lpNorm<Eigen::Infinity>());
   for (unsigned int i=2; i<nParam+1; i++){
     double norm((simplex[i].second-simplex[0].second).lpNorm<Eigen::Infinity>());
@@ -330,12 +309,10 @@ void Optimizer::computeThetaPaper(){
       max = norm;
   }
 
+  bool crit1 = (iter <= maxIter);
+  bool crit2 = (funEvals <= maxFunEvals);
   bool crit3 = ((simplex[nParam].first - simplex[0].first) > tolFun);
   bool crit4 = (max > tolTheta);
-  bool crit5 = (restart <= maxRestart);
-
-  std::cout << "f(x(n+1)) = " << simplex[nParam].first << ", f(x(1)) = " << simplex[0].first << std::endl;
-  std::cout << "Difference = " << simplex[nParam].first - simplex[0].first << std::endl;
 
   Eigen::VectorXd thetaR(nParam);
   double fR(0.0);
@@ -346,12 +323,9 @@ void Optimizer::computeThetaPaper(){
   Eigen::VectorXd thetaIC(nParam);
   double fIC(0.0);
 
-  int modified(1);
 
   // Nelder Mead algorithm
-  while (crit1 && crit2 && crit3 && crit4 && crit5){
-    std::cout << "Entered in the while loop" << std::endl;
-    modified = 0;
+  while (crit1 && crit2 && crit3 && crit4){
 
     fR = 0.0;
     fE = 0.0;
@@ -376,13 +350,10 @@ void Optimizer::computeThetaPaper(){
     // than the best then obtain a new simplex by replacing the worst point
     // with the reflected point
     fR = computeLogL(thetaR);
-    std::cout << "fR = " << fR << std::endl;
     if (fR < simplex[nParam-1].first && fR >= simplex[0].first){
       simplex[nParam].second = thetaR;
       simplex[nParam].first = fR;
       funEvals++;
-      std::cout << "Reflection." << std::endl;
-      //modified = 1;
       // go to order
     }
 
@@ -390,21 +361,16 @@ void Optimizer::computeThetaPaper(){
     else if (fR < simplex[0].first){
       thetaE = theta0 + b*(thetaR - theta0);
       fE = computeLogL(thetaE);
-      std::cout << "fE = " << fE << std::endl;
       if (fE != 1e+32 && fE < fR){
         simplex[nParam].second = thetaE;
         simplex[nParam].first = fE;
         funEvals++;
-        std::cout << "Expansion1." << std::endl;
-        //modified = 1;
         // go to order
       }
       else {
         simplex[nParam].second = thetaR;
         simplex[nParam].first = fR;
         funEvals++;
-        std::cout << "Expansion2." << std::endl;
-        //modified = 1;
         // go to order
       }
     }
@@ -418,8 +384,6 @@ void Optimizer::computeThetaPaper(){
         simplex[nParam].second = thetaOC;
         simplex[nParam].first = fOC;
         funEvals++;
-        std::cout << "Outside Contraction." << std::endl;
-        //modified = 1;
         // go to order
       }
       else {
@@ -429,8 +393,6 @@ void Optimizer::computeThetaPaper(){
           simplex[i].first = computeLogL(simplex[i].second);
           funEvals++;
         }
-        std::cout << "Shrink." << std::endl;
-        //modified = 1;
         // go to order
       }
     }
@@ -442,8 +404,6 @@ void Optimizer::computeThetaPaper(){
         simplex[nParam].second = thetaIC;
         simplex[nParam].first = fIC;
         funEvals++;
-        std::cout << "Inside Contraction." << std::endl;
-        //modified = 1;
         // go to order
       }
       else {
@@ -453,19 +413,10 @@ void Optimizer::computeThetaPaper(){
           simplex[i].first = computeLogL(simplex[i].second);
           funEvals++;
         }
-        std::cout << "Shrink." << std::endl;
-        //modified = 1;
         // go to order
       }
 
     }
-
-    // if (!modified) {
-    //   simplex = simplexInit(simplex[0].second, 0.5);
-    //   restart++;
-    //   modified = 1;
-    //   std::cout << "Restart." << std::endl;
-    // }
 
     std::sort(simplex.begin(), simplex.end(), helpers::operandPair);
 
@@ -481,14 +432,8 @@ void Optimizer::computeThetaPaper(){
     crit2 = (funEvals <= maxFunEvals);
     crit3 = std::abs(simplex[nParam].first - simplex[0].first) > 0.001;
     crit4 = max > tolTheta;
-    crit5 = (restart <= maxRestart);
-
-    std::cout << "Best funEval = " << simplex[0].first << std::endl;
 
   }
-
-  std::cout << "Exited while loop. Iter = " << iter << ", funEvals = " << funEvals << ", restarts = " << restart << std::endl;
-  std::cout << "Diff. simplex points = " << max << ", diff. LogL values = " << simplex[nParam].first - simplex[0].first << std::endl;
 
   optimTheta = simplex[0].second.array().exp();
 
@@ -497,31 +442,13 @@ void Optimizer::computeThetaPaper(){
 void Optimizer::glmssn() {
   computeThetaWiki();
 
-  int j = 0;
-  if (j < nModels*2 && tailUpModel){
-    tailUpModel->setSigma2(optimTheta(j));
-    j++;
-    tailUpModel->setAlpha(optimTheta(j));
-    j++;
-  }
-  if (j < nModels*2 && tailDownModel){
-    tailDownModel->setSigma2(optimTheta(j));
-    j++;
-    tailDownModel->setAlpha(optimTheta(j));
-    j++;
-  }
-  if (j < nModels*2 && euclidModel){
-    euclidModel->setSigma2(optimTheta(j));
-    j++;
-    euclidModel->setAlpha(optimTheta(j));
-    j++;
-  }
+  Eigen::VectorXd logTheta = optimTheta.array().log();
+  updateParam(logTheta);
 
   if (tailUpModel) covMat += tailUpModel->computeMatCov(*weightMat, *distHydro);
   if (tailDownModel) covMat += tailDownModel->computeMatCov(*flowMat, *distHydro);
   if (euclidModel) covMat += euclidModel->computeMatCov(*distGeo);
-  if (useNugget) covMat += Eigen::MatrixXd::Identity(n,n)*optimTheta(j);
-
+  if (useNugget) covMat += Eigen::MatrixXd::Identity(n,n)*optimTheta(optimTheta.size()-1);
 
   Eigen::LDLT<Eigen::MatrixXd> solver(n);
   solver.compute(covMat);
@@ -536,51 +463,4 @@ void Optimizer::glmssn() {
   Eigen::MatrixXd invXVX(solver.solve(Id));
 
   betaValues = invXVX*X->transpose()*invV*(*z);
-}
-
-void Optimizer::test(const Eigen::VectorXd& theta){
-  int j = 0;
-  if (j < nModels*2 && tailUpModel){
-    tailUpModel->setSigma2(std::exp(theta(j)));
-    j++;
-    tailUpModel->setAlpha(std::exp(theta(j)));
-    j++;
-  }
-  if (j < nModels*2 && tailDownModel){
-    tailDownModel->setSigma2(std::exp(theta(j)));
-    j++;
-    tailDownModel->setAlpha(std::exp(theta(j)));
-    j++;
-  }
-  if (j < nModels*2 && euclidModel){
-    euclidModel->setSigma2(std::exp(theta(j)));
-    j++;
-    euclidModel->setAlpha(std::exp(theta(j)));
-    j++;
-  }
-
-  if (tailUpModel) covMat += tailUpModel->computeMatCov(*weightMat, *distHydro);
-  if (tailDownModel) covMat += tailDownModel->computeMatCov(*flowMat, *distHydro);
-  if (euclidModel) covMat += euclidModel->computeMatCov(*distGeo);
-  if (useNugget) covMat += Eigen::MatrixXd::Identity(n,n)*exp(theta(j));
-
-
-  Eigen::LDLT<Eigen::MatrixXd> solver(n);
-  solver.compute(covMat);
-  Eigen::MatrixXd Id(n,n);
-  Id.setIdentity();
-  Eigen::MatrixXd invV(solver.solve(Id));
-
-  solver = Eigen::LDLT<Eigen::MatrixXd>(p+1);
-  solver.compute(X->transpose()*invV*(*X));
-  Id.resize(p+1,p+1);
-  Id.setIdentity();
-  Eigen::MatrixXd invXVX(solver.solve(Id));
-
-  betaValues = invXVX*X->transpose()*invV*(*z);
-}
-
-void Optimizer::setTheta(const Eigen::VectorXd& theta){
-  optimTheta = theta;
-  test(theta.array().log());
 }

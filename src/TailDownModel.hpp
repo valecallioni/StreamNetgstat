@@ -13,6 +13,7 @@ protected:
 
 public:
   TailDownModel() = default;
+  virtual ~TailDownModel() =  default;
   TailDownModel(double s, double a): sigma2(s), alpha(a){};
   virtual double computeCov(double, double) = 0;
   virtual double computeCov(double h) = 0;
@@ -27,24 +28,28 @@ public:
 
 class LinearWithSillTD : public TailDownModel{
 public:
+  ~LinearWithSillTD() =  default;
   double computeCov(double, double) override;
   double computeCov(double) override;
 };
 
 class SphericalTD : public TailDownModel{
 public:
+  ~SphericalTD() =  default;
   double computeCov(double, double) override;
   double computeCov(double) override;
 };
 
 class ExponentialTD : public TailDownModel{
 public:
+  ~ExponentialTD() =  default;
   double computeCov(double, double) override;
   double computeCov(double) override;
 };
 
 class MariahTD : public TailDownModel{
 public:
+  ~MariahTD() =  default;
   double computeCov(double, double) override;
   double computeCov(double) override;
 };

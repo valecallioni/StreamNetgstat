@@ -31,4 +31,4 @@ public:
     void print() const;
 };
 
-#endif //PACSPROJECT_STREAMSEGMENT_HPP
+#endif

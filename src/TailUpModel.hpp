@@ -13,6 +13,7 @@ protected:
 
 public:
   TailUpModel() = default;
+  virtual ~TailUpModel() =  default;
   TailUpModel(double s, double a): sigma2(s), alpha(a){};
   virtual double computeCov(double h) = 0;
   Eigen::MatrixXd computeMatCov(const Eigen::MatrixXd& weightMat, const Eigen::MatrixXd& distMat);
@@ -26,21 +27,25 @@ public:
 
 class LinearWithSillTU : public TailUpModel{
 public:
+  virtual ~LinearWithSillTU() =  default;
   double computeCov(double h) override;
 };
 
 class SphericalTU : public TailUpModel{
 public:
+  virtual ~SphericalTU() =  default;
   double computeCov(double h) override;
 };
 
 class ExponentialTU : public TailUpModel{
 public:
+  virtual ~ExponentialTU() =  default;
   double computeCov(double h) override;
 };
 
 class MariahTU : public TailUpModel{
 public:
+  virtual ~MariahTU() =  default;
   double computeCov(double h) override;
 };
 
