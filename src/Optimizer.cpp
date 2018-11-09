@@ -281,6 +281,7 @@ void Optimizer::computeThetaWiki(){
 
   }
 
+  if (iter > maxIter) std::cerr << "Reached max number of iterations" << std::endl;
   optimTheta = simplex[0].second.array().exp();
 
 }

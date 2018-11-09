@@ -29,6 +29,8 @@ private:
 public:
     Network() = default;
     Network(const unsigned int id, const std::vector<Point>& obs, const std::vector<Point>& pred, const std::vector<StreamSegment>& seg);
+    Network(const unsigned int id, const std::vector<Point>& obs, const std::vector<StreamSegment>& seg);
+
 
     void setID(const unsigned int id) {ID = id;};
 
@@ -38,8 +40,6 @@ public:
     const Eigen::MatrixXi& getFlowMatOO() const {return obspoints.getFlowMat();};
     const Eigen::MatrixXi& getFlowMatOP() const {return flowMatOP;};
     const Eigen::MatrixXi& getFlowMatPP() const {return predpoints.getFlowMat();};
-    //const std::vector<Point>& getObsPoints() const {return obspoints.getPoints();};
-    //const std::vector<Point>& getPredPoints() const {return predpoints.getPoints();};
     const Eigen::MatrixXd& getDistGeoOO() const {return obspoints.getDistGeo();};
     const Eigen::MatrixXd& getDistGeoOP() const {return distGeoOP;};
     const Eigen::MatrixXd& getDistGeoPP() const {return predpoints.getDistGeo();};

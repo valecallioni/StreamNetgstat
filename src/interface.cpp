@@ -13,8 +13,143 @@
 extern "C"{
 
 // CREATE MODEL
-RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP obs_points, SEXP pred_points,
-  SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names, SEXP doKrig) {
+RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
+  SEXP obs_points, SEXP obs_data, SEXP var_names, SEXP model_names) {
+
+    BEGIN_RCPP
+
+    // Stream segments storage
+    int netNum = Rcpp::as<int> (net_num);
+    Eigen::MatrixXd networkDataTot = Rcpp::as<Eigen::MatrixXd> (network_data);
+    std::list<std::vector<std::string>> binTables = Rcpp::as<std::list<std::vector<std::string>>> (bin_tables);
+    std::vector<std::vector<StreamSegment>> segments(netNum);
+    std::vector<std::map<unsigned int, std::string>> segmentsMaps(netNum);
+    unsigned int j = 0;
+    for (unsigned int k=0; k<netNum; k++){
+        unsigned int currentNet = k+1;
+        unsigned int i = 0;
+        std::vector<StreamSegment> seg;
+        while (j<networkDataTot.rows() && networkDataTot(j,0)==currentNet){
+          StreamSegment s(currentNet, networkDataTot(j,1), networkDataTot(j,2), binTables.front()[i]);
+          seg.push_back(s);
+          segmentsMaps[k][networkDataTot(j,1)] = binTables.front()[i];
+          i++;
+          j++;
+        }
+        segments[k] = seg;
+        binTables.pop_front();
+    }
+
+    networkDataTot.resize(0,0);
+    binTables.resize(0);
+
+
+    // Observed points storage
+    Eigen::MatrixXd obsPointsMat = Rcpp::as<Eigen::Map<Eigen::MatrixXd>> (obs_points);
+    std::vector<std::vector<Point>> obsPoints(netNum);
+    helpers::pointsStorage(segmentsMaps, obsPointsMat, obsPoints);
+    obsPointsMat.resize(0,0);
+    segmentsMaps.clear();
+
+
+    // Networks creation
+    unsigned int nObsTot(0);
+    std::vector<Network> networks(netNum);
+    for (unsigned int k=0; k<netNum; k++){
+      Network net(k, obsPoints[k], segments[k]);
+      networks[k] = net;
+      obsPoints[k].clear();
+      segments[k].clear();
+      //networks[k].print();
+      networks[k].computeDistances();
+      Rcpp::Rcout << "Net n." << k+1 << " distance matrices created. \n";
+      nObsTot += networks[k].getNObs();
+    }
+    obsPoints.clear();
+    segments.clear();
+
+
+    // Variables (response variable, covariates and weight variable) names
+    std::vector<std::string> varNames = Rcpp::as<std::vector<std::string>> (var_names);
+    std::string weightVar(varNames.back());
+
+
+    // Dataframe for fitting the model, regarding the observed points
+    Dataframe dataObs(varNames, Rcpp::as<Eigen::MatrixXd> (obs_data));
+    // Matrices of observed points only, about connection, distances and weight built using block matrices
+    Eigen::MatrixXd weightMatOO(dataObs.computeWeightMat(weightVar));
+    Eigen::MatrixXd flowMatOO(nObsTot, nObsTot);
+    Eigen::MatrixXd distHydroOO(nObsTot, nObsTot);
+    Eigen::MatrixXd distGeoOO(nObsTot, nObsTot);
+    std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatrices("obs", networks, nObsTot));
+    flowMatOO = matrices[0];
+    distHydroOO = matrices[1];
+    distGeoOO = matrices[2];
+    matrices.clear();
+    weightMatOO = weightMatOO.cwiseProduct(flowMatOO);
+    Rcpp::Rcout << "Distance matrices completed. \n";
+
+
+    // Creation of the factories related to the covariance models chosen
+    std::vector<std::string> corModels = Rcpp::as<std::vector<std::string>> (model_names);
+    tailup_factory::TailUpFactory& tailup_fac (tailup_factory::TailUpFactory::Instance());
+    std::unique_ptr<TailUpModel> tmp_tailUpModel;
+    taildown_factory::TailDownFactory& taildown_fac (taildown_factory::TailDownFactory::Instance());
+    std::unique_ptr<TailDownModel> tmp_tailDownModel;
+    euclidean_factory::EuclideanFactory& euclid_fac(euclidean_factory::EuclideanFactory::Instance());
+    std::unique_ptr<EuclideanModel> tmp_euclidModel;
+
+    int up = 0;
+    int down = 0;
+    int euclid = 0;
+    for (auto name: corModels){
+      std::size_t found_up = name.find("up");
+      std::size_t found_down = name.find("down");
+      std::size_t found_euclid = name.find("Euclid");
+      if (found_up!=std::string::npos){
+        up++;
+         tmp_tailUpModel = tailup_fac.create(name);
+      }
+      if (found_down!=std::string::npos){
+        down++;
+        tmp_tailDownModel = taildown_fac.create(name);
+      }
+      if (found_euclid!=std::string::npos){
+        euclid++;
+        tmp_euclidModel = euclid_fac.create(name);
+      }
+    }
+
+    // Design matrix
+    Eigen::MatrixXd designMat;
+    designMat.resize(nObsTot, varNames.size()-1);
+    designMat.fill(1.0);
+    for (unsigned int i=1; i<designMat.cols(); i++){
+      designMat.col(i) = dataObs[varNames[i]];
+    }
+
+
+    // -------------------------------------------------------------------------
+    // MODEL FITTING
+    Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, TRUE, up+down+euclid,
+      dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>());
+    solver.glmssn();
+
+
+    Rcpp::List result = Rcpp::List::create(Rcpp::Named("optTheta") = solver.getOptimTheta(),
+                                           Rcpp::Named("betaValues") = solver.getBeta(),
+                                           Rcpp::Named("covMatrix") = solver.getCovMat());
+
+
+    return Rcpp::wrap(result);
+    END_RCPP
+
+}
+
+
+// CREATE MODEL and DO KRIGING
+RcppExport SEXP getSSNModelKriging (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP obs_points, SEXP pred_points,
+  SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names) {
 
     BEGIN_RCPP
 
@@ -192,10 +327,8 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
       weightMatOP, flowMatOP.cast<int>(), solver.getOptimTheta(), dataObs[varNames[0]],
       solver.getTailUp(), solver.getTailDown(), solver.getEuclid(), up+down+euclid, TRUE);
 
-    bool doKriging = Rcpp::as<bool> (doKrig);
-    if (doKriging){
-      universalKriging.predict();
-    }
+    universalKriging.predict();
+
 
 
 
@@ -211,4 +344,5 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
     END_RCPP
 
 }
+
 }

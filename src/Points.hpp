@@ -13,7 +13,7 @@ class Points {
 
 private:
   std::vector<Point> points;
-  unsigned int n;
+  unsigned int n = 0;
   Eigen::MatrixXi flowMat;
   Eigen::MatrixXd distHydro;
   Eigen::MatrixXd distGeo;
