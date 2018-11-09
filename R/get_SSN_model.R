@@ -2,11 +2,14 @@
 #' @useDynLib StreamNetgstat
 #' @export
 
-get_SSN_model = function(ssn, varNames, weightVar, CorModels, predpts = NULL, doKriging = FALSE){
+#get_SSN_model = function(ssn, varNames, weightVar, CorModels, predpts = NULL, doKriging = FALSE){
  
 #get_SSN_model = function(varNames, weightVar, CorModels,
 #                         bin_tables, network_data, obs_points, pred_points, obs_data, pred_data){
-  
+
+get_SSN_model = function(varNames, weightVar, CorModels,
+                         bin_tables, network_data, obs_points, obs_data){
+
   # Check to see whether distance folder exists...
   if (!file.exists(file.path(ssn@path, "distance"))) {
     dir.create(file.path(ssn@path, "distance"))
@@ -45,7 +48,7 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, predpts = NULL, do
 
   # -------------------------------------------------------------
   # Preprocessing of the data
-  
+
   net_num = levels(ssn@network.line.coords[,1])
 
   # Create a list for the binaryId tables (one per network)
@@ -88,33 +91,39 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, predpts = NULL, do
   obs_data = data.matrix(obs_data[ord, c(varNames, weightVar)])
 
   # Create a data.frame for the prediction points attributes and data
-  pred_points = NULL
-  pred_data = NULL
-  for (p in 1:length(ssn@predpoints@SSNPoints)){
-    if (ssn@predpoints@ID[[p]] == predpts){
-      tmp = cbind(ssn@predpoints@SSNPoints[[p]]@network.point.coords,
-                  ssn@predpoints@SSNPoints[[p]]@point.coords)
-      pred_points = rbind(pred_points, tmp)
-      pred_data = rbind(pred_data, ssn@predpoints@SSNPoints[[p]]@point.data)
-    }
-  }
-  indx <- sapply(pred_points, is.factor)
-  pred_points[indx] <- lapply(pred_points[indx], function(x) as.numeric(as.character(x)))
-  ord = order(pred_points$NetworkID)
-  pred_points = data.matrix(pred_points[ord, ])
-
-  indx <- sapply(pred_data, is.factor)
-  pred_data[indx] <- lapply(pred_data[indx], function(x) as.numeric(as.character(x)))
-  ord = order(pred_data$netID)
-  pred_data = data.matrix(pred_data[ord, c(varNames[-1], weightVar)])
-
+  # pred_points = NULL
+  # pred_data = NULL
+  # if (!is.null(predpts)){
+  #   for (p in 1:length(ssn@predpoints@SSNPoints)){
+  #     if (ssn@predpoints@ID[[p]] == predpts){
+  #       tmp = cbind(ssn@predpoints@SSNPoints[[p]]@network.point.coords,
+  #                   ssn@predpoints@SSNPoints[[p]]@point.coords)
+  #       pred_points = rbind(pred_points, tmp)
+  #       pred_data = rbind(pred_data, ssn@predpoints@SSNPoints[[p]]@point.data)
+  #     }
+  #   }
+  #   indx <- sapply(pred_points, is.factor)
+  #   pred_points[indx] <- lapply(pred_points[indx], function(x) as.numeric(as.character(x)))
+  #   ord = order(pred_points$NetworkID)
+  #   pred_points = data.matrix(pred_points[ord, ])
+  # 
+  #   indx <- sapply(pred_data, is.factor)
+  #   pred_data[indx] <- lapply(pred_data[indx], function(x) as.numeric(as.character(x)))
+  #   ord = order(pred_data$netID)
+  #   pred_data = data.matrix(pred_data[ord, c(varNames[-1], weightVar)])
+  # }
+  
+  
   
   # Pass bin_table, network_data, obs_points, pred_points, obs_data, pred_data, c(varNames, weightVar), CorModels
   # to the C++ function
   
-  result = .Call("getSSNM", length(net_num), bin_tables, network_data, 
-                 obs_points, pred_points, obs_data, pred_data, c(varNames, weightVar), CorModels,
-                 doKriging)
+  # result = .Call("getSSNModelKriging", length(net_num), bin_tables, network_data, 
+  #                obs_points, pred_points, obs_data, pred_data, c(varNames, weightVar), CorModels,
+  #                doKriging)
+  
+  result = .Call("getSSNModel", length(net_num), bin_tables, network_data, 
+                 obs_points, obs_data, c(varNames, weightVar), CorModels)
   return (result)
   
   
