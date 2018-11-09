@@ -116,20 +116,17 @@ double Optimizer::computeLogL(Eigen::VectorXd& theta){
   if (euclidModel) V += euclidModel->computeMatCov(*distGeo);
   if (useNugget) V += Eigen::MatrixXd::Identity(n,n)*std::exp(theta(theta.size()-1));
 
-  // Da correggere: posso usare solo isPositive() di LDLT
-  Eigen::EigenSolver<Eigen::MatrixXd> eig(n);
-  eig.compute(V);
-  Eigen::VectorXd values(eig.eigenvalues().real());
-  for (unsigned int i=0; i<values.size(); i++){
-    if (values(i) < 0.0){
-      throw std::domain_error("Covariance matrix not positive definite");
-      check = false;
-      //break;
-    }
-  }
+
 
   Eigen::LDLT<Eigen::MatrixXd> solver(n);
   solver.compute(V);
+
+  if (!solver.isPositive()) {
+    throw std::domain_error("Covariance matrix not positive definite");
+    check = false;
+  }
+
+
   Eigen::MatrixXd Id(n,n);
   Id.setIdentity();
   Eigen::MatrixXd invV(solver.solve(Id));

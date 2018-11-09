@@ -14,7 +14,7 @@ extern "C"{
 
 // CREATE MODEL
 RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP obs_points, SEXP pred_points,
-  SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names) {
+  SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names, SEXP doKrig) {
 
     BEGIN_RCPP
 
@@ -191,7 +191,12 @@ RcppExport SEXP getSSNM (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP 
     Kriging universalKriging(designMatPred, designMat, solver.getCovMat(), distHydroOP, distHydroPO, distGeoOP,
       weightMatOP, flowMatOP.cast<int>(), solver.getOptimTheta(), dataObs[varNames[0]],
       solver.getTailUp(), solver.getTailDown(), solver.getEuclid(), up+down+euclid, TRUE);
-    universalKriging.predict();
+
+    bool doKriging = Rcpp::as<bool> (doKrig);
+    if (doKriging){
+      universalKriging.predict();
+    }
+
 
 
 
