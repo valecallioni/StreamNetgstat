@@ -2,7 +2,7 @@
 #' @useDynLib StreamNetgstat
 #' @export
 
-get_SSN_model = function(ssn, varNames, weightVar, CorModels, predpts = NULL){
+get_SSN_model = function(ssn, varNames, weightVar, CorModels, predpts = NULL, doKriging = FALSE){
  
 #get_SSN_model = function(varNames, weightVar, CorModels,
 #                         bin_tables, network_data, obs_points, pred_points, obs_data, pred_data){
@@ -91,7 +91,7 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, predpts = NULL){
   pred_points = NULL
   pred_data = NULL
   for (p in 1:length(ssn@predpoints@SSNPoints)){
-    if (ssn@predpoints@ID[[p]] == "predpts"){
+    if (ssn@predpoints@ID[[p]] == predpts){
       tmp = cbind(ssn@predpoints@SSNPoints[[p]]@network.point.coords,
                   ssn@predpoints@SSNPoints[[p]]@point.coords)
       pred_points = rbind(pred_points, tmp)
@@ -112,7 +112,9 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, predpts = NULL){
   # Pass bin_table, network_data, obs_points, pred_points, obs_data, pred_data, c(varNames, weightVar), CorModels
   # to the C++ function
   
-  result = .Call("getSSNM", length(net_num), bin_tables, network_data, obs_points, pred_points, obs_data, pred_data, c(varNames, weightVar), CorModels)
+  result = .Call("getSSNM", length(net_num), bin_tables, network_data, 
+                 obs_points, pred_points, obs_data, pred_data, c(varNames, weightVar), CorModels,
+                 doKriging)
   return (result)
   
   
