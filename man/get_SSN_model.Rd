@@ -4,7 +4,8 @@
 \alias{get_SSN_model}
 \title{get model}
 \usage{
-get_SSN_model(ssn, varNames, weightVar, CorModels, predpts = NULL)
+get_SSN_model(ssn, varNames, weightVar, CorModels, predpts = NULL,
+  doKriging = FALSE)
 }
 \description{
 get model
