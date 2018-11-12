@@ -68,7 +68,7 @@ std::vector<Eigen::MatrixXd> helpers::createDistMatrices(const std::string& type
     // Chiamo una funzione template che mi restituisce i 3 sottoblocchi
     // Qui capisco se i punti che sto studiando sono obs o pred!!!
     if (type == "obs") p1 = net[k].getObsPoints();
-    if (type == "pred") p1 = net[k].getPredPoints();;
+    if (type == "pred") p1 = net[k].getPredPoints();
     tmp = helpers::returnBlockMatrices(p1);
     res[0].block(count, count, tmp[0].rows(), tmp[0].cols()) = tmp[0];
     res[1].block(count, count, tmp[1].rows(), tmp[1].cols()) = tmp[1];

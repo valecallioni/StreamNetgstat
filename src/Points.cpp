@@ -20,7 +20,7 @@ void Points::setPoints(const std::vector<Point>& p){
 
 void Points::computeDistances(const std::map<std::string, StreamSegment>& segments) {
 
-  for (unsigned int i = 0; i < 1; i++) {
+  for (unsigned int i = 0; i < n; i++) {
       std::vector<char> p1 = points[i].getBinaryID();
       unsigned int n1 = p1.size();
       unsigned int min = n1;
@@ -61,17 +61,10 @@ void Points::computeDistances(const std::map<std::string, StreamSegment>& segmen
               if (distHydro(i,j)<0.0 || distHydro(j,i)<0.0){
                 points[i].print();
                 points[j].print();
-                // std::cout << "points[i].getDistUpstream() = " << points[i].getDistUpstream() << ", where i = " << i << ", points[j].getDistUpstream() = " << points[j].getDistUpstream();
-                // std::cout << ", where j = " << j << ", and segments.find(junc)->second.getDistUpstream() = " << segments.find(junc)->second.getDistUpstream();
-                // std::cout << ", whose segID is " << segments.find(junc)->second.getSegmentID();
-                // std::cout << " and has binID = " << segments.find(junc)->second.getBinaryID() << std::endl;
-                // std::cout << "k = " << k << ", n1 = " << n1 << ", n2 = " << n2 << std::endl;
-                // std::cout << "binID p1 = ";
-                // for (auto c: points[i].getBinaryID()) std::cout << c;
-                // std::cout << ", binID p2 = ";
-                // for (auto c: points[j].getBinaryID()) std::cout << c;
-                // std::cout << "\n";
-                //throw std::domain_error("distance negative");
+                std::cout << "segments.find(junc)->second.getDistUpstream() = " << segments.find(junc)->second.getDistUpstream();
+                std::cout << ", whose segID is " << segments.find(junc)->second.getSegmentID();
+                std::cout << " and has binID = " << segments.find(junc)->second.getBinaryID() << std::endl;
+                throw std::domain_error("distance negative");
               }
           }
 
@@ -81,7 +74,6 @@ void Points::computeDistances(const std::map<std::string, StreamSegment>& segmen
           distGeo(j,i) = distGeo(i,j);
 
       }
-      std::cout << "distHydro[,1]: \n" << distHydro.col(0) << std::endl;
   }
 
 }

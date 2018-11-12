@@ -127,8 +127,8 @@ double Optimizer::computeLogL(Eigen::VectorXd& theta){
     Eigen::VectorXd values(eig.eigenvalues().real());
     std::cerr << "Covariance matrix not positive definite" << std::endl;
     std::cout << values.minCoeff() << std::endl;
+    throw std::domain_error("Covariance matrix not positive definite");
   }
-    //throw std::domain_error("Covariance matrix not positive definite");
 
 
   Eigen::MatrixXd Id(n,n);

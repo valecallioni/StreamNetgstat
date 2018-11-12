@@ -6,7 +6,7 @@ library(Rcpp)
 library(RcppEigen)
 dyn.load("/vagrant/PACSProject/StreamNetgstat/src/interface.so")
 source("/vagrant/PACSProject/StreamNetgstat/R/get_SSN_model.R")
-load("/vagrant/PACSProject/Data/middlefork_pred1km.RData")
+load("/vagrant/PACSProject/Data/missouriObs.RData")
 
 # file.copy(system.file(file.path("lsndata", "MiddleFork04.ssn"), package = "SSN"), 
 #           to = tempdir(), recursive = TRUE, copy.mode = FALSE)
@@ -23,10 +23,10 @@ result = get_SSN_model(c("STREAM_AUG", "ELEV"), "afvArea",
                             c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), 
                             bin_tables, network_data, obs_points, obs_data)
 
-# print("Theta:")
-# print(result$optTheta)
-# print("Beta:")
-# print(result$betaValues)
+print("Theta:")
+print(result$optTheta)
+print("Beta:")
+print(result$betaValues)
 # setwd("/vagrant/PACSProject/")
 # write(t(result$covMatrix), file = "covMat.txt", ncolumns = 1143)
 #write(t(result$predictions), file = "predData.txt", ncolumns = 2)

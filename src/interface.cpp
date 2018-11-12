@@ -40,7 +40,7 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
         segments[k] = seg;
         binTables.pop_front();
     }
-    //Rcpp::Rcout << "Stream segments stored. \n";
+    Rcpp::Rcout << "Stream segments stored. \n";
     networkDataTot.resize(0,0);
     binTables.resize(0);
 
@@ -51,7 +51,7 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
     helpers::pointsStorage(segmentsMaps, obsPointsMat, obsPoints);
     obsPointsMat.resize(0,0);
     segmentsMaps.clear();
-    //Rcpp::Rcout << "obsPointsMat stored. \n";
+    Rcpp::Rcout << "obsPointsMat stored. \n";
 
 
     // Networks creation
@@ -64,14 +64,11 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
       segments[k].clear();
       //networks[k].print();
       networks[k].computeDistances();
-      // Rcpp::Rcout << "Net n." << k+1 << " distance matrices created. \n";
-      // Rcpp::Rcout << "distHydro: \n" << networks[k].getDistHydroOO().block(0,0,10,10) << "\n";
-      // Rcpp::Rcout << "distGeo: \n" << networks[k].getDistGeoOO().block(0,0,10,10) << "\n";
       nObsTot += networks[k].getNObs();
-      //Rcpp::Rcout << "nObsPoints: \n" << networks[k].getNObs() << "\n";
     }
     obsPoints.clear();
     segments.clear();
+    Rcpp::Rcout << "Networks stored. \n";
 
 
     // Variables (response variable, covariates and weight variable) names
@@ -92,7 +89,10 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
     distGeoOO = matrices[2];
     matrices.clear();
     weightMatOO = weightMatOO.cwiseProduct(flowMatOO);
-    //Rcpp::Rcout << "Distance matrices completed. \n";
+    Rcpp::Rcout << "Distance matrices completed. \n";
+    Rcpp::Rcout << "distHydroOO[1:20, 1:10]: \n" << distHydroOO.block(0,0,20,10) << "\n";
+    Rcpp::Rcout << "distGeoOO[1:20, 1:10]: \n" << distGeoOO.block(0,0,20,10) << "\n";
+
 
 
     // Creation of the factories related to the covariance models chosen
@@ -138,6 +138,7 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
     // MODEL FITTING
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, TRUE, up+down+euclid,
       dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>());
+    Rcpp::Rcout << "Starting model fitting \n";
     solver.glmssn();
 
 

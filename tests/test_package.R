@@ -20,7 +20,7 @@ library(SSN)
 
 setwd("~/Desktop/OneDrive - Politecnico di Milano/PACS/Programming/PACSProject/Data")
 
-ssn = importSSN("Salmon.ssn")
+ssn = importSSN("MissouriHW.ssn")
 result = get_SSN_model(ssn, varNames = c("Stream_Aug", "ELEV"), weightVar = "afvArea",
                        CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"))
 
