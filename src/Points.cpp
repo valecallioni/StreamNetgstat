@@ -58,7 +58,19 @@ void Points::computeDistances(const std::map<std::string, StreamSegment>& segmen
               }
               distHydro(i, j) = points[i].getDistUpstream() - segments.find(junc)->second.getDistUpstream();
               distHydro(j, i) = points[j].getDistUpstream() - segments.find(junc)->second.getDistUpstream();
-
+              if (distHydro(i,j)<0.0 || distHydro(j,i)<0.0){
+                std::cout << "points[i].getDistUpstream() = " << points[i].getDistUpstream() << ", where i = " << i << ", points[j].getDistUpstream() = " << points[j].getDistUpstream();
+                std::cout << ", where j = " << j << ", and segments.find(junc)->second.getDistUpstream() = " << segments.find(junc)->second.getDistUpstream();
+                std::cout << ", whose segID is " << segments.find(junc)->second.getSegmentID();
+                std::cout << " and has binID = " << segments.find(junc)->second.getBinaryID() << std::endl;
+                std::cout << "k = " << k << ", n1 = " << n1 << ", n2 = " << n2 << std::endl;
+                std::cout << "binID p1 = ";
+                for (auto c: points[i].getBinaryID()) std::cout << c;
+                std::cout << ", binID p2 = ";
+                for (auto c: points[j].getBinaryID()) std::cout << c;
+                std::cout << "\n";
+                throw std::domain_error("distance negative");
+              }
           }
 
           // Compute Euclidean distances

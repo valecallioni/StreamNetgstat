@@ -117,14 +117,18 @@ double Optimizer::computeLogL(Eigen::VectorXd& theta){
   if (useNugget) V += Eigen::MatrixXd::Identity(n,n)*std::exp(theta(theta.size()-1));
 
 
-
   Eigen::LDLT<Eigen::MatrixXd> solver(n);
   solver.compute(V);
 
   if (!solver.isPositive()) {
-    throw std::domain_error("Covariance matrix not positive definite");
     check = false;
+    Eigen::EigenSolver<Eigen::MatrixXd> eig(n);
+    eig.compute(V);
+    Eigen::VectorXd values(eig.eigenvalues().real());
+    std::cerr << "Covariance matrix not positive definite" << std::endl;
+    std::cout << values.minCoeff() << std::endl;
   }
+    //throw std::domain_error("Covariance matrix not positive definite");
 
 
   Eigen::MatrixXd Id(n,n);

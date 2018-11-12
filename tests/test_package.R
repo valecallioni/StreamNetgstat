@@ -1,6 +1,10 @@
-# Hypotheses: 
-# - We have to deal only with numerical variables (not with categorical ones)
-# - We have one network at a time
+setwd("~/Desktop/OneDrive - Politecnico di Milano/PACS/Programming/PACSProject/StreamNetgstat")
+library(roxygen2)
+roxygenise()
+
+library(devtools)
+devtools::install_github("valecallioni/StreamNetgstat")
+
 
 library(benchr)
 
@@ -16,10 +20,9 @@ library(SSN)
 
 setwd("~/Desktop/OneDrive - Politecnico di Milano/PACS/Programming/PACSProject/Data")
 
-ssn = importSSN("MissouriHW.ssn", predpts = "preds")
+ssn = importSSN("MissouriHW.ssn")
 result = get_SSN_model(ssn, varNames = c("STREAM_AUG", "ELEV"), weightVar = "afvArea",
-                       CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), 
-                       predpts = "preds")
+                       CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"))
 
 benchmark(
   RPackage = funSSNPackage(ssn, "preds"),

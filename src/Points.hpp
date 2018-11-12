@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <Eigen/Dense>
+#include <stdexcept>
 #include "Point.hpp"
 #include "StreamSegment.hpp"
 //#include "Helpers.hpp"

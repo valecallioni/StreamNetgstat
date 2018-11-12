@@ -19,14 +19,15 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
     BEGIN_RCPP
 
     // Stream segments storage
-    int netNum = Rcpp::as<int> (net_num);
+    std::vector<int> nets = Rcpp::as<std::vector<int>> (net_num);
+    int netNum = nets.size();
     Eigen::MatrixXd networkDataTot = Rcpp::as<Eigen::MatrixXd> (network_data);
     std::list<std::vector<std::string>> binTables = Rcpp::as<std::list<std::vector<std::string>>> (bin_tables);
     std::vector<std::vector<StreamSegment>> segments(netNum);
     std::vector<std::map<unsigned int, std::string>> segmentsMaps(netNum);
     unsigned int j = 0;
     for (unsigned int k=0; k<netNum; k++){
-        unsigned int currentNet = k+1;
+        unsigned int currentNet = nets[k];
         unsigned int i = 0;
         std::vector<StreamSegment> seg;
         while (j<networkDataTot.rows() && networkDataTot(j,0)==currentNet){
@@ -39,7 +40,7 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
         segments[k] = seg;
         binTables.pop_front();
     }
-
+    Rcpp::Rcout << "Stream segments stored. \n";
     networkDataTot.resize(0,0);
     binTables.resize(0);
 
@@ -50,12 +51,13 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
     helpers::pointsStorage(segmentsMaps, obsPointsMat, obsPoints);
     obsPointsMat.resize(0,0);
     segmentsMaps.clear();
+    Rcpp::Rcout << "obsPointsMat stored. \n";
 
 
     // Networks creation
     unsigned int nObsTot(0);
     std::vector<Network> networks(netNum);
-    for (unsigned int k=0; k<netNum; k++){
+    for (unsigned int k=0; k<netNum.size(); k++){
       Network net(k, obsPoints[k], segments[k]);
       networks[k] = net;
       obsPoints[k].clear();
@@ -63,7 +65,10 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
       //networks[k].print();
       networks[k].computeDistances();
       Rcpp::Rcout << "Net n." << k+1 << " distance matrices created. \n";
+      Rcpp::Rcout << "distHydro: \n" << networks[k].getDistHydroOO().block(0,0,10,10) << "\n";
+      Rcpp::Rcout << "distGeo: \n" << networks[k].getDistGeoOO().block(0,0,10,10) << "\n";
       nObsTot += networks[k].getNObs();
+      Rcpp::Rcout << "nObsPoints: \n" << networks[k].getNObs() << "\n";
     }
     obsPoints.clear();
     segments.clear();
@@ -133,7 +138,7 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
     // MODEL FITTING
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, TRUE, up+down+euclid,
       dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>());
-    solver.glmssn();
+    //solver.glmssn();
 
 
     Rcpp::List result = Rcpp::List::create(Rcpp::Named("optTheta") = solver.getOptimTheta(),
@@ -154,14 +159,15 @@ RcppExport SEXP getSSNModelKriging (SEXP net_num, SEXP bin_tables, SEXP network_
     BEGIN_RCPP
 
     // Stream segments storage
-    int netNum = Rcpp::as<int> (net_num);
+    std::vector<int> nets = Rcpp::as<std::vector<int>> (net_num);
+    int netNum = nets.size();
     Eigen::MatrixXd networkDataTot = Rcpp::as<Eigen::MatrixXd> (network_data);
     std::list<std::vector<std::string>> binTables = Rcpp::as<std::list<std::vector<std::string>>> (bin_tables);
     std::vector<std::vector<StreamSegment>> segments(netNum);
     std::vector<std::map<unsigned int, std::string>> segmentsMaps(netNum);
     unsigned int j = 0;
     for (unsigned int k=0; k<netNum; k++){
-        unsigned int currentNet = k+1;
+        unsigned int currentNet = nets[k];
         unsigned int i = 0;
         std::vector<StreamSegment> seg;
         while (j<networkDataTot.rows() && networkDataTot(j,0)==currentNet){
