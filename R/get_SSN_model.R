@@ -2,7 +2,7 @@
 #' @useDynLib StreamNetgstat
 #' @export
 
-get_SSN_model = function(ssn, varNames, weightVar, CorModels, predpts = NULL, doKriging = FALSE){
+get_SSN_model = function(ssn, varNames, weightVar, CorModels, predpts = NULL){
  
 #get_SSN_model = function(varNames, weightVar, CorModels,
 #                         bin_tables, network_data, obs_points, pred_points, obs_data, pred_data){
@@ -93,7 +93,7 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, predpts = NULL, do
   ord = order(obs_data$netID)
   obs_data = data.matrix(obs_data[ord, c(varNames, weightVar)])
 
-  Create a data.frame for the prediction points attributes and data
+  # Create a data.frame for the prediction points attributes and data
   pred_points = NULL
   pred_data = NULL
   if (!is.null(predpts)){
