@@ -51,7 +51,7 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, predpts = NULL){
   # -------------------------------------------------------------
   # Preprocessing of the data
 
-  net_num = levels(ssn@network.line.coords[,1])
+  net_num = as.numeric(levels(ssn@network.line.coords[,1]))
   #net_num = c(17)
 
   # Create a list for the binaryId tables (one per network)
@@ -121,11 +121,11 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, predpts = NULL){
   # Pass bin_table, network_data, obs_points, pred_points, obs_data, pred_data, c(varNames, weightVar), CorModels
   # to the C++ function
   
-  result = .Call("getSSNModelKriging", net_num, bin_tables, network_data,
-                 obs_points, pred_points, obs_data, pred_data, c(varNames, weightVar), CorModels)
+  # result = .Call("getSSNModelKriging", net_num, bin_tables, network_data,
+  #                obs_points, pred_points, obs_data, pred_data, c(varNames, weightVar), CorModels)
 
-  # result = .Call("getSSNModel", net_num, bin_tables, network_data, 
-  #                obs_points, obs_data, c(varNames, weightVar), CorModels)
+  result = .Call("getSSNModel", net_num, bin_tables, network_data,
+                 obs_points, obs_data, c(varNames, weightVar), CorModels)
   return (result)
   
   
