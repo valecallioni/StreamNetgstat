@@ -57,7 +57,7 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
     // Networks creation
     unsigned int nObsTot(0);
     std::vector<Network> networks(netNum);
-    for (unsigned int k=0; k<netNum.size(); k++){
+    for (unsigned int k=0; k<netNum; k++){
       Network net(k, obsPoints[k], segments[k]);
       networks[k] = net;
       obsPoints[k].clear();
