@@ -19,17 +19,6 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels){
     dir.create(file.path(ssn@path, "distance", "obs"))
   }
 
-  # And then whether prediction folder exists
-  if(length(ssn@predpoints@ID) > 0) {
-    pred.num <- which(ssn@predpoints@ID == predpts)
-    if (length(pred.num) > 1) {
-      stop("SSN contains more than one copy of ", predpts)
-    }
-    if (length(pred.num) == 0){
-      stop(predpts, " does not exist in SSN")
-    }
-  }
-
   # Check to see whether the covariance models are valid
   if(length(grep("tailup",CorModels)) > 0){
     if(length(grep("tailup",CorModels)) > 1)

@@ -14,16 +14,21 @@ source("~/Desktop/OneDrive - Politecnico di Milano/PACS/Programming/PACSProject/
 source("~/Desktop/OneDrive - Politecnico di Milano/PACS/Programming/PACSProject/StreamNetgstat/tests/funSSNPackage.R")
 
 library(SSN)
-# file.copy(system.file(file.path("lsndata", "MiddleFork04.ssn"), package = "SSN"), 
-#           to = tempdir(), recursive = TRUE, copy.mode = FALSE)
-# setwd(tempdir())
+file.copy(system.file(file.path("lsndata", "MiddleFork04.ssn"), package = "SSN"),
+          to = tempdir(), recursive = TRUE, copy.mode = FALSE)
+setwd(tempdir())
+ssn = importSSN("MiddleFork04.ssn", predpts = "pred1km")
 
-setwd("~/Desktop/OneDrive - Politecnico di Milano/PACS/Programming/PACSProject/Data")
+# setwd("~/Desktop/OneDrive - Politecnico di Milano/PACS/Programming/PACSProject/Data")
+# ssn = importSSN("MissouriHW.ssn")
 
-ssn = importSSN("MissouriHW.ssn")
-result = get_SSN_model(ssn, varNames = c("Stream_Aug", "ELEV"), weightVar = "afvArea",
+result = get_SSN_model(ssn, varNames = c("Summer_mn", "ELEV_DEM"), weightVar = "afvArea",
                        CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"))
 
+
+
+
+# Confronto:
 benchmark(
   RPackage = funSSNPackage(ssn, "preds"),
   cppPackage = get_SSN_model(ssn, varNames = c("STREAM_AUG", "ELEV"), weightVar = "afvArea",

@@ -89,9 +89,9 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
     distGeoOO = matrices[2];
     matrices.clear();
     weightMatOO = weightMatOO.cwiseProduct(flowMatOO);
-    Rcpp::Rcout << "Distance matrices completed. \n";
-    Rcpp::Rcout << "distHydroOO[1:20, 1:10]: \n" << distHydroOO.block(0,0,20,10) << "\n";
-    Rcpp::Rcout << "distGeoOO[1:20, 1:10]: \n" << distGeoOO.block(0,0,20,10) << "\n";
+    //Rcpp::Rcout << "Distance matrices completed. \n";
+    //Rcpp::Rcout << "distHydroOO[1:20, 1:10]: \n" << distHydroOO.block(0,0,20,10) << "\n";
+    //Rcpp::Rcout << "distGeoOO[1:20, 1:10]: \n" << distGeoOO.block(0,0,20,10) << "\n";
 
 
 
