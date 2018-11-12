@@ -20,8 +20,8 @@ library(SSN)
 
 setwd("~/Desktop/OneDrive - Politecnico di Milano/PACS/Programming/PACSProject/Data")
 
-ssn = importSSN("MissouriHW.ssn")
-result = get_SSN_model(ssn, varNames = c("STREAM_AUG", "ELEV"), weightVar = "afvArea",
+ssn = importSSN("Salmon.ssn")
+result = get_SSN_model(ssn, varNames = c("Stream_Aug", "ELEV"), weightVar = "afvArea",
                        CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"))
 
 benchmark(

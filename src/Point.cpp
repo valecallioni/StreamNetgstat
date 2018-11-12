@@ -27,9 +27,9 @@ void Point::setBinaryID(const std::string& binID){
 }
 
 void Point::print() const {
-    //std::cout << "Point " << ID << ", pid: " << pid << ", rid: ";
-    //std::cout << rid << ", distUpstream " << distUpstream << "and binaryID ";
-    //for (auto c: binaryID)
-    //    std::cout << c;
-    std::cout << "Point " << pid << ": (" << x1 << ", " << x2 << ")" << std::endl;
+    std::cout << "Point " << ID << ", pid: " << pid << ", rid: ";
+    std::cout << rid << ", distUpstream " << distUpstream << "and binaryID: \n ";
+    for (auto c: binaryID)
+        std::cout << c;
+    std::cout << "\n";
 }
