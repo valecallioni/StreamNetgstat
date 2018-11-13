@@ -20,6 +20,7 @@ setwd("~/Desktop/OneDrive - Politecnico di Milano/PACS/Programming/PACSProject/D
 ssn = importSSN("MissouriHW.ssn")
 
 
+
 # Prova:
 result = get_SSN_model(ssn, varNames = c("Summer_mn", "ELEV_DEM"), weightVar = "afvArea",
                        CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"))
@@ -30,8 +31,7 @@ result = get_SSN_model(ssn, varNames = c("Summer_mn", "ELEV_DEM"), weightVar = "
 # Confronto:
 library(benchr)
 benchmark(
-  RPackage = funSSNPackage(ssn, predname = NULL),
+  RPackage = funSSNPackage(ssn, formula = STREAM_AUG ~ ELEV, predname = NULL),
   cppPackage = get_SSN_model(ssn, varNames = c("STREAM_AUG", "ELEV"), weightVar = "afvArea",
-                         CorModels = c("LinearSill.tailup", "Exponential.taildown", "Exponential.Euclid"), 
-                         predpts = "preds", doKriging = TRUE)
+                         CorModels = c("LinearSill.tailup", "Exponential.taildown", "Exponential.Euclid"))
 )

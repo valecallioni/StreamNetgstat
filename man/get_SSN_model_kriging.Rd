@@ -4,7 +4,8 @@
 \alias{get_SSN_model_kriging}
 \title{get model and kriging}
 \usage{
-get_SSN_model_kriging(ssn, varNames, weightVar, CorModels, predpts)
+get_SSN_model_kriging(ssn, varNames, weightVar, predpts, CorModels,
+  useNugget = TRUE)
 }
 \description{
 get model and kriging

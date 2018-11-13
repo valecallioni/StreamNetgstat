@@ -2,7 +2,7 @@
 #' @useDynLib StreamNetgstat
 #' @export
 
-get_SSN_model_kriging = function(ssn, varNames, weightVar, CorModels, predpts){
+get_SSN_model_kriging = function(ssn, varNames, weightVar, predpts, CorModels, useNugget = TRUE){
 
 # get_SSN_model_kriging = function(varNames, weightVar, CorModels,
 #                          bin_tables, network_data, obs_points, pred_points, obs_data, pred_data){
@@ -116,7 +116,7 @@ get_SSN_model_kriging = function(ssn, varNames, weightVar, CorModels, predpts){
   # to the C++ function
   
   result = .Call("getSSNModelKriging", net_num, bin_tables, network_data,
-                 obs_points, pred_points, obs_data, pred_data, c(varNames, weightVar), CorModels)
+                 obs_points, pred_points, obs_data, pred_data, c(varNames, weightVar), CorModels, useNugget)
     
   return (result)
   

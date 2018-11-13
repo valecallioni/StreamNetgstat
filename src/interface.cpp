@@ -14,7 +14,7 @@ extern "C"{
 
 // CREATE MODEL
 RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
-  SEXP obs_points, SEXP obs_data, SEXP var_names, SEXP model_names) {
+  SEXP obs_points, SEXP obs_data, SEXP var_names, SEXP model_names, SEXP nugg) {
 
     BEGIN_RCPP
 
@@ -40,7 +40,6 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
         segments[k] = seg;
         binTables.pop_front();
     }
-    Rcpp::Rcout << "Stream segments stored. \n";
     networkDataTot.resize(0,0);
     binTables.resize(0);
 
@@ -51,7 +50,6 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
     helpers::pointsStorage(segmentsMaps, obsPointsMat, obsPoints);
     obsPointsMat.resize(0,0);
     segmentsMaps.clear();
-    Rcpp::Rcout << "obsPointsMat stored. \n";
 
 
     // Networks creation
@@ -89,10 +87,6 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
     distGeoOO = matrices[2];
     matrices.clear();
     weightMatOO = weightMatOO.cwiseProduct(flowMatOO);
-    //Rcpp::Rcout << "Distance matrices completed. \n";
-    //Rcpp::Rcout << "weightMatOO[1:20, 1:10]: \n" << weightMatOO.block(0,0,20,10) << "\n";
-    //Rcpp::Rcout << "flowMatOO[1:20, 1:10]: \n" << flowMatOO.block(0,0,20,10) << "\n";
-
 
 
     // Creation of the factories related to the covariance models chosen
@@ -103,6 +97,8 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
     std::unique_ptr<TailDownModel> tmp_tailDownModel;
     euclidean_factory::EuclideanFactory& euclid_fac(euclidean_factory::EuclideanFactory::Instance());
     std::unique_ptr<EuclideanModel> tmp_euclidModel;
+
+    bool nuggetEffect = Rcpp::as<bool> (nugg);
 
     int up = 0;
     int down = 0;
@@ -136,11 +132,11 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
 
     // -------------------------------------------------------------------------
     // MODEL FITTING
-    Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, TRUE, up+down+euclid,
+    Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, nuggetEffect, up+down+euclid,
       dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>());
-    Rcpp::Rcout << "Starting model fitting \n";
+
+    Rcpp::Rcout << "Model fitting \n";
     solver.glmssn();
-    Rcpp::Rcout << "End model fitting \n";
 
     Rcpp::List result = Rcpp::List::create(Rcpp::Named("optTheta") = solver.getOptimTheta(),
                                            Rcpp::Named("betaValues") = solver.getBeta(),
@@ -153,9 +149,10 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
 }
 
 
-// CREATE MODEL and DO KRIGING
-RcppExport SEXP getSSNModelKriging (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP obs_points, SEXP pred_points,
-  SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names) {
+
+// DO KRIGING
+RcppExport SEXP doSSNKriging (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP obs_points, SEXP pred_points,
+  SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names, SEXP nugg, SEXP param, SEXP cov_mat) {
 
     BEGIN_RCPP
 
@@ -219,6 +216,186 @@ RcppExport SEXP getSSNModelKriging (SEXP net_num, SEXP bin_tables, SEXP network_
     obsPoints.clear();
     predPoints.clear();
     segments.clear();
+    Rcpp::Rcout << "Networks stored. \n";
+
+
+    // Variables (response variable, covariates and weight variable) names
+    std::vector<std::string> varNames = Rcpp::as<std::vector<std::string>> (var_names);
+    std::string weightVar(varNames.back());
+    std::vector<std::string> covNames(varNames.begin()+1, varNames.end());
+
+    // Dataframe for fitting the model, regarding the observed points
+    Dataframe dataObs(varNames, Rcpp::as<Eigen::MatrixXd> (obs_data));
+    //Dataframe of the prediction points (without the response variable)
+    Dataframe dataPred(covNames, Rcpp::as<Eigen::MatrixXd> (pred_data));
+
+    //Matrices about connection, distances and weight between observed and predicion points built using block matrices
+    Eigen::MatrixXd weightMatOP(dataObs.computeWeightMat(weightVar, dataPred[weightVar]));
+    Eigen::MatrixXd flowMatOP(nObsTot, nPredTot);
+    Eigen::MatrixXd distHydroOP(nObsTot, nPredTot);
+    Eigen::MatrixXd distHydroPO(nPredTot, nObsTot);
+    Eigen::MatrixXd distGeoOP(nObsTot, nPredTot);
+    std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatricesOP(networks, nObsTot, nPredTot));
+    flowMatOP = matrices[0];
+    distHydroOP = matrices[1];
+    distHydroPO = matrices[2].transpose();
+    distGeoOP = matrices[3];
+    matrices.clear();
+    weightMatOP = weightMatOP.cwiseProduct(flowMatOP);
+
+
+    // Creation of the factories related to the covariance models chosen
+    std::vector<std::string> corModels = Rcpp::as<std::vector<std::string>> (model_names);
+    tailup_factory::TailUpFactory& tailup_fac (tailup_factory::TailUpFactory::Instance());
+    std::unique_ptr<TailUpModel> tmp_tailUpModel;
+    taildown_factory::TailDownFactory& taildown_fac (taildown_factory::TailDownFactory::Instance());
+    std::unique_ptr<TailDownModel> tmp_tailDownModel;
+    euclidean_factory::EuclideanFactory& euclid_fac(euclidean_factory::EuclideanFactory::Instance());
+    std::unique_ptr<EuclideanModel> tmp_euclidModel;
+
+    bool nuggetEffect = Rcpp::as<bool> (nugg);
+
+    Eigen::VectorXd optParam = Rcpp::as<Eigen::VectorXd> (param);
+    Eigen::MatrixXd covMatrix = Rcpp::as<Eigen::MatrixXd> (cov_mat);
+
+    int up = 0;
+    int down = 0;
+    int euclid = 0;
+    j = 0;
+    for (auto name: corModels){
+      std::size_t found_up = name.find("up");
+      std::size_t found_down = name.find("down");
+      std::size_t found_euclid = name.find("Euclid");
+      if (found_up!=std::string::npos){
+        up++;
+        tmp_tailUpModel = tailup_fac.create(name);
+        tmp_tailUpModel->setSigma2(optParam(j));
+        j++;
+        tmp_tailUpModel->setAlpha(optParam(j));
+        j++;
+      }
+      if (found_down!=std::string::npos){
+        down++;
+        tmp_tailDownModel = taildown_fac.create(name);
+        tmp_tailDownModel->setSigma2(optParam(j));
+        j++;
+        tmp_tailDownModel->setAlpha(optParam(j));
+        j++;
+      }
+      if (found_euclid!=std::string::npos){
+        euclid++;
+        tmp_euclidModel = euclid_fac.create(name);
+        tmp_euclidModel->setSigma2(optParam(j));
+        j++;
+        tmp_euclidModel->setAlpha(optParam(j));
+        j++;
+      }
+    }
+
+    // Design matrix
+    Eigen::MatrixXd designMat;
+    designMat.resize(nObsTot, varNames.size()-1);
+    designMat.fill(1.0);
+    for (unsigned int i=1; i<designMat.cols(); i++){
+      designMat.col(i) = dataObs[varNames[i]];
+    }
+
+
+    // -------------------------------------------------------------------------
+    // KRIGING
+    Eigen::MatrixXd designMatPred;
+    designMatPred.resize(nPredTot, varNames.size()-1);
+    designMatPred.fill(1.0);
+    for (unsigned int i=1; i<designMatPred.cols(); i++){
+      designMatPred.col(i) = dataPred[varNames[i]];
+    }
+
+
+    Kriging universalKriging(designMatPred, designMat, covMatrix, distHydroOP, distHydroPO, distGeoOP,
+      weightMatOP, flowMatOP.cast<int>(), optParam, dataObs[varNames[0]],
+      tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, up+down+euclid, nuggetEffect);
+
+    Rcpp::Rcout << "Kriging \n";
+    universalKriging.predict();
+
+
+
+    Rcpp::List result = Rcpp::List::create(Rcpp::Named("predictions") = universalKriging.getPredictions());
+
+
+    return Rcpp::wrap(result);
+    END_RCPP
+
+}
+
+
+// CREATE MODEL and DO KRIGING
+RcppExport SEXP getSSNModelKriging (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP obs_points, SEXP pred_points,
+  SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names, SEXP nugg) {
+
+    BEGIN_RCPP
+
+    // Stream segments storage
+    std::vector<int> nets = Rcpp::as<std::vector<int>> (net_num);
+    int netNum = nets.size();
+    Eigen::MatrixXd networkDataTot = Rcpp::as<Eigen::MatrixXd> (network_data);
+    std::list<std::vector<std::string>> binTables = Rcpp::as<std::list<std::vector<std::string>>> (bin_tables);
+    std::vector<std::vector<StreamSegment>> segments(netNum);
+    std::vector<std::map<unsigned int, std::string>> segmentsMaps(netNum);
+    unsigned int j = 0;
+    for (unsigned int k=0; k<netNum; k++){
+        unsigned int currentNet = nets[k];
+        unsigned int i = 0;
+        std::vector<StreamSegment> seg;
+        while (j<networkDataTot.rows() && networkDataTot(j,0)==currentNet){
+          StreamSegment s(currentNet, networkDataTot(j,1), networkDataTot(j,2), binTables.front()[i]);
+          seg.push_back(s);
+          segmentsMaps[k][networkDataTot(j,1)] = binTables.front()[i];
+          i++;
+          j++;
+        }
+        segments[k] = seg;
+        binTables.pop_front();
+    }
+
+    networkDataTot.resize(0,0);
+    binTables.resize(0);
+
+
+    // Observed points storage
+    Eigen::MatrixXd obsPointsMat = Rcpp::as<Eigen::Map<Eigen::MatrixXd>> (obs_points);
+    std::vector<std::vector<Point>> obsPoints(netNum);
+    helpers::pointsStorage(segmentsMaps, obsPointsMat, obsPoints);
+    obsPointsMat.resize(0,0);
+
+
+    // Predicted points (points for prediction) storage
+    Eigen::MatrixXd predPointsMat = Rcpp::as<Eigen::MatrixXd> (pred_points);
+    std::vector<std::vector<Point>> predPoints(netNum);
+    helpers::pointsStorage(segmentsMaps, predPointsMat, predPoints);
+    predPointsMat.resize(0,0);
+    segmentsMaps.clear();
+
+
+    // Networks creation
+    unsigned int nObsTot(0);
+    unsigned int nPredTot(0);
+    std::vector<Network> networks(netNum);
+    for (unsigned int k=0; k<netNum; k++){
+      Network net(k, obsPoints[k], predPoints[k], segments[k]);
+      networks[k] = net;
+      obsPoints[k].clear();
+      predPoints[k].clear();
+      segments[k].clear();
+      //networks[k].print();
+      networks[k].computeDistances();
+      nObsTot += networks[k].getNObs();
+      nPredTot += networks[k].getNPred();
+    }
+    obsPoints.clear();
+    predPoints.clear();
+    segments.clear();
+    Rcpp::Rcout << "Networks stored. \n";
 
 
     // Variables (response variable, covariates and weight variable) names
@@ -281,6 +458,8 @@ RcppExport SEXP getSSNModelKriging (SEXP net_num, SEXP bin_tables, SEXP network_
     euclidean_factory::EuclideanFactory& euclid_fac(euclidean_factory::EuclideanFactory::Instance());
     std::unique_ptr<EuclideanModel> tmp_euclidModel;
 
+    bool nuggetEffect = Rcpp::as<bool> (nugg);
+
     int up = 0;
     int down = 0;
     int euclid = 0;
@@ -315,8 +494,10 @@ RcppExport SEXP getSSNModelKriging (SEXP net_num, SEXP bin_tables, SEXP network_
 
     // -------------------------------------------------------------------------
     // MODEL FITTING
-    Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, TRUE, up+down+euclid,
+    Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, nuggetEffect, up+down+euclid,
       dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>());
+
+    Rcpp::Rcout << "Model fitting \n";
     solver.glmssn();
 
 
@@ -332,12 +513,10 @@ RcppExport SEXP getSSNModelKriging (SEXP net_num, SEXP bin_tables, SEXP network_
 
     Kriging universalKriging(designMatPred, designMat, solver.getCovMat(), distHydroOP, distHydroPO, distGeoOP,
       weightMatOP, flowMatOP.cast<int>(), solver.getOptimTheta(), dataObs[varNames[0]],
-      solver.getTailUp(), solver.getTailDown(), solver.getEuclid(), up+down+euclid, TRUE);
+      solver.getTailUp(), solver.getTailDown(), solver.getEuclid(), up+down+euclid, nuggetEffect);
 
+    Rcpp::Rcout << "Kriging \n";
     universalKriging.predict();
-
-
-
 
 
 
