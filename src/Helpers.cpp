@@ -61,6 +61,7 @@ std::vector<Eigen::MatrixXd> helpers::createDistMatrices(const std::string& type
   unsigned int count(0);
 
   std::vector<Eigen::MatrixXd> tmp;
+  int h = 0;
   Eigen::MatrixXd geoDist;
   Points p1;
   Points p2;
@@ -73,12 +74,14 @@ std::vector<Eigen::MatrixXd> helpers::createDistMatrices(const std::string& type
     res[0].block(count, count, tmp[0].rows(), tmp[0].cols()) = tmp[0];
     res[1].block(count, count, tmp[1].rows(), tmp[1].cols()) = tmp[1];
     res[2].block(count, count, tmp[2].rows(), tmp[2].cols()) = tmp[2];
-    if (k < net.size()-1){
-      if (type == "obs") p2 = net[k+1].getObsPoints();
-      if (type == "pred") p2 = net[k+1].getPredPoints();
+    h = k;
+    while (h < net.size()-1){
+      if (type == "obs") p2 = net[h+1].getObsPoints();
+      if (type == "pred") p2 = net[h+1].getPredPoints();
       geoDist = helpers::geoDistBetweenNets(p1, p2);
       res[2].block(count, count + p1.getN(), geoDist.rows(), geoDist.cols()) = geoDist;
       res[2].block(count + p1.getN(), count, geoDist.cols(), geoDist.rows()) = geoDist.transpose();
+      h++;
     }
     count += p1.getN();
   }
@@ -93,6 +96,7 @@ std::vector<Eigen::MatrixXd> helpers::createDistMatricesOP(const std::vector<Net
   unsigned int countObs(0);
   unsigned int countPred(0);
   std::vector<Eigen::MatrixXd> tmp;
+  int h = 0;
   Eigen::MatrixXd geoDist;
   Points p1;
   Points p2;
@@ -101,16 +105,28 @@ std::vector<Eigen::MatrixXd> helpers::createDistMatricesOP(const std::vector<Net
     res[1].block(countObs, countPred, net[k].getNObs(), net[k].getNPred()) = net[k].getDistHydroOP();
     res[2].block(countObs, countPred, net[k].getNObs(), net[k].getNPred()) = net[k].getDistHydroPO().transpose();
     res[3].block(countObs, countPred, net[k].getNObs(), net[k].getNPred()) = net[k].getDistGeoOP();
-    if (k < net.size()-1){
+    h = k;
+    while (h < net.size()-1){
       p1 = net[k].getObsPoints();
-      p2 = net[k+1].getPredPoints();
+      p2 = net[h+1].getPredPoints();
       geoDist = helpers::geoDistBetweenNets(p1, p2);
       res[3].block(countObs, countPred + net[k].getNPred(), geoDist.rows(), geoDist.cols()) = geoDist;
-      p1 = net[k+1].getObsPoints();
+      p1 = net[h+1].getObsPoints();
       p2 = net[k].getPredPoints();
       geoDist = helpers::geoDistBetweenNets(p1, p2);
       res[3].block(countObs + net[k].getNObs(), countPred, geoDist.rows(), geoDist.cols()) = geoDist;
+      h++;
     }
+    // if (k < net.size()-1){
+    //   p1 = net[k].getObsPoints();
+    //   p2 = net[k+1].getPredPoints();
+    //   geoDist = helpers::geoDistBetweenNets(p1, p2);
+    //   res[3].block(countObs, countPred + net[k].getNPred(), geoDist.rows(), geoDist.cols()) = geoDist;
+    //   p1 = net[k+1].getObsPoints();
+    //   p2 = net[k].getPredPoints();
+    //   geoDist = helpers::geoDistBetweenNets(p1, p2);
+    //   res[3].block(countObs + net[k].getNObs(), countPred, geoDist.rows(), geoDist.cols()) = geoDist;
+    // }
     countObs += net[k].getNObs();
     countPred += net[k].getNPred();
   }

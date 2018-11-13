@@ -27,27 +27,30 @@ useNugget(useNugg), nModels(n_models){
   maxDistGeo = 4.0*distGeo->maxCoeff();
 }
 
-bool Optimizer::updateParam(Eigen::VectorXd& theta){
+bool Optimizer::updateParam(const Eigen::VectorXd& theta){
   bool control = true;
   int j = 0;
   if (j < nModels*2 && tailUpModel){
+    if (std::exp(theta(j)) < 0.0) control = false;
     tailUpModel->setSigma2(std::exp(theta(j)));
     j++;
-    if (std::exp(theta(j)) > maxDistHydro) control = false;
+    if (std::exp(theta(j)) > maxDistHydro && std::exp(theta(j)) < 0.0) control = false;
     tailUpModel->setAlpha(std::exp(theta(j)));
     j++;
   }
   if (j < nModels*2 && tailDownModel){
+    if (std::exp(theta(j)) < 0.0) control = false;
     tailDownModel->setSigma2(std::exp(theta(j)));
     j++;
-    if (std::exp(theta(j)) > maxDistHydro) control = false;
+    if (std::exp(theta(j)) > maxDistHydro && std::exp(theta(j)) < 0.0) control = false;
     tailDownModel->setAlpha(std::exp(theta(j)));
     j++;
   }
   if (j < nModels*2 && euclidModel){
+    if (std::exp(theta(j)) < 0.0) control = false;
     euclidModel->setSigma2(std::exp(theta(j)));
     j++;
-    if (std::exp(theta(j)) > maxDistGeo) control = false;
+    if (std::exp(theta(j)) > maxDistGeo && std::exp(theta(j)) < 0.0) control = false;
     euclidModel->setAlpha(std::exp(theta(j)));
     j++;
   }
@@ -105,7 +108,7 @@ Eigen::VectorXd Optimizer::thetaInit() {
   return theta;
 }
 
-double Optimizer::computeLogL(Eigen::VectorXd& theta){
+double Optimizer::computeLogL(const Eigen::VectorXd& theta){
   double logl(1e+32);
   bool check = updateParam(theta);
 
@@ -120,15 +123,9 @@ double Optimizer::computeLogL(Eigen::VectorXd& theta){
   Eigen::LDLT<Eigen::MatrixXd> solver(n);
   solver.compute(V);
 
-  if (!solver.isPositive()) {
-    check = false;
-    Eigen::EigenSolver<Eigen::MatrixXd> eig(n);
-    eig.compute(V);
-    Eigen::VectorXd values(eig.eigenvalues().real());
-    std::cerr << "Covariance matrix not positive definite" << std::endl;
-    std::cout << values.minCoeff() << std::endl;
+  if (!solver.isPositive())
     throw std::domain_error("Covariance matrix not positive definite");
-  }
+
 
 
   Eigen::MatrixXd Id(n,n);
@@ -146,7 +143,8 @@ double Optimizer::computeLogL(Eigen::VectorXd& theta){
 
   Eigen::HouseholderQR<Eigen::MatrixXd> qrV(n,n);
   qrV.solve(V);
-  if (check) logl = n*log(2*3.14) + r.transpose()*invV*r + std::log(V.determinant());
+
+  if (check) logl = n*log(2*3.14) + r.transpose()*invV*r + qrV.logAbsDeterminant();
   return logl;
 
 }
@@ -280,7 +278,7 @@ void Optimizer::computeThetaWiki(){
     iter++;
     crit1 = (iter <= maxIter);
     crit2 = (funEvals <= maxFunEvals);
-    crit3 = std::abs(simplex[nParam].first - simplex[0].first) > 0.001;
+    crit3 = std::abs(simplex[nParam].first - simplex[0].first) > tolFun;
     crit4 = max > tolTheta;
 
   }
@@ -437,6 +435,7 @@ void Optimizer::computeThetaPaper(){
 
   }
 
+  if (iter > maxIter) std::cerr << "Reached max number of iterations" << std::endl;
   optimTheta = simplex[0].second.array().exp();
 
 }

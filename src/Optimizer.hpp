@@ -62,9 +62,9 @@ public:
   std::unique_ptr<TailDownModel>& getTailDown() {return tailDownModel;};
   std::unique_ptr<EuclideanModel>& getEuclid() {return euclidModel;};
 
-  bool updateParam(Eigen::VectorXd& theta);
+  bool updateParam(const Eigen::VectorXd& theta);
   Eigen::VectorXd thetaInit();
-  double computeLogL(Eigen::VectorXd& theta);
+  double computeLogL(const Eigen::VectorXd& theta);
   std::vector<std::pair<double, Eigen::VectorXd>> simplexInit(const Eigen::VectorXd& theta0, const double tau);
 
   void computeThetaPaper();

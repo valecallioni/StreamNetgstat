@@ -58,14 +58,6 @@ void Points::computeDistances(const std::map<std::string, StreamSegment>& segmen
               }
               distHydro(i, j) = points[i].getDistUpstream() - segments.find(junc)->second.getDistUpstream();
               distHydro(j, i) = points[j].getDistUpstream() - segments.find(junc)->second.getDistUpstream();
-              if (distHydro(i,j)<0.0 || distHydro(j,i)<0.0){
-                points[i].print();
-                points[j].print();
-                std::cout << "segments.find(junc)->second.getDistUpstream() = " << segments.find(junc)->second.getDistUpstream();
-                std::cout << ", whose segID is " << segments.find(junc)->second.getSegmentID();
-                std::cout << " and has binID = " << segments.find(junc)->second.getBinaryID() << std::endl;
-                throw std::domain_error("distance negative");
-              }
           }
 
           // Compute Euclidean distances

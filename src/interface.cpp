@@ -90,8 +90,8 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
     matrices.clear();
     weightMatOO = weightMatOO.cwiseProduct(flowMatOO);
     //Rcpp::Rcout << "Distance matrices completed. \n";
-    //Rcpp::Rcout << "distHydroOO[1:20, 1:10]: \n" << distHydroOO.block(0,0,20,10) << "\n";
-    //Rcpp::Rcout << "distGeoOO[1:20, 1:10]: \n" << distGeoOO.block(0,0,20,10) << "\n";
+    //Rcpp::Rcout << "weightMatOO[1:20, 1:10]: \n" << weightMatOO.block(0,0,20,10) << "\n";
+    //Rcpp::Rcout << "flowMatOO[1:20, 1:10]: \n" << flowMatOO.block(0,0,20,10) << "\n";
 
 
 
@@ -140,7 +140,7 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
       dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>());
     Rcpp::Rcout << "Starting model fitting \n";
     solver.glmssn();
-
+    Rcpp::Rcout << "End model fitting \n";
 
     Rcpp::List result = Rcpp::List::create(Rcpp::Named("optTheta") = solver.getOptimTheta(),
                                            Rcpp::Named("betaValues") = solver.getBeta(),
