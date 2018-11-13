@@ -2,11 +2,42 @@
 % Please edit documentation in R/do_SSN_kriging.R
 \name{do_SSN_kriging}
 \alias{do_SSN_kriging}
-\title{do kriging}
+\title{Make prediction on a Spatial Stream Network object}
 \usage{
 do_SSN_kriging(ssn, varNames, weightVar, predpts, CorModels,
   useNugget = TRUE, theta, covMat)
 }
+\arguments{
+\item{ssn}{a \link[SSN]{SpatialStreamNetwork-class} object.}
+
+\item{varNames}{a vector of strings, the names of the variables used in the model.}
+
+\item{weightVar}{a string indicating the name of the variable to compute the spatial weights.}
+
+\item{predpts}{a string indicating the name of the group of points in which make predictions.}
+
+\item{CorModels}{a vector of strings, the names of the covariance models.}
+
+\item{useNugget}{If FALSE the nugget effect is not included in the model. Default to TRUE.}
+
+\item{theta}{vector of the parameters values used for computing the covariance matrix.}
+
+\item{covMat}{covariance matrix of the observed points.}
+}
+\value{
+A list with the following fields:
+\item{\code{optTheta}}{ vector of the parameters values of the fitted model. }
+\item{\code{betaValues}}{ vector of the beta values of the fitted model. }
+\item{\code{covMatrix}}{ covariance matrix of the fitted model. }
+\item{\code{predictions}}{ 2-column matrix containing the predicted values and the kriging variance. }
+}
 \description{
-do kriging
+Given a \link[SSN]{SpatialStreamNetwork-class} object and the covariance parameters values, makes predictions using universal kriging.
+}
+\details{
+This function calculates prediction values and kriging variance for prediction sites based on the results of a linear model for the \link[SSN]{SpatialStreamNetwork-class} object.
+}
+\references{
+Peterson, E.E. and Ver Hoef, J.M. (2010) A mixed-model moving-average approach to geostatistical modeling in stream networks. Ecology 91(3), 644–651.
+Ver Hoef, J.M. and Peterson, E.E. (2010) A moving average approach for spatial statistical models of stream networks (with discussion). Journal of the American Statistical Association 105, 6–18. DOI: 10.1198/jasa.2009.ap08248. Rejoinder pgs. 22–24.
 }
