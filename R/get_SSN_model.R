@@ -2,80 +2,80 @@
 #' @useDynLib StreamNetgstat
 #' @export
 
-#get_SSN_model = function(ssn, varNames, weightVar, CorModels){
+get_SSN_model = function(ssn, varNames, weightVar, CorModels){
  
-get_SSN_model = function(varNames, weightVar, CorModels, net_num, 
-                         bin_tables, network_data, obs_points, obs_data){
+#get_SSN_model = function(varNames, weightVar, CorModels, net_num, 
+#                         bin_tables, network_data, obs_points, obs_data){
 
-  # library(rlist)
-  # 
-  # # Check to see whether distance folder exists...
-  # if (!file.exists(file.path(ssn@path, "distance"))) {
-  #   dir.create(file.path(ssn@path, "distance"))
-  # }
-  # 
-  # # And then whether an observation folder exists
-  # if (!file.exists(file.path(ssn@path, "distance", "obs"))) {
-  #   dir.create(file.path(ssn@path, "distance", "obs"))
-  # }
-  # 
-  # # Check to see whether the covariance models are valid
-  # if(length(grep("tailup",CorModels)) > 0){
-  #   if(length(grep("tailup",CorModels)) > 1)
-  #     stop("Cannot have more than 1 tailup model")
-  # }
-  # if(length(grep("taildown",CorModels)) > 0){
-  #   if(length(grep("taildown",CorModels)) > 1)
-  #     stop("Cannot have more than 1 taildown model")
-  # }
-  # if(length(grep("Euclid",CorModels)) > 0){
-  #   if(length(grep("Euclid",CorModels)) > 1)
-  #     stop("Cannot have more than 1 Euclidean model")
-  # }
-  # 
-  # 
-  # # -------------------------------------------------------------
-  # # Preprocessing of the data
-  # 
-  # net_num = as.numeric(levels(ssn@network.line.coords[,1]))
-  # 
-  # # Create a list for the binaryId tables (one per network)
-  # bin_tables = list()
-  # for (k in net_num){
-  #   driver <- RSQLite::SQLite()
-  #   connect.name <- file.path(ssn@path,"binaryID.db")
-  #   connect <- dbConnect(SQLite(), connect.name)
-  #   if (file.exists(file.path(ssn@path, "binaryID.db")) == FALSE){
-  #     stop("binaryID.db is missing from ssn object")
-  #   }
-  # 
-  #   net.name <- paste("net", k, sep = "")
-  #   bin.table <- dbReadTable(connect, net.name)
-  #   dbDisconnect(connect)
-  #   bin.table = bin.table[order(bin.table[,1]),2]
-  #   bin_tables = list.append(bin_tables, bin.table)
-  # }
-  # 
-  # # Create a data.frame for the segments attributes
-  # network_data = ssn@network.line.coords
-  # indx <- sapply(network_data, is.factor)
-  # network_data[indx] <- lapply(network_data[indx], function(x) as.numeric(as.character(x)))
-  # network_data = data.matrix(network_data[order(network_data$NetworkID, network_data$SegmentID),])
-  # 
-  # 
-  # 
-  # # Create a data.frame for the observed points attributes
-  # obs_points = cbind(ssn@obspoints@SSNPoints[[1]]@network.point.coords,
-  #                        ssn@obspoints@SSNPoints[[1]]@point.coords)
-  # indx <- sapply(obs_points, is.factor)
-  # obs_points[indx] <- lapply(obs_points[indx], function(x) as.numeric(as.character(x)))
-  # obs_points = data.matrix(obs_points[order(obs_points$NetworkID),])
-  # 
-  # # Create a data.frame for the observed points data
-  # obs_data = ssn@obspoints@SSNPoints[[1]]@point.data
-  # indx <- sapply(obs_data, is.factor)
-  # obs_data[indx] <- lapply(obs_data[indx], function(x) as.numeric(as.character(x)))
-  # obs_data = data.matrix(obs_data[order(obs_data$netID, obs_data$pid),c(varNames, weightVar)])
+  library(rlist)
+
+  # Check to see whether distance folder exists...
+  if (!file.exists(file.path(ssn@path, "distance"))) {
+    dir.create(file.path(ssn@path, "distance"))
+  }
+
+  # And then whether an observation folder exists
+  if (!file.exists(file.path(ssn@path, "distance", "obs"))) {
+    dir.create(file.path(ssn@path, "distance", "obs"))
+  }
+
+  # Check to see whether the covariance models are valid
+  if(length(grep("tailup",CorModels)) > 0){
+    if(length(grep("tailup",CorModels)) > 1)
+      stop("Cannot have more than 1 tailup model")
+  }
+  if(length(grep("taildown",CorModels)) > 0){
+    if(length(grep("taildown",CorModels)) > 1)
+      stop("Cannot have more than 1 taildown model")
+  }
+  if(length(grep("Euclid",CorModels)) > 0){
+    if(length(grep("Euclid",CorModels)) > 1)
+      stop("Cannot have more than 1 Euclidean model")
+  }
+
+
+  # -------------------------------------------------------------
+  # Preprocessing of the data
+
+  net_num = as.numeric(levels(ssn@network.line.coords[,1]))
+
+  # Create a list for the binaryId tables (one per network)
+  bin_tables = list()
+  for (k in net_num){
+    driver <- RSQLite::SQLite()
+    connect.name <- file.path(ssn@path,"binaryID.db")
+    connect <- dbConnect(SQLite(), connect.name)
+    if (file.exists(file.path(ssn@path, "binaryID.db")) == FALSE){
+      stop("binaryID.db is missing from ssn object")
+    }
+
+    net.name <- paste("net", k, sep = "")
+    bin.table <- dbReadTable(connect, net.name)
+    dbDisconnect(connect)
+    bin.table = bin.table[order(bin.table[,1]),2]
+    bin_tables = list.append(bin_tables, bin.table)
+  }
+
+  # Create a data.frame for the segments attributes
+  network_data = ssn@network.line.coords
+  indx <- sapply(network_data, is.factor)
+  network_data[indx] <- lapply(network_data[indx], function(x) as.numeric(as.character(x)))
+  network_data = data.matrix(network_data[order(network_data$NetworkID, network_data$SegmentID),])
+
+
+
+  # Create a data.frame for the observed points attributes
+  obs_points = cbind(ssn@obspoints@SSNPoints[[1]]@network.point.coords,
+                         ssn@obspoints@SSNPoints[[1]]@point.coords)
+  indx <- sapply(obs_points, is.factor)
+  obs_points[indx] <- lapply(obs_points[indx], function(x) as.numeric(as.character(x)))
+  obs_points = data.matrix(obs_points[order(obs_points$NetworkID),])
+
+  # Create a data.frame for the observed points data
+  obs_data = ssn@obspoints@SSNPoints[[1]]@point.data
+  indx <- sapply(obs_data, is.factor)
+  obs_data[indx] <- lapply(obs_data[indx], function(x) as.numeric(as.character(x)))
+  obs_data = data.matrix(obs_data[order(obs_data$netID, obs_data$pid),c(varNames, weightVar)])
   
   
   # Pass bin_table, network_data, obs_points, pred_points, obs_data, pred_data, c(varNames, weightVar), CorModels

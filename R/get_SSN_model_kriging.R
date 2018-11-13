@@ -88,7 +88,7 @@ get_SSN_model_kriging = function(ssn, varNames, weightVar, CorModels, predpts){
     indx <- sapply(obs_data, is.factor)
     obs_data[indx] <- lapply(obs_data[indx], function(x) as.numeric(as.character(x)))
     obs_data = data.matrix(obs_data[order(obs_data$netID, obs_data$pid),c(varNames, weightVar)])
-
+    
     # Create a data.frame for the prediction points attributes and data
     pred_points = NULL
     pred_data = NULL
