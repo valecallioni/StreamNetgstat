@@ -1,12 +1,26 @@
-#' get model and kriging
+#' Fit a variance component model for a Spatial Stream Network object 
+#' and make prediction
+#'
+#' @param ssn a \link[SSN]{SpatialStreamNetwork-class} object.
+#' @param varNames a vector of strings, the names of the variables used in the model.
+#' @param weightVar a string indicating the name of the variable to compute the spatial weights.
+#' @param predpts a string indicating the name of the group of points in which make predictions.
+#' @param CorModels a vector of strings, the names of the covariance models.
+#' @param useNugget If FALSE the nugget effect is not included in the model. Default to TRUE.
+#' @return A list with the following fields:
+#' \item{\code{optTheta}}{ vector of the parameters values of the fitted model. }
+#' \item{\code{betaValues}}{ vector of the beta values of the fitted model. }
+#' \item{\code{covMatrix}}{ covariance matrix of the fitted model. }
+#' \item{\code{predictions}}{ 2-column matrix containing the predicted values and the kriging variance. }
+#' @description Given a \link[SSN]{SpatialStreamNetwork-class} object, fits a linear model using a variance component approach. Then it makes predictions using universal kriging.
+#' @details This function works on objects of \link[SSN]{SpatialStreamNetwork-class} to fit generalized linear models with spatially autocorrelated errors using normal likelihood methods. Then it calculates prediction values and kriging variance for prediction sites.
+#' @references Peterson, E.E. and Ver Hoef, J.M. (2010) A mixed-model moving-average approach to geostatistical modeling in stream networks. Ecology 91(3), 644–651.
+#' Ver Hoef, J.M. and Peterson, E.E. (2010) A moving average approach for spatial statistical models of stream networks (with discussion). Journal of the American Statistical Association 105, 6–18. DOI: 10.1198/jasa.2009.ap08248. Rejoinder pgs. 22–24.
 #' @useDynLib StreamNetgstat
 #' @export
 
 get_SSN_model_kriging = function(ssn, varNames, weightVar, predpts, CorModels, useNugget = TRUE){
 
-# get_SSN_model_kriging = function(varNames, weightVar, CorModels,
-#                          bin_tables, network_data, obs_points, pred_points, obs_data, pred_data){
-  
     library(rlist)
 
     # Check to see whether distance folder exists...
@@ -49,7 +63,6 @@ get_SSN_model_kriging = function(ssn, varNames, weightVar, predpts, CorModels, u
     # Preprocessing of the data
 
     net_num = as.numeric(levels(ssn@network.line.coords[,1]))
-    #net_num = c(17)
 
     # Create a list for the binaryId tables (one per network)
     bin_tables = list()

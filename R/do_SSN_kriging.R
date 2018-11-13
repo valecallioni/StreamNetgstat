@@ -1,4 +1,22 @@
-#' do kriging
+#' Make prediction on a Spatial Stream Network object
+#' 
+#' @param ssn a \link[SSN]{SpatialStreamNetwork-class} object.
+#' @param varNames a vector of strings, the names of the variables used in the model.
+#' @param weightVar a string indicating the name of the variable to compute the spatial weights.
+#' @param predpts a string indicating the name of the group of points in which make predictions.
+#' @param CorModels a vector of strings, the names of the covariance models.
+#' @param useNugget If FALSE the nugget effect is not included in the model. Default to TRUE.
+#' @param theta vector of the parameters values used for computing the covariance matrix.
+#' @param covMat covariance matrix of the observed points.
+#' @return A list with the following fields:
+#' \item{\code{optTheta}}{ vector of the parameters values of the fitted model. }
+#' \item{\code{betaValues}}{ vector of the beta values of the fitted model. }
+#' \item{\code{covMatrix}}{ covariance matrix of the fitted model. }
+#' \item{\code{predictions}}{ 2-column matrix containing the predicted values and the kriging variance. }
+#' @description Given a \link[SSN]{SpatialStreamNetwork-class} object and the covariance parameters values, makes predictions using universal kriging.
+#' @details This function calculates prediction values and kriging variance for prediction sites based on the results of a linear model for the \link[SSN]{SpatialStreamNetwork-class} object.
+#' @references Peterson, E.E. and Ver Hoef, J.M. (2010) A mixed-model moving-average approach to geostatistical modeling in stream networks. Ecology 91(3), 644–651.
+#' Ver Hoef, J.M. and Peterson, E.E. (2010) A moving average approach for spatial statistical models of stream networks (with discussion). Journal of the American Statistical Association 105, 6–18. DOI: 10.1198/jasa.2009.ap08248. Rejoinder pgs. 22–24.
 #' @useDynLib StreamNetgstat
 #' @export
 

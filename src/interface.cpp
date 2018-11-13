@@ -60,7 +60,6 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
       networks[k] = net;
       obsPoints[k].clear();
       segments[k].clear();
-      //networks[k].print();
       networks[k].computeDistances();
       nObsTot += networks[k].getNObs();
     }
@@ -208,7 +207,6 @@ RcppExport SEXP doSSNKriging (SEXP net_num, SEXP bin_tables, SEXP network_data, 
       obsPoints[k].clear();
       predPoints[k].clear();
       segments[k].clear();
-      //networks[k].print();
       networks[k].computeDistances();
       nObsTot += networks[k].getNObs();
       nPredTot += networks[k].getNPred();
@@ -387,7 +385,6 @@ RcppExport SEXP getSSNModelKriging (SEXP net_num, SEXP bin_tables, SEXP network_
       obsPoints[k].clear();
       predPoints[k].clear();
       segments[k].clear();
-      //networks[k].print();
       networks[k].computeDistances();
       nObsTot += networks[k].getNObs();
       nPredTot += networks[k].getNPred();

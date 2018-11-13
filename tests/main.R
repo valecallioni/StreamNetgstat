@@ -5,7 +5,7 @@
 library(Rcpp)
 library(RcppEigen)
 dyn.load("/vagrant/PACSProject/StreamNetgstat/src/interface.so")
-source("/vagrant/PACSProject/StreamNetgstat/R/get_SSN_model.R")
+source("/vagrant/PACSProject/StreamNetgstat/tests/get_SSN_model.R")
 load("/vagrant/PACSProject/Data/missouriObs.RData")
 
 # file.copy(system.file(file.path("lsndata", "MiddleFork04.ssn"), package = "SSN"), 

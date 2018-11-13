@@ -1,4 +1,4 @@
-funSSNPackage = function(ssn, predname){
+funSSNPackage = function(ssn, formula, predname){
   
   createDistMat(ssn, predpts = predname, o.write = TRUE, amongpreds = FALSE)
   
