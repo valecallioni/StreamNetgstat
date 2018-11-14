@@ -107,7 +107,7 @@ double LinearWithSillTD::computeCov(double h) {
 
 double SphericalTD::computeCov(double a, double b) {
   if (b <= alpha){
-    return sigma2 * (1.0 - (3.0/2.0) * (a/alpha) + 0.5 * b/alpha) * pow(1.0 - b/alpha, 2);
+    return sigma2 * (1.0 - (3.0/2.0) * (a/alpha) + 0.5 * b/alpha) * (1.0 - b/alpha)*(1.0 - b/alpha);
   }
   else {
     return 0.0;
