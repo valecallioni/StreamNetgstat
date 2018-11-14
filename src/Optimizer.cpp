@@ -31,7 +31,7 @@ bool Optimizer::updateParam(const Eigen::VectorXd& theta){
   bool control = true;
   int j = 0;
   if (j < nModels*2 && tailUpModel){
-    if (std::exp(theta(j)) < 0.0 || theta(j) > 20) control = false;
+    if (std::exp(theta(j)) < 0.0 || std::exp(theta(j)) > 1e+4) control = false;
     tailUpModel->setSigma2(std::exp(theta(j)));
     j++;
     if (std::exp(theta(j)) > maxDistHydro && std::exp(theta(j)) < 0.0) control = false;
@@ -39,7 +39,7 @@ bool Optimizer::updateParam(const Eigen::VectorXd& theta){
     j++;
   }
   if (j < nModels*2 && tailDownModel){
-    if (std::exp(theta(j)) < 0.0  || theta(j) > 20) control = false;
+    if (std::exp(theta(j)) < 0.0  || std::exp(theta(j)) > 1e+4) control = false;
     tailDownModel->setSigma2(std::exp(theta(j)));
     j++;
     if (std::exp(theta(j)) > maxDistHydro && std::exp(theta(j)) < 0.0) control = false;
@@ -47,7 +47,7 @@ bool Optimizer::updateParam(const Eigen::VectorXd& theta){
     j++;
   }
   if (j < nModels*2 && euclidModel){
-    if (std::exp(theta(j)) < 0.0  || theta(j) > 20) control = false;
+    if (std::exp(theta(j)) < 0.0  || std::exp(theta(j)) > 1e+4) control = false;
     euclidModel->setSigma2(std::exp(theta(j)));
     j++;
     if (std::exp(theta(j)) > maxDistGeo && std::exp(theta(j)) < 0.0) control = false;
