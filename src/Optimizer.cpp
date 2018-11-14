@@ -286,6 +286,7 @@ void Optimizer::computeThetaWiki(){
 
   if (iter > maxIter) std::cerr << "Reached max number of iterations" << std::endl;
   std::cout << "Minimization terminated with " << iter << " iterations." << std::endl;
+  std::cout << "Min. criteria about fun values = " << crit3 << ", with diff.abs.val = " << std::abs(simplex[nParam].first - simplex[0].first) << std::endl;
   optimTheta = simplex[0].second.array().exp();
 
 }
