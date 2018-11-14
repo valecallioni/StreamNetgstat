@@ -284,6 +284,7 @@ void Optimizer::computeThetaWiki(){
   }
 
   if (iter > maxIter) std::cerr << "Reached max number of iterations" << std::endl;
+  std::cout << "Minimization terminated with " << iter << " iterations." << std::endl;
   optimTheta = simplex[0].second.array().exp();
 
 }
@@ -436,6 +437,7 @@ void Optimizer::computeThetaPaper(){
   }
 
   if (iter > maxIter) std::cerr << "Reached max number of iterations" << std::endl;
+  std::cout << "Minimization terminated with " << iter << " iterations." << std::endl;
   optimTheta = simplex[0].second.array().exp();
 
 }

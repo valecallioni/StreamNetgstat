@@ -4,14 +4,16 @@
 #' @param varNames a vector of strings, the names of the variables used in the model.
 #' @param weightVar a string indicating the name of the variable to compute the spatial weights.
 #' @param CorModels a vector of strings, the names of the covariance models.
-#' @param useNugget If FALSE the nugget effect is not included in the model. Default to TRUE.
+#' @param useNugget If \code{FALSE} the nugget effect is not included in the model. Default to \code{TRUE}.
 #' @return A list with the following fields:
 #' \item{\code{optTheta}}{ vector of the parameters values of the fitted model. }
 #' \item{\code{betaValues}}{ vector of the beta values of the fitted model. }
 #' \item{\code{covMatrix}}{ covariance matrix of the fitted model. }
 #' @description Given a \link[SSN]{SpatialStreamNetwork-class} object, fits a linear model using a variance component approach.
 #' @details This function works on objects of \link[SSN]{SpatialStreamNetwork-class} to fit generalized linear models with spatially autocorrelated errors using normal likelihood methods.
-#' @references Peterson, E.E. and Ver Hoef, J.M. (2010) A mixed-model moving-average approach to geostatistical modeling in stream networks. Ecology 91(3), 644–651.
+#' @references 
+#' Peterson, E.E. and Ver Hoef, J.M. (2010) A mixed-model moving-average approach to geostatistical modeling in stream networks. Ecology 91(3), 644–651.
+#' 
 #' Ver Hoef, J.M. and Peterson, E.E. (2010) A moving average approach for spatial statistical models of stream networks (with discussion). Journal of the American Statistical Association 105, 6–18. DOI: 10.1198/jasa.2009.ap08248. Rejoinder pgs. 22–24.
 
 #' @useDynLib StreamNetgstat

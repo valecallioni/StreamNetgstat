@@ -22,31 +22,26 @@ ssn = importSSN("MissouriHW.ssn")
 
 
 # Prova:
-result = get_SSN_model(ssn, varNames = c("Summer_mn", "ELEV_DEM"), weightVar = "afvArea",
-                       CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"))
+result.Exponential.cpp = get_SSN_model(ssn, varNames = c("STREAM_AUG", "ELEV"), weightVar = "afvArea",
+                                        CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"))
 
+result.Spherical.cpp = get_SSN_model(ssn, varNames = c("STREAM_AUG", "ELEV"), weightVar = "afvArea",
+                                      CorModels = c("Spherical.tailup", "Spherical.taildown", "Spherical.Euclid"))
+
+result.LinearSill.cpp = get_SSN_model(ssn, varNames = c("STREAM_AUG", "ELEV"), weightVar = "afvArea",
+                                     CorModels = c("LinearSill.tailup", "LinearSill.taildown"))
+
+result.LinearSill.R = funSSNPackage(ssn, formula = STREAM_AUG ~ ELEV, predname = NULL)
 
 
 
 ###### Confronto:
 
 # Model
-start.time.cpp = Sys.time()
-cppPackage = get_SSN_model(ssn, varNames = c("STREAM_AUG", "ELEV"), weightVar = "afvArea",
-                           CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"))
-end.time.cpp = Sys.time()
-time.taken.cpp = end.time.cpp - start.time.cpp
-
-start.time.R = Sys.time()
-RPackage = funSSNPackage(ssn, formula = STREAM_AUG ~ ELEV, predname = NULL)
-end.time.R = Sys.time()
-time.taken.R = end.time.R - start.time.R
-
-
 library(benchr)
 benchmark(
   times = 1,
-  RPackage = funSSNPackage(ssn, formula = STREAM_AUG ~ ELEV, predname = NULL),
   cppPackage = get_SSN_model(ssn, varNames = c("STREAM_AUG", "ELEV"), weightVar = "afvArea",
-                         CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"))
+                             CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid")),
+  RPackage = funSSNPackage(ssn, formula = STREAM_AUG ~ ELEV, predname = NULL)
 )

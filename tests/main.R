@@ -20,7 +20,7 @@ load("/vagrant/PACSProject/Data/missouriObs.RData")
 
 
 result = get_SSN_model(c("STREAM_AUG", "ELEV"), "afvArea", 
-                            c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), 
+                            c("LinearSill.tailup", "LinearSill.taildown"), 
                             net_num, bin_tables, network_data, obs_points, obs_data)
 
 print("Theta:")
