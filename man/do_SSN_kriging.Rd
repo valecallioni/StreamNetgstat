@@ -18,7 +18,7 @@ do_SSN_kriging(ssn, varNames, weightVar, predpts, CorModels,
 
 \item{CorModels}{a vector of strings, the names of the covariance models.}
 
-\item{useNugget}{If FALSE the nugget effect is not included in the model. Default to TRUE.}
+\item{useNugget}{If \code{FALSE} the nugget effect is not included in the model. Default to \code{TRUE}.}
 
 \item{theta}{vector of the parameters values used for computing the covariance matrix.}
 
@@ -39,5 +39,6 @@ This function calculates prediction values and kriging variance for prediction s
 }
 \references{
 Peterson, E.E. and Ver Hoef, J.M. (2010) A mixed-model moving-average approach to geostatistical modeling in stream networks. Ecology 91(3), 644–651.
+
 Ver Hoef, J.M. and Peterson, E.E. (2010) A moving average approach for spatial statistical models of stream networks (with discussion). Journal of the American Statistical Association 105, 6–18. DOI: 10.1198/jasa.2009.ap08248. Rejoinder pgs. 22–24.
 }
