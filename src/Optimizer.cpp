@@ -103,7 +103,6 @@ Eigen::VectorXd Optimizer::thetaInit() {
     theta(i) = std::log(0.1 * varResid);
   }
 
-  std::cout << "Initial theta values: \n" << theta.array().exp() << std::endl;
   //log-scale for every parsill (sigma2) and every range (alpha)
   //log-scale also for the nugget
   return theta;
@@ -286,7 +285,6 @@ void Optimizer::computeThetaWiki(){
 
   if (iter > maxIter) std::cerr << "Reached max number of iterations" << std::endl;
   std::cout << "Minimization terminated with " << iter << " iterations." << std::endl;
-  std::cout << "Min. criteria about fun values = " << crit3 << ", with diff.abs.val = " << std::abs(simplex[nParam].first - simplex[0].first) << std::endl;
   optimTheta = simplex[0].second.array().exp();
 
 }
