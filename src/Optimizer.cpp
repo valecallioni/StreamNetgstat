@@ -103,6 +103,7 @@ Eigen::VectorXd Optimizer::thetaInit() {
     theta(i) = std::log(0.1 * varResid);
   }
 
+  std::cout << "Initial theta values: \n" << theta.array().exp() << std::endl;
   //log-scale for every parsill (sigma2) and every range (alpha)
   //log-scale also for the nugget
   return theta;

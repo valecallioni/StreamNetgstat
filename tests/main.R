@@ -5,7 +5,7 @@
 library(Rcpp)
 library(RcppEigen)
 dyn.load("/vagrant/PACSProject/StreamNetgstat/src/interface.so")
-source("/vagrant/PACSProject/StreamNetgstat/tests/get_SSN_model.R")
+source("/vagrant/PACSProject/get_SSN_model.R")
 load("/vagrant/PACSProject/Data/missouriObs.RData")
 
 # file.copy(system.file(file.path("lsndata", "MiddleFork04.ssn"), package = "SSN"), 
@@ -20,7 +20,7 @@ load("/vagrant/PACSProject/Data/missouriObs.RData")
 
 
 result = get_SSN_model(c("STREAM_AUG", "ELEV"), "afvArea", 
-                            c("LinearSill.tailup", "LinearSill.taildown"), 
+                            c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), 
                             net_num, bin_tables, network_data, obs_points, obs_data)
 
 print("Theta:")
