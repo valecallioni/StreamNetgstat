@@ -45,7 +45,7 @@ private:
   unsigned int maxIter = 50;
   unsigned int funEvals = 0;
   unsigned int maxFunEvals = 1e6;
-  double tolTheta = 1e-6;
+  double tolTheta = 1e-3;
   double tolFun = 1e-3;
 
   double maxDistHydro = 1e+10;

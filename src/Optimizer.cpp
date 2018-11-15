@@ -129,7 +129,6 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
   Eigen::MatrixXd Id(n,n);
   Id.setIdentity();
   Eigen::MatrixXd invV(solver.solve(Id));
-  std::cout << "det(V) = " << V.determinant() << std::endl;
   std::cout << "invV" << invV.block(0,0,3,3) << std::endl;
 
   solver = Eigen::LDLT<Eigen::MatrixXd>(p+1);
@@ -143,6 +142,7 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
 
   Eigen::HouseholderQR<Eigen::MatrixXd> qrV(n,n);
   qrV.solve(V);
+  std::cout << "det(V) = " << qrV.absDeterminant() << std::endl;
 
   if (check) logl = n*log(2*3.14) + r.transpose()*invV*r + qrV.logAbsDeterminant();
   return logl;
@@ -221,10 +221,11 @@ void Optimizer::computeThetaWiki(){
     // than the best then obtain a new simplex by replacing the worst point
     // with the reflected point
     fR = computeLogL(thetaR);
-    std::cout << "Print after computing fR" << std::endl;
+    std::cout << "Print after computing fR. fR = " << fR << std::endl;
     if (fR < simplex[nParam-1].first && fR >= simplex[0].first){
       simplex[nParam].second = thetaR;
       simplex[nParam].first = fR;
+      std::cout << "Reflexion." << std::endl;
       // go to order
     }
 
@@ -233,7 +234,7 @@ void Optimizer::computeThetaWiki(){
       thetaE = theta0 + c*(theta0 - simplex[nParam].second);
       //thetaE = theta0 + c*(theta0 - simplex[nParam].second);
       fE = computeLogL(thetaE);
-      std::cout << "Print after computing fE" << std::endl;
+      std::cout << "Print after computing fE. fE = " << fE << std::endl;
       if (fE < fR){
         simplex[nParam].second = thetaE;
         simplex[nParam].first = fE;
@@ -254,7 +255,7 @@ void Optimizer::computeThetaWiki(){
     else {
       thetaC = theta0 + r*(simplex[nParam].second - theta0);
       fC = computeLogL(thetaC);
-      std::cout << "Print after computing fC" << std::endl;
+      std::cout << "Print after computing fC. fC = "<< fC << std::endl;
 
       if (fC < simplex[nParam].first){
         simplex[nParam].second = thetaC;
