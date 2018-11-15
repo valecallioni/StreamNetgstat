@@ -42,7 +42,7 @@ private:
   Eigen::MatrixXd covMat;
 
   unsigned int iter = 0;
-  unsigned int maxIter = 50;
+  unsigned int maxIter = 1e3;
   unsigned int funEvals = 0;
   unsigned int maxFunEvals = 1e6;
   double tolTheta = 1e-3;
