@@ -126,11 +126,10 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
   if (!solver.isPositive())
     throw std::domain_error("Covariance matrix not positive definite");
 
-
-
   Eigen::MatrixXd Id(n,n);
   Id.setIdentity();
   Eigen::MatrixXd invV(solver.solve(Id));
+  std::cout << "invV" << invV.block(0,0,3,3) << std::endl;
 
   solver = Eigen::LDLT<Eigen::MatrixXd>(p+1);
   solver.compute(X->transpose()*invV*(*X));
@@ -234,12 +233,14 @@ void Optimizer::computeThetaWiki(){
         simplex[nParam].second = thetaE;
         simplex[nParam].first = fE;
         funEvals++;
+        std::cout << "Expansion." << std::endl;
         // go to order
       }
       else {
         simplex[nParam].second = thetaR;
         simplex[nParam].first = fR;
         funEvals++;
+        std::cout << "Reflexion." << std::endl;
         // go to order
       }
     }
@@ -253,6 +254,7 @@ void Optimizer::computeThetaWiki(){
         simplex[nParam].second = thetaC;
         simplex[nParam].first = fC;
         funEvals++;
+        std::cout << "Contraction." << std::endl;
         // go to order
       }
       else {
@@ -262,6 +264,7 @@ void Optimizer::computeThetaWiki(){
           simplex[i].first = computeLogL(simplex[i].second);
           funEvals++;
         }
+        std::cout << "Shrink." << std::endl;
         // go to order
       }
     }
