@@ -198,6 +198,8 @@ void Optimizer::computeThetaWiki(){
     //Calcolo Log-likelihood per tutti e 8
     //Passaggi NelderMead
 
+    std::cout << "Entered while loop." << std::endl;
+
     fR = 0.0;
     fE = 0.0;
     fC = 0.0;
@@ -219,6 +221,7 @@ void Optimizer::computeThetaWiki(){
     // than the best then obtain a new simplex by replacing the worst point
     // with the reflected point
     fR = computeLogL(thetaR);
+    std::cout << "Print after computing fR" << std::endl;
     if (fR < simplex[nParam-1].first && fR >= simplex[0].first){
       simplex[nParam].second = thetaR;
       simplex[nParam].first = fR;
@@ -230,6 +233,7 @@ void Optimizer::computeThetaWiki(){
       thetaE = theta0 + c*(theta0 - simplex[nParam].second);
       //thetaE = theta0 + c*(theta0 - simplex[nParam].second);
       fE = computeLogL(thetaE);
+      std::cout << "Print after computing fE" << std::endl;
       if (fE < fR){
         simplex[nParam].second = thetaE;
         simplex[nParam].first = fE;
@@ -250,6 +254,7 @@ void Optimizer::computeThetaWiki(){
     else {
       thetaC = theta0 + r*(simplex[nParam].second - theta0);
       fC = computeLogL(thetaC);
+      std::cout << "Print after computing fC" << std::endl;
 
       if (fC < simplex[nParam].first){
         simplex[nParam].second = thetaC;
