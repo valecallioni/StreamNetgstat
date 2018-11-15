@@ -119,17 +119,22 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
   if (euclidModel) V += euclidModel->computeMatCov(*distGeo);
   if (useNugget) V += Eigen::MatrixXd::Identity(n,n)*std::exp(theta(theta.size()-1));
 
-
+  std::cout << "det(V)" << V.determinant() << std::endl;
+  std::cout << "V:\n" << V.block(0,0,3,3) << std::endl;
   Eigen::LDLT<Eigen::MatrixXd> solver(n);
   solver.compute(V);
+
+  Eigen::HouseholderQR<Eigen::MatrixXd> qrV(n,n);
+  qrV.solve(V);
 
   if (!solver.isPositive())
     throw std::domain_error("Covariance matrix not positive definite");
 
   Eigen::MatrixXd Id(n,n);
   Id.setIdentity();
-  Eigen::MatrixXd invV(solver.solve(Id));
-  std::cout << "invV" << invV.block(0,0,3,3) << std::endl;
+  Eigen::MatrixXd invV(qrV.solve(Id));
+  std::cout << "invV \n" << invV.block(0,0,3,3) << std::endl;
+  std::cout << "LDLT: \n" << solver.solve(Id).block(0,0,3,3) << std::endl;
 
   solver = Eigen::LDLT<Eigen::MatrixXd>(p+1);
   solver.compute(X->transpose()*invV*(*X));
@@ -140,9 +145,9 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
   Eigen::VectorXd beta(invXVX*X->transpose()*invV*(*z));
   Eigen::VectorXd r(*z - (*X)*beta);
 
-  Eigen::HouseholderQR<Eigen::MatrixXd> qrV(n,n);
-  qrV.solve(V);
-  std::cout << "det(V) = " << qrV.absDeterminant() << std::endl;
+  // Eigen::HouseholderQR<Eigen::MatrixXd> qrV(n,n);
+  // qrV.solve(V);
+  //std::cout << "log(det(V)) = " << qrV.logAbsDeterminant() << std::endl;
 
   if (check) logl = n*log(2*3.14) + r.transpose()*invV*r + qrV.logAbsDeterminant();
   return logl;
