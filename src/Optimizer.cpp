@@ -119,8 +119,6 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
   if (euclidModel) V += euclidModel->computeMatCov(*distGeo);
   if (useNugget) V += Eigen::MatrixXd::Identity(n,n)*std::exp(theta(theta.size()-1));
 
-  // std::cout << "det(V)" << V.determinant() << std::endl;
-  // std::cout << "V:\n" << V.block(0,0,3,3) << std::endl;
   Eigen::LDLT<Eigen::MatrixXd> solver(n);
   solver.compute(V);
 
@@ -133,8 +131,6 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
   Eigen::MatrixXd Id(n,n);
   Id.setIdentity();
   Eigen::MatrixXd invV(solver.solve(Id));
-  // std::cout << "invV \n" << invV.block(0,0,3,3) << std::endl;
-  // std::cout << "LDLT: \n" << solver.solve(Id).block(0,0,3,3) << std::endl;
 
   solver = Eigen::LDLT<Eigen::MatrixXd>(p+1);
   solver.compute(X->transpose()*invV*(*X));
@@ -144,10 +140,6 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
 
   Eigen::VectorXd beta(invXVX*X->transpose()*invV*(*z));
   Eigen::VectorXd r(*z - (*X)*beta);
-
-  // Eigen::HouseholderQR<Eigen::MatrixXd> qrV(n,n);
-  // qrV.solve(V);
-  //std::cout << "log(det(V)) = " << qrV.logAbsDeterminant() << std::endl;
 
   if (check) logl = n*log(2*3.14) + r.transpose()*invV*r + qrV.logAbsDeterminant();
   return logl;
@@ -203,14 +195,9 @@ void Optimizer::computeThetaWiki(){
     //Calcolo Log-likelihood per tutti e 8
     //Passaggi NelderMead
 
-    // std::cout << "Entered while loop." << std::endl;
-
     fR = 0.0;
     fE = 0.0;
     fC = 0.0;
-
-    //Order
-    //std::sort(simplex.begin(), simplex.end(), helpers::operandPair);
 
     //Compunting centroid
     theta0.fill(0.0);
@@ -226,32 +213,26 @@ void Optimizer::computeThetaWiki(){
     // than the best then obtain a new simplex by replacing the worst point
     // with the reflected point
     fR = computeLogL(thetaR);
-    // std::cout << "Print after computing fR. fR = " << fR << std::endl;
     if (fR < simplex[nParam-1].first && fR >= simplex[0].first){
       simplex[nParam].second = thetaR;
       simplex[nParam].first = fR;
-      // std::cout << "Reflexion." << std::endl;
       // go to order
     }
 
     //Expansion
     else if (fR < simplex[0].first){
       thetaE = theta0 + c*(theta0 - simplex[nParam].second);
-      //thetaE = theta0 + c*(theta0 - simplex[nParam].second);
       fE = computeLogL(thetaE);
-      // std::cout << "Print after computing fE. fE = " << fE << std::endl;
       if (fE < fR){
         simplex[nParam].second = thetaE;
         simplex[nParam].first = fE;
         funEvals++;
-        // std::cout << "Expansion." << std::endl;
         // go to order
       }
       else {
         simplex[nParam].second = thetaR;
         simplex[nParam].first = fR;
         funEvals++;
-        // std::cout << "Reflexion." << std::endl;
         // go to order
       }
     }
@@ -260,13 +241,11 @@ void Optimizer::computeThetaWiki(){
     else {
       thetaC = theta0 + r*(simplex[nParam].second - theta0);
       fC = computeLogL(thetaC);
-      // std::cout << "Print after computing fC. fC = "<< fC << std::endl;
 
       if (fC < simplex[nParam].first){
         simplex[nParam].second = thetaC;
         simplex[nParam].first = fC;
         funEvals++;
-        // std::cout << "Contraction." << std::endl;
         // go to order
       }
       else {
@@ -276,7 +255,6 @@ void Optimizer::computeThetaWiki(){
           simplex[i].first = computeLogL(simplex[i].second);
           funEvals++;
         }
-        // std::cout << "Shrink." << std::endl;
         // go to order
       }
     }
@@ -299,7 +277,6 @@ void Optimizer::computeThetaWiki(){
   }
 
   if (iter > maxIter) std::cerr << "Reached max number of iterations" << std::endl;
-  std::cout << "Minimization terminated with " << iter << " iterations." << std::endl;
   optimTheta = simplex[0].second.array().exp();
 
 }

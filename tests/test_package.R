@@ -31,7 +31,7 @@ result.Spherical.cpp = get_SSN_model(ssn, varNames = c("STREAM_AUG", "ELEV"), we
 result.LinearSill.cpp = get_SSN_model(ssn, varNames = c("STREAM_AUG", "ELEV"), weightVar = "afvArea",
                                      CorModels = c("LinearSill.tailup", "LinearSill.taildown"))
 
-result.LinearSill.R = funSSNPackage(ssn, formula = STREAM_AUG ~ ELEV, predname = NULL)
+result.Exp.up.down.R = funSSNPackage(ssn, formula = STREAM_AUG ~ ELEV, predname = NULL)
 
 
 
