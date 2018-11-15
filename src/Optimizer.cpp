@@ -129,6 +129,7 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
   Eigen::MatrixXd Id(n,n);
   Id.setIdentity();
   Eigen::MatrixXd invV(solver.solve(Id));
+  std::cout << "det(V) = " << V.determinant() << std::endl;
   std::cout << "invV" << invV.block(0,0,3,3) << std::endl;
 
   solver = Eigen::LDLT<Eigen::MatrixXd>(p+1);
