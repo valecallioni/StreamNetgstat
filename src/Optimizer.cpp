@@ -34,7 +34,7 @@ bool Optimizer::updateParam(const Eigen::VectorXd& theta){
     if (std::exp(theta(j)) < 0.0 || std::exp(theta(j)) > 1e+4) control = false;
     tailUpModel->setSigma2(std::exp(theta(j)));
     j++;
-    if (std::exp(theta(j)) > maxDistHydro && std::exp(theta(j)) < 0.0) control = false;
+    if (std::exp(theta(j)) > maxDistHydro || std::exp(theta(j)) < 0.0) control = false;
     tailUpModel->setAlpha(std::exp(theta(j)));
     j++;
   }
@@ -42,7 +42,7 @@ bool Optimizer::updateParam(const Eigen::VectorXd& theta){
     if (std::exp(theta(j)) < 0.0  || std::exp(theta(j)) > 1e+4) control = false;
     tailDownModel->setSigma2(std::exp(theta(j)));
     j++;
-    if (std::exp(theta(j)) > maxDistHydro && std::exp(theta(j)) < 0.0) control = false;
+    if (std::exp(theta(j)) > maxDistHydro || std::exp(theta(j)) < 0.0) control = false;
     tailDownModel->setAlpha(std::exp(theta(j)));
     j++;
   }
@@ -50,7 +50,7 @@ bool Optimizer::updateParam(const Eigen::VectorXd& theta){
     if (std::exp(theta(j)) < 0.0  || std::exp(theta(j)) > 1e+4) control = false;
     euclidModel->setSigma2(std::exp(theta(j)));
     j++;
-    if (std::exp(theta(j)) > maxDistGeo && std::exp(theta(j)) < 0.0) control = false;
+    if (std::exp(theta(j)) > maxDistGeo || std::exp(theta(j)) < 0.0) control = false;
     euclidModel->setAlpha(std::exp(theta(j)));
     j++;
   }
@@ -429,7 +429,6 @@ void Optimizer::computeThetaPaper(){
   }
 
   if (iter > maxIter) std::cerr << "Reached max number of iterations" << std::endl;
-  std::cout << "Minimization terminated with " << iter << " iterations." << std::endl;
   optimTheta = simplex[0].second.array().exp();
 
 }
