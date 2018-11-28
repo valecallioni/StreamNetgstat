@@ -82,7 +82,7 @@ do_SSN_kriging = function(ssn, varNames, weightVar, predpts, CorModels, useNugge
     }
     indx <- sapply(pred_points, is.factor)
     pred_points[indx] <- lapply(pred_points[indx], function(x) as.numeric(as.character(x)))
-    pred_points = data.matrix(pred_points[order(pred_points$NetworkID,),])
+    pred_points = data.matrix(pred_points[order(pred_points$NetworkID),])
     
     indx <- sapply(pred_data, is.factor)
     pred_data[indx] <- lapply(pred_data[indx], function(x) as.numeric(as.character(x)))
