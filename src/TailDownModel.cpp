@@ -66,6 +66,10 @@ Eigen::MatrixXd TailDownModel::computeMatCov(const Eigen::MatrixXi& flowMat, con
           h = distMatOP(i,j);
           res(i,j) = computeCov(h);
         }
+        else if (distMatOP(i,j) == 0.0 && distMatPO(j,i) == 0.0){
+          res(i,j) = sigma2;
+          res(j,i) = sigma2;
+        }
       }
       else {
         double a(0.0);

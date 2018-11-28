@@ -45,6 +45,10 @@ Eigen::MatrixXd TailUpModel::computeMatCov(const Eigen::MatrixXd& weightMat, con
         h = distMatOP(i,j);
         res(i,j) = weightMat(i,j) * computeCov(h);
       }
+      else if (distMatOP(i,j) == 0.0 && distMatPO(j,i) == 0.0 && weightMat(i,j) == 1) {
+        res(i,j) = sigma2;
+        res(j,i) = sigma2;
+      }
     }
   }
   return res;
