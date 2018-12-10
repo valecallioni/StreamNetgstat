@@ -13,7 +13,7 @@
 #' @useDynLib StreamNetgstat
 #' @export
 
-Torgegram = function(ssn, ResponseName,
+torgegram = function(ssn, ResponseName,
                       EmpVarMeth = "MethMoment")
 {
   
