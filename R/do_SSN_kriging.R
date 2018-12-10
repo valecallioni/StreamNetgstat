@@ -30,7 +30,7 @@ do_SSN_kriging = function(ssn, varNames, weightVar, predpts, CorModels, useNugge
   # -------------------------------------------------------------
   # Preprocessing of the data
   
-  net_num = as.numeric(levels(ssn@network.line.coords[,1]))
+  net_num = as.numeric(levels(ssn@network.line.coords[,"NetworkID"]))
 
   # Create a list for the binaryId tables (one per network)
   bin_tables = list()
