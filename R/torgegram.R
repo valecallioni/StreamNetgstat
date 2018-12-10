@@ -1,5 +1,19 @@
+#' Compute the Torgegram for a Spatial Stream Network object 
+#'
+#' @param ssn a \link[SSN]{SpatialStreamNetwork-class} object.
+#' @param ResponseName the name of the response variable.
+#' @param EmpVarMeth a string indicating the name of the method to be used for computing the semivariogram.
+#' @return A list.
+#' @description Given a \link[SSN]{SpatialStreamNetwork-class} object, computes the Torgegram and the Empirical Semivariogram and provides the plots.
+#' @details This function works on objects of \link[SSN]{SpatialStreamNetwork-class}.
+#' @references 
+#' Peterson, E.E. and Ver Hoef, J.M. (2010) A mixed-model moving-average approach to geostatistical modeling in stream networks. Ecology 91(3), 644–651.
+#' 
+#' Ver Hoef, J.M. and Peterson, E.E. (2010) A moving average approach for spatial statistical models of stream networks (with discussion). Journal of the American Statistical Association 105, 6–18. DOI: 10.1198/jasa.2009.ap08248. Rejoinder pgs. 22–24.
+#' @useDynLib StreamNetgstat
+#' @export
+
 Torgegram = function(ssn, ResponseName,
-                      maxlag = NULL, nlag = 6, inc = 0, nlagcutoff = 15, 
                       EmpVarMeth = "MethMoment")
 {
   
