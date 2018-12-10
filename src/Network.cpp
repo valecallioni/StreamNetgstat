@@ -56,13 +56,12 @@ void Network::print() const {
         (s.second).print();*/
 }
 
-void Network::computeDistances() {
+void Network::computeDistances(bool geo) {
 
     std::vector<Point> obs(obspoints.getPoints());
     std::vector<Point> pred(predpoints.getPoints());
 
-    obspoints.computeDistances(segments);
-    predpoints.computeDistances(segments);
+    obspoints.computeDistances(geo, segments);
 
     if (nPred > 0){
       for (unsigned int i=0; i<nObs; i++) {
@@ -72,45 +71,105 @@ void Network::computeDistances() {
           unsigned int min = n1;
 
           for (unsigned int j = 0; j < nPred; j++) {
-              min = n1;
-              std::vector<char> p2 = pred[j].getBinaryID();
-              unsigned int n2 = p2.size();
-              if (n2 < n1)
-                  min = n2;
-              unsigned int k = 0;
-              while (k < min && p1[k] == p2[k])
-                  k++;
+            min = n1;
+            std::vector<char> p2 = pred[j].getBinaryID();
+            unsigned int n2 = p2.size();
+            if (n2 < n1)
+                min = n2;
+            unsigned int k = 0;
+            while (k < min && p1[k] == p2[k])
+                k++;
 
-              if (k == n1 || k == n2){ // flow-connection
-                  flowMatOP(i,j) = 1;
-                  if (n2 == n1){
-                      if (obs[i].getDistUpstream() > pred[j].getDistUpstream())
-                          distHydroOP(i,j) = obs[i].getDistUpstream() - pred[j].getDistUpstream();
-                      else
-                          distHydroPO(j,i) = pred[j].getDistUpstream() - obs[i].getDistUpstream();
-                  }
-                  else if (n2 < n1){
+            if (k == n1 || k == n2){ // flow-connection
+                flowMatOP(i,j) = 1;
+                if (n2 == n1){
+                    if (obs[i].getDistUpstream() > pred[j].getDistUpstream())
+                        distHydroOP(i,j) = obs[i].getDistUpstream() - pred[j].getDistUpstream();
+                    else
+                        distHydroPO(j,i) = pred[j].getDistUpstream() - obs[i].getDistUpstream();
+                }
+                else if (n2 < n1){
+                    distHydroOP(i,j) = obs[i].getDistUpstream() - pred[j].getDistUpstream();
+                }
+                else
+                    distHydroPO(j,i) = pred[j].getDistUpstream() - obs[i].getDistUpstream();
+            }
+
+            else { // flow-unconnection
+                std::string junc("");
+                for (unsigned int c=0; c<k; c++){
+                    junc.append(1, obs[i].getBinaryID()[c]);
+                }
+                distHydroOP(i,j) = obs[i].getDistUpstream() - segments.find(junc)->second.getDistUpstream();
+                distHydroPO(j,i) = pred[j].getDistUpstream() - segments.find(junc)->second.getDistUpstream();
+            }
+
+            if (geo){
+              // Compute Euclidean distances
+              distGeoOP(i,j) = std::sqrt((obs[i].getX1() - pred[j].getX1())*(obs[i].getX1() - pred[j].getX1()) + (obs[i].getX2() - pred[j].getX2())*(obs[i].getX2() - pred[j].getX2()));
+            }
+
+          }
+      }
+    }
+
+}
+
+void Network::setDistPoints(bool geo, const std::vector<Eigen::MatrixXd>& matrices){
+
+  obspoints.setDistances(matrices);
+
+  std::vector<Point> obs(obspoints.getPoints());
+  std::vector<Point> pred(predpoints.getPoints());
+
+  if (nPred > 0){
+    for (unsigned int i=0; i<nObs; i++) {
+
+        std::vector<char> p1 = obs[i].getBinaryID();
+        unsigned int n1 = p1.size();
+        unsigned int min = n1;
+
+        for (unsigned int j = 0; j < nPred; j++) {
+          min = n1;
+          std::vector<char> p2 = pred[j].getBinaryID();
+          unsigned int n2 = p2.size();
+          if (n2 < n1)
+              min = n2;
+          unsigned int k = 0;
+          while (k < min && p1[k] == p2[k])
+              k++;
+
+          if (k == n1 || k == n2){ // flow-connection
+              flowMatOP(i,j) = 1;
+              if (n2 == n1){
+                  if (obs[i].getDistUpstream() > pred[j].getDistUpstream())
                       distHydroOP(i,j) = obs[i].getDistUpstream() - pred[j].getDistUpstream();
-                  }
                   else
                       distHydroPO(j,i) = pred[j].getDistUpstream() - obs[i].getDistUpstream();
               }
-
-              else { // flow-unconnection
-                  std::string junc("");
-                  for (unsigned int c=0; c<k; c++){
-                      junc.append(1, obs[i].getBinaryID()[c]);
-                  }
-                  distHydroOP(i,j) = obs[i].getDistUpstream() - segments.find(junc)->second.getDistUpstream();
-                  distHydroPO(j,i) = pred[j].getDistUpstream() - segments.find(junc)->second.getDistUpstream();
+              else if (n2 < n1){
+                  distHydroOP(i,j) = obs[i].getDistUpstream() - pred[j].getDistUpstream();
               }
-
-              // Compute Euclidean distances
-              distGeoOP(i,j) = std::sqrt((obs[i].getX1() - pred[j].getX1())*(obs[i].getX1() - pred[j].getX1()) + (obs[i].getX2() - pred[j].getX2())*(obs[i].getX2() - pred[j].getX2()));
-
+              else
+                  distHydroPO(j,i) = pred[j].getDistUpstream() - obs[i].getDistUpstream();
           }
 
-      }
+          else { // flow-unconnection
+              std::string junc("");
+              for (unsigned int c=0; c<k; c++){
+                  junc.append(1, obs[i].getBinaryID()[c]);
+              }
+              distHydroOP(i,j) = obs[i].getDistUpstream() - segments.find(junc)->second.getDistUpstream();
+              distHydroPO(j,i) = pred[j].getDistUpstream() - segments.find(junc)->second.getDistUpstream();
+          }
+
+          if (geo) {
+            // Compute Euclidean distances
+            distGeoOP(i,j) = std::sqrt((obs[i].getX1() - pred[j].getX1())*(obs[i].getX1() - pred[j].getX1()) + (obs[i].getX2() - pred[j].getX2())*(obs[i].getX2() - pred[j].getX2()));
+          }
+        }
+
     }
+  }
 
 }

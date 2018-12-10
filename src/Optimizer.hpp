@@ -70,6 +70,7 @@ public:
   void computeThetaPaper();
   void computeThetaWiki();
   void glmssn();
+  void glmssn(Eigen::VectorXd& thetaOpt);
 
 };
 

@@ -9,7 +9,7 @@ Kriging::Kriging(const Eigen::MatrixXd& dMatPred, const Eigen::MatrixXd& dMatObs
     Xobs = std::make_shared<Eigen::MatrixXd>(dMatObs);
     distHydroOP = std::make_shared<Eigen::MatrixXd>(Nop);
     distHydroPO = std::make_shared<Eigen::MatrixXd>(Npo);
-    distGeo = std::make_shared<Eigen::MatrixXd>(D);
+    if (D.rows() > 0) distGeo = std::make_shared<Eigen::MatrixXd>(D);
     weightMat = std::make_shared<Eigen::MatrixXd>(wMat);
     flowMat = std::make_shared<Eigen::MatrixXi>(connMat);
 

@@ -7,7 +7,7 @@ useNugget(useNugg), nModels(n_models){
   z = std::make_shared<Eigen::VectorXd>(y);
   X = std::make_shared<Eigen::MatrixXd>(designMat);
   distHydro = std::make_shared<Eigen::MatrixXd>(N);
-  distGeo = std::make_shared<Eigen::MatrixXd>(D);
+  if (D.rows() > 0) distGeo = std::make_shared<Eigen::MatrixXd>(D);
   weightMat = std::make_shared<Eigen::MatrixXd>(wMat);
   flowMat = std::make_shared<Eigen::MatrixXi>(connMat);
 
@@ -24,14 +24,14 @@ useNugget(useNugg), nModels(n_models){
   covMat.fill(0.0);
 
   maxDistHydro = 4.0*distHydro->maxCoeff();
-  maxDistGeo = 4.0*distGeo->maxCoeff();
+  if (euclidModel) maxDistGeo = 4.0*distGeo->maxCoeff();
 }
 
 bool Optimizer::updateParam(const Eigen::VectorXd& theta){
   bool control = true;
   int j = 0;
   if (j < nModels*2 && tailUpModel){
-    if (std::exp(theta(j)) < 0.0 || std::exp(theta(j)) > 1e+4) control = false;
+    if (std::exp(theta(j)) < 0.0 || std::exp(theta(j)) > 2.0*2) control = false;
     tailUpModel->setSigma2(std::exp(theta(j)));
     j++;
     if (std::exp(theta(j)) > maxDistHydro || std::exp(theta(j)) < 0.0) control = false;
@@ -39,7 +39,7 @@ bool Optimizer::updateParam(const Eigen::VectorXd& theta){
     j++;
   }
   if (j < nModels*2 && tailDownModel){
-    if (std::exp(theta(j)) < 0.0  || std::exp(theta(j)) > 1e+4) control = false;
+    if (std::exp(theta(j)) < 0.0  || std::exp(theta(j)) > 3.0*2) control = false;
     tailDownModel->setSigma2(std::exp(theta(j)));
     j++;
     if (std::exp(theta(j)) > maxDistHydro || std::exp(theta(j)) < 0.0) control = false;
@@ -47,7 +47,7 @@ bool Optimizer::updateParam(const Eigen::VectorXd& theta){
     j++;
   }
   if (j < nModels*2 && euclidModel){
-    if (std::exp(theta(j)) < 0.0  || std::exp(theta(j)) > 1e+4) control = false;
+    if (std::exp(theta(j)) < 0.0  || std::exp(theta(j)) > 15.0*2) control = false;
     euclidModel->setSigma2(std::exp(theta(j)));
     j++;
     if (std::exp(theta(j)) > maxDistGeo || std::exp(theta(j)) < 0.0) control = false;
@@ -437,6 +437,32 @@ void Optimizer::glmssn() {
   computeThetaWiki();
 
   Eigen::VectorXd logTheta = optimTheta.array().log();
+  updateParam(logTheta);
+
+  if (tailUpModel) covMat += tailUpModel->computeMatCov(*weightMat, *distHydro);
+  if (tailDownModel) covMat += tailDownModel->computeMatCov(*flowMat, *distHydro);
+  if (euclidModel) covMat += euclidModel->computeMatCov(*distGeo);
+  if (useNugget) covMat += Eigen::MatrixXd::Identity(n,n)*optimTheta(optimTheta.size()-1);
+
+  Eigen::LDLT<Eigen::MatrixXd> solver(n);
+  solver.compute(covMat);
+  Eigen::MatrixXd Id(n,n);
+  Id.setIdentity();
+  Eigen::MatrixXd invV(solver.solve(Id));
+
+  solver = Eigen::LDLT<Eigen::MatrixXd>(p);
+  solver.compute(X->transpose()*invV*(*X));
+  Id.resize(p+1,p+1);
+  Id.setIdentity();
+  Eigen::MatrixXd invXVX(solver.solve(Id));
+
+  betaValues = invXVX*X->transpose()*invV*(*z);
+}
+
+void Optimizer::glmssn(Eigen::VectorXd& thetaOpt) {
+  computeThetaWiki();
+
+  Eigen::VectorXd logTheta = thetaOpt.array().log();
   updateParam(logTheta);
 
   if (tailUpModel) covMat += tailUpModel->computeMatCov(*weightMat, *distHydro);

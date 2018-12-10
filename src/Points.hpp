@@ -31,8 +31,8 @@ public:
 
   void setPoints(const std::vector<Point>& p);
 
-
-  void computeDistances(const std::map<std::string, StreamSegment>& segments);
+  void computeDistances(bool geo, const std::map<std::string, StreamSegment>& segments);
+  void setDistances(const std::vector<Eigen::MatrixXd>& matrices);
 
 };
 

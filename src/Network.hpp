@@ -50,8 +50,8 @@ public:
     const Points& getObsPoints() const {return obspoints;};
     const Points& getPredPoints() const {return predpoints;};
 
-
-    void computeDistances();
+    void computeDistances(bool geo);
+    void setDistPoints(bool geo, const std::vector<Eigen::MatrixXd>& matrices);
 
     void print() const;
 };
