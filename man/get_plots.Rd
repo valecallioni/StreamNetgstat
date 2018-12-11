@@ -40,13 +40,10 @@ get_plots(ssn, ResponseName, Euclidean = FALSE, maxlag_Torg = NULL,
 \item{EmpVarMeth}{method for computing semivariances. The default is "MethMoment", the classical method of moments, which is just the average difference-squared within bin classes. "Covariance" computes covariance rather than semivariance, but may be more biased because it subtracts off the simple mean of the response variable. "RobustMedian" and "RobustMean" are robust estimators proposed by Cressie and Hawkins (1980). If v is a vector of all pairwise square-roots of absolute differences within a bin class, then RobustMedian computes median(v)^4/.457. "RobustMean" computes mean(v)^4/(.457 + .494/length(v)).}
 }
 \value{
-A vector of distance matrices.
+A list of distance matrices.
 }
 \description{
-Given a \link[SSN]{SpatialStreamNetwork-class} object, computes the Torgegram and the Empirical Semivariogram and provides the plots.
-}
-\details{
-This function works on objects of \link[SSN]{SpatialStreamNetwork-class}.
+Given a \link[SSN]{SpatialStreamNetwork-class} object, computes the Torgegram (empirical semivariogram from the data based on hydrologic distance) and the empirical semivariogram from the data based on the Euclidean distance. It provides the plots.
 }
 \references{
 Peterson, E.E. and Ver Hoef, J.M. (2010) A mixed-model moving-average approach to geostatistical modeling in stream networks. Ecology 91(3), 644–651.

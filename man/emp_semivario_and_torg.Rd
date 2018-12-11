@@ -38,13 +38,16 @@ emp_semivario_and_torg(ssn, ResponseName, maxlag_Torg = NULL,
 \item{EmpVarMeth}{method for computing semivariances. The default is "MethMoment", the classical method of moments, which is just the average difference-squared within bin classes. "Covariance" computes covariance rather than semivariance, but may be more biased because it subtracts off the simple mean of the response variable. "RobustMedian" and "RobustMean" are robust estimators proposed by Cressie and Hawkins (1980). If v is a vector of all pairwise square-roots of absolute differences within a bin class, then RobustMedian computes median(v)^4/.457. "RobustMean" computes mean(v)^4/(.457 + .494/length(v)).}
 }
 \value{
-A list.
+A list with the following fields:
+\item{\code{EmpSemiVar}}{ object of class \link[SSN]{EmpiricalSemivariogram}. }
+\item{\code{Torg}}{ object of class \link[SSN]{Torgegram}. }
+\item{\code{distMatrices}}{ list of distance-matrices. }
 }
 \description{
-Given a \link[SSN]{SpatialStreamNetwork-class} object, computes the Torgegram and the Empirical Semivariogram and provides the plots.
+Given a \link[SSN]{SpatialStreamNetwork-class} object, computes the Torgegram (empirical semivariogram from the data based on hydrologic distance) and the empirical semivariogram from the data based on the Euclidean distance.
 }
 \details{
-This function works on objects of \link[SSN]{SpatialStreamNetwork-class}.
+Given a \link[SSN]{SpatialStreamNetwork-class} object, the function creates a list of hydrologic distances and Euclidean distances and empirical semivariogram values for both, along with number of pairs of points in each bin, for flow-connected and flow-unconnected sites when considering the hydrologic distance. Flow-connected locations lie on the same stream network (share a common downstream junction) and water flows from one location to the other. Flow-unconnected locations also lie on the same stream network, but do not share flow. The output is a list, containing an object of class \link[SSN]{Torgegram}, an object of class \link[SSN]{EmpiricalSemivariogram} and a list containing the distance-matrices.
 }
 \references{
 Peterson, E.E. and Ver Hoef, J.M. (2010) A mixed-model moving-average approach to geostatistical modeling in stream networks. Ecology 91(3), 644–651.
