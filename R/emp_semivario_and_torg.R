@@ -182,16 +182,16 @@ emp_semivario_and_torg = function(ssn, ResponseName,
   theta.deg <- acos(difx/distance)*180/pi
   # matrix of degrees clockwise from north between locations
   theta.deg[signind] <- 360-theta.deg[signind]
-  diff2 <- ( matrix(data[,var],nrow=nObs,ncol=1) %*%
+  diff2 <- ( matrix(obs_data[ResponseName],nrow=nObs,ncol=1) %*%
                matrix(rep(1,times=nObs),nrow=1,ncol=nObs) -
                matrix(rep(1,times=nObs),nrow=nObs,ncol=1) %*%
-               matrix(data[,var],nrow=1,ncol=nObs) )^2
-  sqrtdiff <- sqrt(abs( matrix(data[,var],nrow=nObs,ncol=1) %*%
+               matrix(obs_data[ResponseName],nrow=1,ncol=nObs) )^2
+  sqrtdiff <- sqrt(abs( matrix(obs_data[ResponseName],nrow=nObs,ncol=1) %*%
                           matrix(rep(1,times=nObs),nrow=1,ncol=nObs) -
                           matrix(rep(1,times=nObs),nrow=nObs,ncol=1) %*%
-                          matrix(data[,var],nrow=1,ncol=nObs) ) )
-  if(EmpVarMeth == "CovMean") temp4cov <- data[,var] - mean(data[,var])
-  else temp4cov <- data[,var]
+                          matrix(obs_data[ResponseName],nrow=1,ncol=nObs) ) )
+  if(EmpVarMeth == "CovMean") temp4cov <- obs_data[ResponseName] - mean(obs_data[ResponseName])
+  else temp4cov <- obs_data[ResponseName]
   covprod <- (matrix(temp4cov,nrow=nObs,ncol=1) %*%
                 matrix(rep(1,times=nObs),nrow=1,ncol=nObs)) *
     (matrix(rep(1,times=nObs),nrow=nObs,ncol=1) %*%
