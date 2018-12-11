@@ -170,9 +170,11 @@ emp_semivario_and_torg = function(ssn, ResponseName,
   # -------------------------
   # EMPIRICAL SEMIVARIOGRAM
   
+  x = obs_points[,4]
+  y = obs_points[,5]
   nObs = dim(obs_points)[1]
   distance = matrices$distGeo
-  difx <- -(matrix(y,nrow=nObs,ncol=1) %*%
+  difx <- -(matrix(,nrow=nObs,ncol=1) %*%
               matrix(rep(1,times=nObs),nrow=1,ncol=nObs) -
               matrix(rep(1,times=nObs),nrow=nObs,ncol=1) %*%
               matrix(y,nrow=1,ncol=nObs))
@@ -184,16 +186,16 @@ emp_semivario_and_torg = function(ssn, ResponseName,
   theta.deg <- acos(difx/distance)*180/pi
   # matrix of degrees clockwise from north between locations
   theta.deg[signind] <- 360-theta.deg[signind]
-  diff2 <- ( matrix(obs_data[ResponseName],nrow=nObs,ncol=1) %*%
+  diff2 <- ( matrix(obs_data,nrow=nObs,ncol=1) %*%
                matrix(rep(1,times=nObs),nrow=1,ncol=nObs) -
                matrix(rep(1,times=nObs),nrow=nObs,ncol=1) %*%
-               matrix(obs_data[ResponseName],nrow=1,ncol=nObs) )^2
-  sqrtdiff <- sqrt(abs( matrix(obs_data[ResponseName],nrow=nObs,ncol=1) %*%
+               matrix(obs_data,nrow=1,ncol=nObs) )^2
+  sqrtdiff <- sqrt(abs( matrix(obs_data,nrow=nObs,ncol=1) %*%
                           matrix(rep(1,times=nObs),nrow=1,ncol=nObs) -
                           matrix(rep(1,times=nObs),nrow=nObs,ncol=1) %*%
-                          matrix(obs_data[ResponseName],nrow=1,ncol=nObs) ) )
-  if(EmpVarMeth == "CovMean") temp4cov <- obs_data[ResponseName] - mean(obs_data[ResponseName])
-  else temp4cov <- obs_data[ResponseName]
+                          matrix(obs_data,nrow=1,ncol=nObs) ) )
+  if(EmpVarMeth == "CovMean") temp4cov <- obs_data - mean(obs_data)
+  else temp4cov <- obs_data
   covprod <- (matrix(temp4cov,nrow=nObs,ncol=1) %*%
                 matrix(rep(1,times=nObs),nrow=1,ncol=nObs)) *
     (matrix(rep(1,times=nObs),nrow=nObs,ncol=1) %*%
