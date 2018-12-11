@@ -82,7 +82,7 @@ plot.Torg <- function(x, sp.relationship = c("fc", "fu"),
          type = "n",
          xlab = xlab,
          ylab = ylab,
-         main = main, ...)
+         main = main)
     maxnp <- max(ev$np.connect,ev$np.unconnect)
     minnp <- min(ev$np.connect,ev$np.unconnect)
     np.range <- maxnp - minnp
@@ -113,7 +113,7 @@ plot.Torg <- function(x, sp.relationship = c("fc", "fu"),
       }
       plot(c(0, max(ev$distance.connect)), c(0, max(ev$gam.connect)),
            type = "n", xlab = xlab, ylab = ylab,
-           main = main, ...)
+           main = main)
       nlag <- length(ev$distance.connect)
       maxnp <- max(ev$np.connect)
       minnp <- min(ev$np.connect)
@@ -134,7 +134,7 @@ plot.Torg <- function(x, sp.relationship = c("fc", "fu"),
       }
       plot(c(0, max(ev$distance.unconnect)), c(0, max(ev$gam.unconnect)),
            type = "n", xlab = xlab, ylab = ylab,
-           main = main, ...)
+           main = main)
       nlag <- length(ev$distance.unconnect)
       maxnp <- max(ev$np.unconnect)
       minnp <- min(ev$np.unconnect)
