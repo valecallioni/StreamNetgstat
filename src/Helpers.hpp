@@ -19,6 +19,6 @@ namespace helpers {
   std::vector<Eigen::MatrixXd> returnBlockMatrices(const Points& p);
   Eigen::MatrixXd geoDistBetweenNets(const Points& p1, const Points& p2);
 
-  std::vector<Eigen::MatrixXd> createDistMatrices(bool geo, const std::string& type, const std::vector<Network>& net, unsigned int nTot);
+  std::vector<Eigen::MatrixXd> createDistMatrices(bool geo, const std::vector<Network>& net, unsigned int nTot);
   std::vector<Eigen::MatrixXd> createDistMatricesOP(bool geo, const std::vector<Network>& net, unsigned int nObs, unsigned int nPred);
 }

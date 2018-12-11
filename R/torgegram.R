@@ -75,7 +75,7 @@ torgegram = function(ssn, ResponseName, maxlag = NULL, nlag = 6,
   nObs = table(ssn@obspoints@SSNPoints[[1]]@network.point.coords[,"NetworkID"])
   for (i in net_num){
     Ds = t(matrices$distHydro[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])]) + matrices$distHydro[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])]
-    FCs = matrices$flowMat[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])] # + diag(1, nObs[i])
+    FCs = matrices$flowMat[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])] + diag(1, nObs[i])
     zs = obs_data[(nsofar+1):(nsofar + nObs[i])]
     nsofar = nsofar + nObs[i]
     ind <- !is.na(zs)

@@ -72,8 +72,7 @@ emp_semivario_and_torg = function(ssn, ResponseName,
   
   
   matrices = .Call("createDistanceMatrices", net_num, bin_tables, network_data, obs_points)
-  
-  
+
   #----------------------
   # TORGEGRAM
   
@@ -87,7 +86,7 @@ emp_semivario_and_torg = function(ssn, ResponseName,
   nObs = table(ssn@obspoints@SSNPoints[[1]]@network.point.coords[,"NetworkID"])
   for (i in net_num){
     Ds = t(matrices$distHydro[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])]) + matrices$distHydro[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])]
-    FCs = matrices$flowMat[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])] # + diag(1, nObs[i])
+    FCs = matrices$flowMat[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])] + diag(1, nObs[i])
     zs = obs_data[(nsofar+1):(nsofar + nObs[i])]
     nsofar = nsofar + nObs[i]
     ind <- !is.na(zs)
@@ -174,7 +173,7 @@ emp_semivario_and_torg = function(ssn, ResponseName,
   y = obs_points[,5]
   nObs = dim(obs_points)[1]
   distance = matrices$distGeo
-  difx <- -(matrix(,nrow=nObs,ncol=1) %*%
+  difx <- -(matrix(y,nrow=nObs,ncol=1) %*%
               matrix(rep(1,times=nObs),nrow=1,ncol=nObs) -
               matrix(rep(1,times=nObs),nrow=nObs,ncol=1) %*%
               matrix(y,nrow=1,ncol=nObs))

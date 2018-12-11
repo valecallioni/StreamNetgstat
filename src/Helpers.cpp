@@ -53,7 +53,7 @@ Eigen::MatrixXd helpers::geoDistBetweenNets(const Points& p1, const Points& p2){
   return res;
 }
 
-std::vector<Eigen::MatrixXd> helpers::createDistMatrices(bool geo, const std::string& type, const std::vector<Network>& net, unsigned int nTot){
+std::vector<Eigen::MatrixXd> helpers::createDistMatrices(bool geo, const std::vector<Network>& net, unsigned int nTot){
   Eigen::MatrixXd mat;
   mat.resize(nTot,nTot);
   mat.fill(0.0);
@@ -66,8 +66,7 @@ std::vector<Eigen::MatrixXd> helpers::createDistMatrices(bool geo, const std::st
   Points p1;
   Points p2;
   for (int k=0; k<net.size(); k++){
-    if (type == "obs") p1 = net[k].getObsPoints();
-    if (type == "pred") p1 = net[k].getPredPoints();
+    p1 = net[k].getObsPoints();
     tmp = helpers::returnBlockMatrices(p1);
     res[0].block(count, count, tmp[0].rows(), tmp[0].cols()) = tmp[0];
     res[1].block(count, count, tmp[1].rows(), tmp[1].cols()) = tmp[1];
@@ -76,8 +75,7 @@ std::vector<Eigen::MatrixXd> helpers::createDistMatrices(bool geo, const std::st
       res[2].block(count, count, tmp[2].rows(), tmp[2].cols()) = tmp[2];
       h = k;
       while (h < net.size()-1){
-        if (type == "obs") p2 = net[h+1].getObsPoints();
-        if (type == "pred") p2 = net[h+1].getPredPoints();
+        p2 = net[h+1].getObsPoints();
         geoDist = helpers::geoDistBetweenNets(p1, p2);
         res[2].block(count, count + p1.getN(), geoDist.rows(), geoDist.cols()) = geoDist;
         res[2].block(count + p1.getN(), count, geoDist.cols(), geoDist.rows()) = geoDist.transpose();

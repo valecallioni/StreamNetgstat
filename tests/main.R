@@ -21,9 +21,9 @@ load("/vagrant/PACSProject/Data/middlefork_predictObs.RData")
 # Missouri arguments: 17, c("STREAM_AUG", "ELEV", "SLOPE"), "afvArea"
 
 
-result = get_SSN_model(c("Summer_mn", "ELEV_DEM"), "afvArea",
-                            c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"),
-                            net_num, bin_tables, network_data, obs_points, obs_data)
+# result = get_SSN_model(c("Summer_mn", "ELEV_DEM"), "afvArea",
+#                             c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"),
+#                             net_num, bin_tables, network_data, obs_points, obs_data)
 
 # result = do_SSN_kriging(net_num, bin_tables, network_data,
 #                         obs_points, pred_points, obs_data, pred_data, 
@@ -36,10 +36,13 @@ result = get_SSN_model(c("Summer_mn", "ELEV_DEM"), "afvArea",
 #                             net_num, bin_tables, network_data, obs_points, pred_points, obs_data, pred_data)
 
 
-print("Theta:")
-print(result$optTheta)
-print("Beta:")
-print(result$betaValues)
-setwd("/vagrant/PACSProject/")
+# print("Theta:")
+# print(result$optTheta)
+# print("Beta:")
+# print(result$betaValues)
+# setwd("/vagrant/PACSProject/")
 # write(t(result$covMatrix), file = "covMat.txt", ncolumns = 45)
 # write(t(result$predictions), file = "predData.txt", ncolumns = 2)
+
+matrices = .Call("createDistanceMatrices", net_num, bin_tables, network_data, obs_points)
+print(dim(matrices$distGeo))

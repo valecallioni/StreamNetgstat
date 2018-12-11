@@ -67,7 +67,7 @@ RcppExport SEXP createHydroDistanceMatrices (SEXP net_num, SEXP bin_tables, SEXP
   segments.clear();
   Rcpp::Rcout << "Networks stored. \n";
 
-  std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatrices(FALSE, "obs", networks, nObsTot));
+  std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatrices(FALSE, networks, nObsTot));
 
 
   Rcpp::List result = Rcpp::List::create(Rcpp::Named("flowMat") = matrices[0],
@@ -135,7 +135,7 @@ RcppExport SEXP createDistanceMatrices (SEXP net_num, SEXP bin_tables, SEXP netw
   segments.clear();
   Rcpp::Rcout << "Networks stored. \n";
 
-  std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatrices(TRUE, "obs", networks, nObsTot));
+  std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatrices(TRUE, networks, nObsTot));
 
 
   Rcpp::List result = Rcpp::List::create(Rcpp::Named("flowMat") = matrices[0],
@@ -268,14 +268,14 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
     }
     else {
       if (euclid){
-        std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatrices(TRUE, "obs", networks, nObsTot));
+        std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatrices(TRUE, networks, nObsTot));
         flowMatOO = matrices[0];
         distHydroOO = matrices[1];
         distGeoOO.resize(nObsTot, nObsTot);
         distGeoOO = matrices[2];
       }
       else {
-        std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatrices(FALSE, "obs", networks, nObsTot));
+        std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatrices(FALSE, networks, nObsTot));
         flowMatOO = matrices[0];
         distHydroOO = matrices[1];
       }
@@ -639,14 +639,14 @@ RcppExport SEXP getSSNModelKriging (SEXP net_num, SEXP bin_tables, SEXP network_
     }
     else {
       if (euclid){
-        std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatrices(TRUE, "obs", networks, nObsTot));
+        std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatrices(TRUE, networks, nObsTot));
         flowMatOO = matrices[0];
         distHydroOO = matrices[1];
         distGeoOO.resize(nObsTot, nObsTot);
         distGeoOO = matrices[2];
       }
       else {
-        std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatrices(FALSE, "obs", networks, nObsTot));
+        std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatrices(FALSE, networks, nObsTot));
         flowMatOO = matrices[0];
         distHydroOO = matrices[1];
       }
