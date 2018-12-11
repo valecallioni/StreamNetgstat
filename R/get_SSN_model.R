@@ -21,8 +21,6 @@
 
 get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE){
  
-  library(rlist)
-
   # Check to see whether distance folder exists...
   if (!file.exists(file.path(ssn@path, "distance"))) {
     dir.create(file.path(ssn@path, "distance"))

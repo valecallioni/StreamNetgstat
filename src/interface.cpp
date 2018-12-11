@@ -70,7 +70,7 @@ RcppExport SEXP createHydroDistanceMatrices (SEXP net_num, SEXP bin_tables, SEXP
   std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatrices(FALSE, "obs", networks, nObsTot));
 
 
-  Rcpp::List result = Rcpp::List::create(Rcpp::Named("flowMat") = matrices[0] + Eigen::MatrixXd::Identity(nObsTot,nObsTot),
+  Rcpp::List result = Rcpp::List::create(Rcpp::Named("flowMat") = matrices[0],
                                          Rcpp::Named("distHydro") = matrices[1]);
 
 
@@ -138,7 +138,7 @@ RcppExport SEXP createDistanceMatrices (SEXP net_num, SEXP bin_tables, SEXP netw
   std::vector<Eigen::MatrixXd> matrices(helpers::createDistMatrices(TRUE, "obs", networks, nObsTot));
 
 
-  Rcpp::List result = Rcpp::List::create(Rcpp::Named("flowMat") = matrices[0] + Eigen::MatrixXd::Identity(nObsTot,nObsTot),
+  Rcpp::List result = Rcpp::List::create(Rcpp::Named("flowMat") = matrices[0],
                                          Rcpp::Named("distHydro") = matrices[1],
                                          Rcpp::Named("distGeo") = matrices[2]);
 

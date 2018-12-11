@@ -25,8 +25,6 @@
 do_SSN_kriging = function(ssn, varNames, weightVar, predpts, CorModels, useNugget = TRUE,
                           theta, covMat){
 
-  library(rlist)
-  
   # -------------------------------------------------------------
   # Preprocessing of the data
   
