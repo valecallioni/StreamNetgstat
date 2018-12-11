@@ -90,6 +90,8 @@ emp_semivario_and_torg = function(ssn, ResponseName,
     FCs = matrices$flowMat[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])] # + diag(1, nObs[i])
     zs = obs_data[(nsofar+1):(nsofar + nObs[i])]
     nsofar = nsofar + nObs[i]
+    ind <- !is.na(zs)
+    ni <- sum(ind)
     rs = zs - mnz
     CP = rs%o%rs
     diff = abs(zs%o%rep(1, times = ni) - 
