@@ -4,8 +4,8 @@
 \alias{get_plots}
 \title{Plot the Torgegram and the Empirical Semivariogram for a Spatial Stream Network object}
 \usage{
-get_plots(ssn, ResponseName, Euclidean = FALSE,
-  EmpVarMeth = "MethMoment")
+get_plots(ssn, ResponseName, Euclidean = FALSE, maxlag = NULL,
+  nlag = 6, inc = 0, nlagcutoff = 15, EmpVarMeth = "MethMoment")
 }
 \arguments{
 \item{ssn}{a \link[SSN]{SpatialStreamNetwork-class} object.}
