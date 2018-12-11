@@ -44,6 +44,8 @@ get_plots = function(ssn, ResponseName, Euclidean = FALSE,
    maxnp <- max(result$EmpSemiVar$np)
    minnp <- min(result$EmpSemiVar$np)
    np.range <- maxnp - minnp
+   min.cex = 1.5
+   max.cex = 6
    cex.inc <- max.cex - min.cex
    points(result$EmpSemiVar$distance,
           result$EmpSemiVar$gamma, pch = 19,
