@@ -2,7 +2,11 @@
 #'
 #' @param ssn a \link[SSN]{SpatialStreamNetwork-class} object.
 #' @param ResponseName the name of the response variable.
-#' @param EmpVarMeth a string indicating the name of the method to be used for computing the semivariogram.
+#' @param maxlag the maximum lag distance to consider when binning pairs of locations by the hydrologic distance that separates them. The default is the median distance between all pairs of locations.
+#' @param nlag the number of lag bins to create for computing the Torgegram. The hydrologic distance between endpoints that define a bin will have equal lengths for all bins. The bin sizes are then determined from the minimum lag in the data, and the specification of maxlag_Torg.
+#' @param inc the bin hydrologic distance between endpoints. It is possible to specify the bin distance rather than nlag_Torg. In this case, the number of bins is determined by the bin distance and the hydrologic distance between the mininum and maximum (maxlag_Torg) lag in the data. 
+#' @param nlagcutoff the minimum number of pairs needed to estimate the semivariance for a bin in the Torgegram computation. If the sample sizes is less than this value, the semivariance for the bin is not calculated.
+#' @param EmpVarMeth method for computing semivariances. The default is "MethMoment", the classical method of moments, which is just the average difference-squared within bin classes. "Covariance" computes covariance rather than semivariance, but may be more biased because it subtracts off the simple mean of the response variable. "RobustMedian" and "RobustMean" are robust estimators proposed by Cressie and Hawkins (1980). If v is a vector of all pairwise square-roots of absolute differences within a bin class, then RobustMedian computes median(v)^4/.457. "RobustMean" computes mean(v)^4/(.457 + .494/length(v)).
 #' @return A list.
 #' @description Given a \link[SSN]{SpatialStreamNetwork-class} object, computes the Torgegram and the Empirical Semivariogram and provides the plots.
 #' @details This function works on objects of \link[SSN]{SpatialStreamNetwork-class}.
@@ -13,8 +17,8 @@
 #' @useDynLib StreamNetgstat
 #' @export
 
-torgegram = function(ssn, ResponseName,
-                      EmpVarMeth = "MethMoment")
+torgegram = function(ssn, ResponseName, maxlag = NULL, nlag = 6, 
+                     inc = 0, nlagcutoff = 15, EmpVarMeth = "MethMoment")
 {
   
   # -------------------------------------------------------------
@@ -56,13 +60,13 @@ torgegram = function(ssn, ResponseName,
   obs_data = ssn@obspoints@SSNPoints[[1]]@point.data
   indx = sapply(obs_data, is.factor)
   obs_data[indx] = lapply(obs_data[indx], function(x) as.numeric(as.character(x)))
-  obs_data = data.matrix(obs_data[order(obs_data$netID, obs_data$pid),c(varNames, weightVar)])
+  obs_data = obs_data[order(obs_data$netID, obs_data$pid),ResponseName]
   
   
   matrices = .Call("createHydroDistanceMatrices", net_num, bin_tables, network_data, obs_points)
   
-  maxlag = NULL
-  nlag = 6
+  maxlag = 50000
+  nlag = 20
   inc = 0
   nlagcutoff = 15
   
@@ -71,14 +75,16 @@ torgegram = function(ssn, ResponseName,
   Dists = NULL
   FCons = NULL
   Covp = NULL
-  mnz = mean(data[,ResponseName], na.rm = TRUE)
+  mnz = mean(obs_data, na.rm = TRUE)
   nsofar = 0
   nObs = table(ssn@obspoints@SSNPoints[[1]]@network.point.coords[,"NetworkID"])
   for (i in net_num){
-    Ds = t(matrices$distHydro[(nsofar+1):nObs[i], (nsofar+1):nObs[i]])
-    FCs = matrices$flowMat[(nsofar+1):nObs[i], (nsofar+1):nObs[i]] + diag(1, nObs[i])
-    zs = obs_data[(nsofar+1):nObs[i],1]
+    Ds = t(matrices$distHydro[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])]) + matrices$distHydro[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])]
+    FCs = matrices$flowMat[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])] # + diag(1, nObs[i])
+    zs = obs_data[(nsofar+1):(nsofar + nObs[i])]
     nsofar = nsofar + nObs[i]
+    ind <- !is.na(zs)
+    ni <- sum(ind)
     rs = zs - mnz
     CP = rs%o%rs
     diff = abs(zs%o%rep(1, times = ni) - 

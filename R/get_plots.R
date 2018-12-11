@@ -15,7 +15,8 @@
 #' @export
 
 
-get_plots = function(ssn, ResponseName, Euclidean = FALSE, EmpVarMeth = "MethMoment")
+get_plots = function(ssn, ResponseName, Euclidean = FALSE, maxlag = NULL, nlag = 6, 
+                     inc = 0, nlagcutoff = 15, EmpVarMeth = "MethMoment")
 {
   
   if(Euclidean){
