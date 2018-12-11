@@ -37,9 +37,19 @@ get_plots = function(ssn, ResponseName, Euclidean = FALSE,
                                    maxlag_EmpVar = maxlag_EmpVar, nlag_EmpVar = nlag_EmpVar, inc_EmpVar = inc_EmpVar, nlagcutoff_EmpVar = nlagcutoff_EmpVar, 
                                    directions = directions, tolerance = tolerance, EmpVarMeth = EmpVarMeth)
    par(mfrow=c(1,2))
-   plot(result$Torg, main = "Torgegram") 
-   plot(result$EmpSemiVar$distance, result$EmpSemiVar$gamma, main = "Empirical Semivariogram based on Euclidean distance",
-        xlab = "Distance", ylab = "Semi-Variance")
+   plot(c(0, max(result$EmpSemiVar$distance)), c(0, max(result$EmpSemiVar$gamma)),
+        type = "n", xlab = "Euclidean Distance", ylab = "",
+        main = "Empirical Semivariogram")
+   nlag <- length(result$EmpSemiVar$distance)
+   maxnp <- max(result$EmpSemiVar$np)
+   minnp <- min(result$EmpSemiVar$np)
+   np.range <- maxnp - minnp
+   cex.inc <- max.cex - min.cex
+   points(result$EmpSemiVar$distance,
+          result$EmpSemiVar$gamma, pch = 19,
+          cex = min.cex + cex.inc*result$EmpSemiVar$np/maxnp,
+          col = "orange")
+   plot(result$Torg, main = "Torgegram", ylab = "") 
   }
   
   else {
