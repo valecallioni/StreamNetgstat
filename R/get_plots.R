@@ -38,7 +38,7 @@ get_plots = function(ssn, ResponseName, Euclidean = FALSE,
                                    directions = directions, tolerance = tolerance, EmpVarMeth = EmpVarMeth)
    par(mfrow=c(1,2))
    plot(result$Torg, main = "Torgegram") 
-   plot(result$EmpSemiVar$distance, result$SemiVar$gamma, main = "Empirical Semivariogram based on Euclidean distance",
+   plot(result$EmpSemiVar$distance, result$EmpSemiVar$gamma, main = "Empirical Semivariogram based on Euclidean distance",
         xlab = "Distance", ylab = "Semi-Variance")
   }
   
