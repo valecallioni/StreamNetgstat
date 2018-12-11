@@ -14,9 +14,8 @@
 #' @param directions directions in degrees clockwise from north that allow lag binning to be directional. Default is \code{c(0, 45, 90, 135)}. Values should be between 0 and 180, as there is radial symmetry in orientation between two points.
 #' @param tolerance the angle on either side of the directions to determine if a pair of points falls in that direction class. Note, a pair of points may be in more than one lag bin if tolerances for different directions overlap.
 #' @param EmpVarMeth method for computing semivariances. The default is "MethMoment", the classical method of moments, which is just the average difference-squared within bin classes. "Covariance" computes covariance rather than semivariance, but may be more biased because it subtracts off the simple mean of the response variable. "RobustMedian" and "RobustMean" are robust estimators proposed by Cressie and Hawkins (1980). If v is a vector of all pairwise square-roots of absolute differences within a bin class, then RobustMedian computes median(v)^4/.457. "RobustMean" computes mean(v)^4/(.457 + .494/length(v)).
-#' @return A vector of distance matrices.
-#' @description Given a \link[SSN]{SpatialStreamNetwork-class} object, computes the Torgegram and the Empirical Semivariogram and provides the plots.
-#' @details This function works on objects of \link[SSN]{SpatialStreamNetwork-class}.
+#' @return A list of distance matrices.
+#' @description Given a \link[SSN]{SpatialStreamNetwork-class} object, computes the Torgegram (empirical semivariogram from the data based on hydrologic distance) and the empirical semivariogram from the data based on the Euclidean distance. It provides the plots.
 #' @references 
 #' Peterson, E.E. and Ver Hoef, J.M. (2010) A mixed-model moving-average approach to geostatistical modeling in stream networks. Ecology 91(3), 644–651.
 #' 
@@ -37,6 +36,7 @@ get_plots = function(ssn, ResponseName, Euclidean = FALSE,
                                    maxlag_EmpVar = maxlag_EmpVar, nlag_EmpVar = nlag_EmpVar, inc_EmpVar = inc_EmpVar, nlagcutoff_EmpVar = nlagcutoff_EmpVar, 
                                    directions = directions, tolerance = tolerance, EmpVarMeth = EmpVarMeth)
    par(mfrow=c(1,2))
+   plot.Torg(result$Torg, main = "Torgegram", ylab = "") 
    plot(c(0, max(result$EmpSemiVar$distance)), c(0, max(result$EmpSemiVar$gamma)),
         type = "n", xlab = "Euclidean Distance", ylab = "",
         main = "Empirical Semivariogram")
@@ -50,8 +50,8 @@ get_plots = function(ssn, ResponseName, Euclidean = FALSE,
    points(result$EmpSemiVar$distance,
           result$EmpSemiVar$gamma, pch = 19,
           cex = min.cex + cex.inc*result$EmpSemiVar$np/maxnp,
-          col = "orange")
-   plot(result$Torg, main = "Torgegram", ylab = "") 
+          col = "orangered")
+   
   }
   
   else {
