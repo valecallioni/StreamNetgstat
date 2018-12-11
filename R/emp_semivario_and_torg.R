@@ -82,13 +82,13 @@ emp_semivario_and_torg = function(ssn, ResponseName,
   Dists = NULL
   FCons = NULL
   Covp = NULL
-  mnz = mean(data[,ResponseName], na.rm = TRUE)
+  mnz = mean(obs_data, na.rm = TRUE)
   nsofar = 0
   nObs = table(ssn@obspoints@SSNPoints[[1]]@network.point.coords[,"NetworkID"])
   for (i in net_num){
-    Ds = t(matrices$distHydro[(nsofar+1):nObs[i], (nsofar+1):nObs[i]])
-    FCs = matrices$flowMat[(nsofar+1):nObs[i], (nsofar+1):nObs[i]] + diag(1, nObs[i])
-    zs = obs_data[(nsofar+1):nObs[i],1]
+    Ds = t(matrices$distHydro[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])]) + matrices$distHydro[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])]
+    FCs = matrices$flowMat[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])] # + diag(1, nObs[i])
+    zs = obs_data[(nsofar+1):(nsofar + nObs[i])]
     nsofar = nsofar + nObs[i]
     rs = zs - mnz
     CP = rs%o%rs

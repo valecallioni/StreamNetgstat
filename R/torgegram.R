@@ -65,11 +65,6 @@ torgegram = function(ssn, ResponseName, maxlag = NULL, nlag = 6,
   
   matrices = .Call("createHydroDistanceMatrices", net_num, bin_tables, network_data, obs_points)
   
-  maxlag = 50000
-  nlag = 20
-  inc = 0
-  nlagcutoff = 15
-  
   Dif2s = NULL
   sqrtDifs = NULL
   Dists = NULL
