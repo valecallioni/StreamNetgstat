@@ -4,7 +4,8 @@
 \alias{get_SSN_model}
 \title{Fit a variance component model for a Spatial Stream Network object}
 \usage{
-get_SSN_model(ssn, varNames, weightVar, CorModels, useNugget = TRUE)
+get_SSN_model(ssn, varNames, weightVar, CorModels, useNugget = TRUE,
+  matrices = NULL)
 }
 \arguments{
 \item{ssn}{a \link[SSN]{SpatialStreamNetwork-class} object.}

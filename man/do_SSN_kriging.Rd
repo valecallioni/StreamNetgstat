@@ -5,7 +5,7 @@
 \title{Make prediction on a Spatial Stream Network object}
 \usage{
 do_SSN_kriging(ssn, varNames, weightVar, predpts, CorModels,
-  useNugget = TRUE, theta, covMat)
+  useNugget = TRUE, theta, covMat, matrices = NULL)
 }
 \arguments{
 \item{ssn}{a \link[SSN]{SpatialStreamNetwork-class} object.}
