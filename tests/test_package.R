@@ -10,14 +10,13 @@ library(StreamNetgstat)
 #source("~/Desktop/OneDrive - Politecnico di Milano/PACS/Programming/PACSProject/StreamNetgstat/R/get_SSN_model.R")
 source("~/Desktop/OneDrive - Politecnico di Milano/PACS/Programming/PACSProject/StreamNetgstat/tests/funSSNPackage.R")
 
-library(SSN)
 # file.copy(system.file(file.path("lsndata", "MiddleFork04.ssn"), package = "SSN"),
 #           to = tempdir(), recursive = TRUE, copy.mode = FALSE)
 # setwd(tempdir())
 # ssn = importSSN("MiddleFork04.ssn", predpts = "pred1km")
 
 setwd("~/Desktop/OneDrive - Politecnico di Milano/PACS/Programming/PACSProject/Data")
-ssn = importSSN("MissouriHW.ssn")
+ssn = importSSN("MissouriHW.ssn", predpts = "preds")
 
 
 
@@ -45,3 +44,9 @@ benchmark(
                              CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid")),
   RPackage = funSSNPackage(ssn, formula = STREAM_AUG ~ ELEV, predname = NULL)
 )
+
+
+##### Create distance-matrices - Fit model - Do kriging
+dist_matrices = get_plots(ssn, "STREAM_AUG", F)
+model = get_SSN_model(ssn, varNames = c("STREAM_AUG", "ELEV"), weightVar = "afvArea", CorModels = c("LinearSill.tailup", "Exponential.taildown"), matrices = dist_matrices)
+kriging = do_SSN_kriging(ssn, varNames = c("STREAM_AUG", "ELEV"), weightVar = "afvArea", predpts = "preds", CorModels = c("LinearSill.tailup", "Exponential.taildown"), theta = model$optTheta, covMat = model$covMatrix, matrices = dist_matrices)
