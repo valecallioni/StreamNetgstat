@@ -23,6 +23,8 @@ do_SSN_kriging(ssn, varNames, weightVar, predpts, CorModels,
 \item{theta}{vector of the parameters values used for computing the covariance matrix.}
 
 \item{covMat}{covariance matrix of the observed points.}
+
+\item{matrices}{a vector of matrices, containing the flow-connection binary matrix, the hydrologic distance matrix and, not necessarily, the Euclidean distance matrix, returned by the function \link[StreamNetgstat]{get_plots}.  These matrices consider the relationships between observed points.}
 }
 \value{
 A list with the following fields:
