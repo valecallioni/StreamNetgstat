@@ -19,7 +19,7 @@
 #' @useDynLib StreamNetgstat
 #' @export
 
-get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE){
+get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE, matrices = NULL){
  
   # Check to see whether distance folder exists...
   if (!file.exists(file.path(ssn@path, "distance"))) {
@@ -94,7 +94,7 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE){
   # to the C++ function
   
   result = .Call("getSSNModel", net_num, bin_tables, network_data,
-                 obs_points, obs_data, c(varNames, weightVar), CorModels, useNugget)
+                 obs_points, obs_data, c(varNames, weightVar), CorModels, useNugget, matrices)
   return (result)
   
   

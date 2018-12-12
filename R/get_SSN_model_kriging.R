@@ -21,7 +21,7 @@
 #' @useDynLib StreamNetgstat
 #' @export
 
-get_SSN_model_kriging = function(ssn, varNames, weightVar, predpts, CorModels, useNugget = TRUE){
+get_SSN_model_kriging = function(ssn, varNames, weightVar, predpts, CorModels, useNugget = TRUE, matrices = NULL){
 
     # Check to see whether distance folder exists...
     if (!file.exists(file.path(ssn@path, "distance"))) {
@@ -129,7 +129,7 @@ get_SSN_model_kriging = function(ssn, varNames, weightVar, predpts, CorModels, u
   # to the C++ function
   
   result = .Call("getSSNModelKriging", net_num, bin_tables, network_data,
-                 obs_points, pred_points, obs_data, pred_data, c(varNames, weightVar), CorModels, useNugget)
+                 obs_points, pred_points, obs_data, pred_data, c(varNames, weightVar), CorModels, useNugget, matrices)
     
   return (result)
   

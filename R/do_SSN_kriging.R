@@ -23,7 +23,7 @@
 #' @export
 
 do_SSN_kriging = function(ssn, varNames, weightVar, predpts, CorModels, useNugget = TRUE,
-                          theta, covMat){
+                          theta, covMat, matrices = NULL){
 
   # -------------------------------------------------------------
   # Preprocessing of the data
@@ -94,7 +94,7 @@ do_SSN_kriging = function(ssn, varNames, weightVar, predpts, CorModels, useNugge
   
   result = .Call("doSSNKriging", net_num, bin_tables, network_data,
                  obs_points, pred_points, obs_data, pred_data, c(varNames, weightVar), CorModels, useNugget,
-                 theta, covMat)
+                 theta, covMat, matrices)
   
   return (result)
   
