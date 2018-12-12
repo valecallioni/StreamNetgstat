@@ -27,11 +27,68 @@ useNugget(useNugg), nModels(n_models){
   if (euclidModel) maxDistGeo = 4.0*distGeo->maxCoeff();
 }
 
+Optimizer::Optimizer(std::unique_ptr<TailUpModel>& tailup_ptr, std::unique_ptr<TailDownModel>& taildown_ptr, std::unique_ptr<EuclideanModel>& euclid_ptr, bool useNugg, const std::vector<double>& bounds,
+  int n_models, const Eigen::VectorXd& y, const Eigen::MatrixXd& designMat, const Eigen::MatrixXd& N, const Eigen::MatrixXd& D, const Eigen::MatrixXd& wMat, const Eigen::MatrixXi& connMat):
+useNugget(useNugg), nModels(n_models){
+
+  z = std::make_shared<Eigen::VectorXd>(y);
+  X = std::make_shared<Eigen::MatrixXd>(designMat);
+  distHydro = std::make_shared<Eigen::MatrixXd>(N);
+  if (D.rows() > 0) distGeo = std::make_shared<Eigen::MatrixXd>(D);
+  weightMat = std::make_shared<Eigen::MatrixXd>(wMat);
+  flowMat = std::make_shared<Eigen::MatrixXi>(connMat);
+
+  tailUpModel = std::move(tailup_ptr);
+  tailDownModel = std::move(taildown_ptr);
+  euclidModel = std::move(euclid_ptr);
+
+  int j = 0;
+  if (j < nModels*2 && tailUpModel){
+    bound_up = bounds[j];
+    j++;
+  }
+  if (j < nModels*2 && tailDownModel){
+    bound_down = bounds[j];
+    j++;
+  }
+  if (j < nModels*2 && euclidModel){
+    bound_eu = bounds[j];
+    j++;
+  }
+
+  n = X->rows();
+  p = X->cols()-1;
+
+  optimTheta.resize(nModels*2 + 1*useNugget);
+  betaValues.resize(p+1);
+  covMat.resize(n,n);
+  covMat.fill(0.0);
+
+  maxDistHydro = 4.0*distHydro->maxCoeff();
+  if (euclidModel) maxDistGeo = 4.0*distGeo->maxCoeff();
+}
+
+void Optimizer::setBounds(const std::vector<double>& bounds){
+  int j = 0;
+  if (j < nModels*2 && tailUpModel){
+    bound_up = bounds[j];
+    j++;
+  }
+  if (j < nModels*2 && tailDownModel){
+    bound_down = bounds[j];
+    j++;
+  }
+  if (j < nModels*2 && euclidModel){
+    bound_eu = bounds[j];
+    j++;
+  }
+}
+
 bool Optimizer::updateParam(const Eigen::VectorXd& theta){
   bool control = true;
   int j = 0;
   if (j < nModels*2 && tailUpModel){
-    if (std::exp(theta(j)) < 0.0 || std::exp(theta(j)) > 2.0*2) control = false;
+    if (std::exp(theta(j)) < 0.0 || std::exp(theta(j)) > bound_up) control = false;
     tailUpModel->setSigma2(std::exp(theta(j)));
     j++;
     if (std::exp(theta(j)) > maxDistHydro || std::exp(theta(j)) < 0.0) control = false;
@@ -39,7 +96,7 @@ bool Optimizer::updateParam(const Eigen::VectorXd& theta){
     j++;
   }
   if (j < nModels*2 && tailDownModel){
-    if (std::exp(theta(j)) < 0.0  || std::exp(theta(j)) > 3.0*2) control = false;
+    if (std::exp(theta(j)) < 0.0  || std::exp(theta(j)) > bound_down) control = false;
     tailDownModel->setSigma2(std::exp(theta(j)));
     j++;
     if (std::exp(theta(j)) > maxDistHydro || std::exp(theta(j)) < 0.0) control = false;
@@ -47,7 +104,7 @@ bool Optimizer::updateParam(const Eigen::VectorXd& theta){
     j++;
   }
   if (j < nModels*2 && euclidModel){
-    if (std::exp(theta(j)) < 0.0  || std::exp(theta(j)) > 15.0*2) control = false;
+    if (std::exp(theta(j)) < 0.0  || std::exp(theta(j)) > bound_eu) control = false;
     euclidModel->setSigma2(std::exp(theta(j)));
     j++;
     if (std::exp(theta(j)) > maxDistGeo || std::exp(theta(j)) < 0.0) control = false;

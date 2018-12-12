@@ -152,7 +152,8 @@ RcppExport SEXP createDistanceMatrices (SEXP net_num, SEXP bin_tables, SEXP netw
 
 // CREATE MODEL
 RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
-  SEXP obs_points, SEXP obs_data, SEXP var_names, SEXP model_names, SEXP nugg, SEXP dist_matrices) {
+  SEXP obs_points, SEXP obs_data, SEXP var_names, SEXP model_names, SEXP nugg,
+  SEXP dist_matrices, SEXP model_bounds) {
 
     BEGIN_RCPP
 
@@ -294,11 +295,16 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
 
     // -------------------------------------------------------------------------
     // MODEL FITTING
+    Rcpp::Nullable<std::vector<double>> vecBounds(model_bounds);
+    std::vector<double> bounds;
+    if(vecBounds.isNotNull())
+      bounds = Rcpp::as<std::vector<double>> (model_bounds);
+
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, nuggetEffect, up+down+euclid,
       dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>());
+    solver.setBounds(bounds);
 
     Rcpp::Rcout << "Model fitting \n";
-    //Eigen::VectorXd theta = Rcpp::as<Eigen::VectorXd>(param_opt);
     solver.glmssn();
 
     Rcpp::List result = Rcpp::List::create(Rcpp::Named("optTheta") = solver.getOptimTheta(),
@@ -510,7 +516,7 @@ RcppExport SEXP doSSNKriging (SEXP net_num, SEXP bin_tables, SEXP network_data, 
 
 // CREATE MODEL and DO KRIGING
 RcppExport SEXP getSSNModelKriging (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP obs_points, SEXP pred_points,
-  SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names, SEXP nugg, SEXP dist_matrices) {
+  SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names, SEXP nugg, SEXP dist_matrices, SEXP model_bounds) {
 
     BEGIN_RCPP
 
@@ -656,17 +662,6 @@ RcppExport SEXP getSSNModelKriging (SEXP net_num, SEXP bin_tables, SEXP network_
 
     //Dataframe of the prediction points (without the response variable)
     Dataframe dataPred(covNames, Rcpp::as<Eigen::MatrixXd> (pred_data));
-    // // Matrices of prediction points only, about connection, distances and weight built using block matrices
-    // Eigen::MatrixXd weightMatPP(dataPred.computeWeightMat(weightVar));
-    // Eigen::MatrixXd flowMatPP(nPredTot, nPredTot);
-    // Eigen::MatrixXd distHydroPP(nPredTot, nPredTot);
-    // Eigen::MatrixXd distGeoPP(nPredTot, nPredTot);
-    // matrices = helpers::createDistMatrices("pred", networks, nPredTot);
-    // flowMatPP = matrices[0];
-    // distHydroPP = matrices[1];
-    // distGeoPP = matrices[2];
-    // matrices.clear();
-    // weightMatPP = weightMatPP.cwiseProduct(flowMatPP);
 
 
     //Matrices about connection, distances and weight between observed and predicion points built using block matrices
@@ -704,8 +699,14 @@ RcppExport SEXP getSSNModelKriging (SEXP net_num, SEXP bin_tables, SEXP network_
 
     // -------------------------------------------------------------------------
     // MODEL FITTING
+    Rcpp::Nullable<std::vector<double>> vecBounds(model_bounds);
+    std::vector<double> bounds;
+    if(vecBounds.isNotNull())
+      bounds = Rcpp::as<std::vector<double>> (model_bounds);
+
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, nuggetEffect, up+down+euclid,
       dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>());
+    solver.setBounds(bounds);
 
     Rcpp::Rcout << "Model fitting \n";
     solver.glmssn();

@@ -36,6 +36,9 @@ private:
   std::unique_ptr<TailUpModel> tailUpModel;
   std::unique_ptr<TailDownModel> tailDownModel;
   std::unique_ptr<EuclideanModel> euclidModel;
+  double bound_up = 1e+4;
+  double bound_down = 1e+4;
+  double bound_eu = 1e+4;
 
   Eigen::VectorXd optimTheta;
   Eigen::VectorXd betaValues;
@@ -54,6 +57,8 @@ private:
 public:
   Optimizer(std::unique_ptr<TailUpModel>& tailup_ptr, std::unique_ptr<TailDownModel>& taildown_ptr, std::unique_ptr<EuclideanModel>& euclid_ptr, bool useNugg, int n_models,
     const Eigen::VectorXd& y, const Eigen::MatrixXd& designMat, const Eigen::MatrixXd& N, const Eigen::MatrixXd& D, const Eigen::MatrixXd& wMat, const Eigen::MatrixXi& connMat);
+  Optimizer(std::unique_ptr<TailUpModel>& tailup_ptr, std::unique_ptr<TailDownModel>& taildown_ptr, std::unique_ptr<EuclideanModel>& euclid_ptr, bool useNugg, const std::vector<double>& bounds,
+    int n_models, const Eigen::VectorXd& y, const Eigen::MatrixXd& designMat, const Eigen::MatrixXd& N, const Eigen::MatrixXd& D, const Eigen::MatrixXd& wMat, const Eigen::MatrixXi& connMat);
 
   const Eigen::VectorXd& getOptimTheta() const {return optimTheta;};
   const Eigen::VectorXd& getBeta() const {return betaValues;};
@@ -61,6 +66,7 @@ public:
   std::unique_ptr<TailUpModel>& getTailUp() {return tailUpModel;};
   std::unique_ptr<TailDownModel>& getTailDown() {return tailDownModel;};
   std::unique_ptr<EuclideanModel>& getEuclid() {return euclidModel;};
+  void setBounds(const std::vector<double>& bounds);
 
   bool updateParam(const Eigen::VectorXd& theta);
   Eigen::VectorXd thetaInit();
