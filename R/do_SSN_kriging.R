@@ -8,6 +8,7 @@
 #' @param useNugget If \code{FALSE} the nugget effect is not included in the model. Default to \code{TRUE}.
 #' @param theta vector of the parameters values used for computing the covariance matrix.
 #' @param covMat covariance matrix of the observed points.
+#' @param matrices a vector of matrices, containing the flow-connection binary matrix, the hydrologic distance matrix and, not necessarily, the Euclidean distance matrix, returned by the function \link[StreamNetgstat]{get_plots}.  These matrices consider the relationships between observed points.
 #' @return A list with the following fields:
 #' \item{\code{optTheta}}{ vector of the parameters values of the fitted model. }
 #' \item{\code{betaValues}}{ vector of the beta values of the fitted model. }

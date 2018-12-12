@@ -5,6 +5,8 @@
 #' @param weightVar a string indicating the name of the variable to compute the spatial weights.
 #' @param CorModels a vector of strings, the names of the covariance models.
 #' @param useNugget If \code{FALSE} the nugget effect is not included in the model. Default to \code{TRUE}.
+#' @param matrices a vector of matrices, containing the flow-connection binary matrix, the hydrologic distance matrix and, not necessarily, the Euclidean distance matrix, returned by the function \link[StreamNetgstat]{get_plots}.  These matrices consider the relationships between observed points.
+#' @param bounds a vector of doubles, representing the bounds for the parsills of the models considered. If a bound is required, all the models should have one. The highest can be set at 1e+04.
 #' @return A list with the following fields:
 #' \item{\code{optTheta}}{ vector of the parameters values of the fitted model. }
 #' \item{\code{betaValues}}{ vector of the beta values of the fitted model. }
@@ -19,7 +21,7 @@
 #' @useDynLib StreamNetgstat
 #' @export
 
-get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE, matrices = NULL){
+get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE, matrices = NULL, bounds = NULL){
  
   # Check to see whether distance folder exists...
   if (!file.exists(file.path(ssn@path, "distance"))) {
@@ -94,7 +96,7 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE, 
   # to the C++ function
   
   result = .Call("getSSNModel", net_num, bin_tables, network_data,
-                 obs_points, obs_data, c(varNames, weightVar), CorModels, useNugget, matrices)
+                 obs_points, obs_data, c(varNames, weightVar), CorModels, useNugget, matrices, bounds)
   return (result)
   
   
