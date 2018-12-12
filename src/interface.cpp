@@ -295,14 +295,15 @@ RcppExport SEXP getSSNModel (SEXP net_num, SEXP bin_tables, SEXP network_data,
 
     // -------------------------------------------------------------------------
     // MODEL FITTING
-    Rcpp::Nullable<std::vector<double>> vecBounds(model_bounds);
-    std::vector<double> bounds;
-    if(vecBounds.isNotNull())
-      bounds = Rcpp::as<std::vector<double>> (model_bounds);
-
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, nuggetEffect, up+down+euclid,
       dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>());
-    solver.setBounds(bounds);
+
+    Rcpp::Nullable<std::vector<double>> vecBounds(model_bounds);
+    std::vector<double> bounds;
+    if(vecBounds.isNotNull()){
+      bounds = Rcpp::as<std::vector<double>> (model_bounds);
+      solver.setBounds(bounds);
+    }
 
     Rcpp::Rcout << "Model fitting \n";
     solver.glmssn();
@@ -699,14 +700,15 @@ RcppExport SEXP getSSNModelKriging (SEXP net_num, SEXP bin_tables, SEXP network_
 
     // -------------------------------------------------------------------------
     // MODEL FITTING
-    Rcpp::Nullable<std::vector<double>> vecBounds(model_bounds);
-    std::vector<double> bounds;
-    if(vecBounds.isNotNull())
-      bounds = Rcpp::as<std::vector<double>> (model_bounds);
-
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, nuggetEffect, up+down+euclid,
       dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>());
-    solver.setBounds(bounds);
+
+    Rcpp::Nullable<std::vector<double>> vecBounds(model_bounds);
+    std::vector<double> bounds;
+    if(vecBounds.isNotNull()){
+      bounds = Rcpp::as<std::vector<double>> (model_bounds);
+      solver.setBounds(bounds);
+    }
 
     Rcpp::Rcout << "Model fitting \n";
     solver.glmssn();
