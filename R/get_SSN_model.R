@@ -94,8 +94,8 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE, 
   obs_points = obs_points[order(obs_points$NetworkID),]
 
   # Create a data.frame for the observed points data
-  if (!is.null(singleNet)) obs_data = ssn@obspoints@SSNPoints[[1]]@point.data[which(ssn@obspoints@SSNPoints[[1]]@point.data$netID == singleNet),]
-  else obs_data = ssn@obspoints@SSNPoints[[1]]@point.data
+  obs_data = ssn@obspoints@SSNPoints[[1]]@point.data
+  if (!is.null(singleNet)) obs_data = obs_data[which(obs_data$netID == singleNet),]
   indx <- sapply(obs_data, is.factor)
   obs_data[indx] <- lapply(obs_data[indx], function(x) as.numeric(as.character(x)))
   obs_data = obs_data[order(obs_data$netID, obs_data$pid),c(varNames, weightVar)]
