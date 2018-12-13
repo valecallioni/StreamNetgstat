@@ -1242,7 +1242,7 @@ RcppExport SEXP getSSNModelKriging_SingleNet (SEXP bin_table, SEXP network_data,
     Rcpp::Nullable<std::vector<Eigen::MatrixXd>> vecMatrices(dist_matrices);
     std::vector<Eigen::MatrixXd> distMatrices;
     // Network creation
-    Network network(0, obsPoints, segments);
+    Network network(0, obsPoints, predPoints, segments);
     obsPoints.clear();
     segments.clear();
     if(vecMatrices.isNotNull()){
