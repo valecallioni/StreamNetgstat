@@ -82,7 +82,7 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE, 
   if (!is.null(singleNet)) network_data = network_data[which(network_data$NetworkID == singleNet),]
   indx <- sapply(network_data, is.factor)
   network_data[indx] <- lapply(network_data[indx], function(x) as.numeric(as.character(x)))
-  network_data = data.matrix(network_data[order(network_data$NetworkID, network_data$SegmentID),])
+  network_data = network_data[order(network_data$NetworkID, network_data$SegmentID),]
 
 
   # Create a data.frame for the observed points attributes
@@ -91,21 +91,23 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE, 
   if (!is.null(singleNet)) obs_points = obs_points[which(obs_points$NetworkID == singleNet),]
   indx <- sapply(obs_points, is.factor)
   obs_points[indx] <- lapply(obs_points[indx], function(x) as.numeric(as.character(x)))
-  obs_points = data.matrix(obs_points[order(obs_points$NetworkID),])
+  obs_points = obs_points[order(obs_points$NetworkID),]
 
   # Create a data.frame for the observed points data
   if (!is.null(singleNet)) obs_data = ssn@obspoints@SSNPoints[[1]]@point.data[which(ssn@obspoints@SSNPoints[[1]]@point.data$netID == singleNet),]
   else obs_data = ssn@obspoints@SSNPoints[[1]]@point.data
   indx <- sapply(obs_data, is.factor)
   obs_data[indx] <- lapply(obs_data[indx], function(x) as.numeric(as.character(x)))
-  obs_data = data.matrix(obs_data[order(obs_data$netID, obs_data$pid),c(varNames, weightVar)])
+  obs_data = obs_data[order(obs_data$netID, obs_data$pid),c(varNames, weightVar)]
   
   if (!is.null(singleNet))
-    result = .Call("getSSNModel_SingleNet", bin.table, network_data,
-                   obs_points, obs_data, c(varNames, weightVar), CorModels, useNugget, matrices, bounds)
+    result = .Call("getSSNModel_SingleNet", bin.table, data.matrix(network_data),
+                   data.matrix(obs_points), data.matrix(obs_data), c(varNames, weightVar), 
+                   CorModels, useNugget, matrices, bounds)
   else
-    result = .Call("getSSNModel_MultipleNets", net_num, bin_tables, network_data,
-                 obs_points, obs_data, c(varNames, weightVar), CorModels, useNugget, matrices, bounds)
+    result = .Call("getSSNModel_MultipleNets", net_num, bin_tables, data.matrix(network_data),
+                   data.matrix(obs_points), data.matrix(obs_data), c(varNames, weightVar), 
+                   CorModels, useNugget, matrices, bounds)
   
   return (list(modelParam = result$optTheta,
                modelBeta = result$betaValues))
