@@ -10,7 +10,7 @@
 #' @param theta vector of the parameters values used for computing the covariance matrix.
 #' @param covMat covariance matrix of the observed points.
 #' @param matrices a vector of matrices, containing the flow-connection binary matrix, the hydrologic distance matrix and, not necessarily, the Euclidean distance matrix, returned by the function \link[StreamNetgstat]{get_plots}.  These matrices consider the relationships between observed points.
-#' @return \code{ssn.object}}{ updated \link[SSN]{SpatialStreamNetwork-class} object, with predicted values included }
+#' @return \code{ssn.object}{ updated \link[SSN]{SpatialStreamNetwork-class} object, with predicted values included }
 #' @description Given a \link[SSN]{SpatialStreamNetwork-class} object and the covariance parameters values, makes predictions using universal kriging.
 #' @details This function calculates prediction values and kriging variance for prediction sites based on the results of a linear model for the \link[SSN]{SpatialStreamNetwork-class} object.
 #' @references 
