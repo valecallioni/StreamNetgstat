@@ -5,7 +5,7 @@
 \title{Make prediction on a Spatial Stream Network object}
 \usage{
 do_SSN_kriging(ssn, varNames, weightVar, predpts, CorModels,
-  useNugget = TRUE, theta, covMat, matrices = NULL)
+  useNugget = TRUE, theta, covMat, singleNet = NULL, matrices = NULL)
 }
 \arguments{
 \item{ssn}{a \link[SSN]{SpatialStreamNetwork-class} object.}
@@ -24,14 +24,9 @@ do_SSN_kriging(ssn, varNames, weightVar, predpts, CorModels,
 
 \item{covMat}{covariance matrix of the observed points.}
 
+\item{singleNet}{an interger, indicating the network ID that is to be analysed. Default to \code{NULL}, so that the analysis is carried on the entire dataset.}
+
 \item{matrices}{a vector of matrices, containing the flow-connection binary matrix, the hydrologic distance matrix and, not necessarily, the Euclidean distance matrix, returned by the function \link[StreamNetgstat]{get_plots}.  These matrices consider the relationships between observed points.}
-}
-\value{
-A list with the following fields:
-\item{\code{optTheta}}{ vector of the parameters values of the fitted model. }
-\item{\code{betaValues}}{ vector of the beta values of the fitted model. }
-\item{\code{covMatrix}}{ covariance matrix of the fitted model. }
-\item{\code{predictions}}{ 2-column matrix containing the predicted values and the kriging variance. }
 }
 \description{
 Given a \link[SSN]{SpatialStreamNetwork-class} object and the covariance parameters values, makes predictions using universal kriging.

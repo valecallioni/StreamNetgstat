@@ -6,7 +6,8 @@
 and make prediction}
 \usage{
 get_SSN_model_kriging(ssn, varNames, weightVar, predpts, CorModels,
-  useNugget = TRUE, matrices = NULL, bounds = NULL)
+  useNugget = TRUE, singleNet = NULL, matrices = NULL,
+  bounds = NULL)
 }
 \arguments{
 \item{ssn}{a \link[SSN]{SpatialStreamNetwork-class} object.}
@@ -21,16 +22,17 @@ get_SSN_model_kriging(ssn, varNames, weightVar, predpts, CorModels,
 
 \item{useNugget}{If \code{FALSE} the nugget effect is not included in the model. Default to \code{TRUE}.}
 
+\item{singleNet}{an interger, indicating the network ID that is to be analysed. Default to \code{NULL}, so that the analysis is carried on the entire dataset.}
+
 \item{matrices}{a vector of matrices, containing the flow-connection binary matrix, the hydrologic distance matrix and, not necessarily, the Euclidean distance matrix, returned by the function \link[StreamNetgstat]{get_plots}. These matrices consider the relationships between observed points.}
 
 \item{bounds}{a vector of doubles, representing the bounds for the parsills of the models considered. If a bound is required, all the models should have one. The highest can be set at 1e+04.}
 }
 \value{
 A list with the following fields:
-\item{\code{optTheta}}{ vector of the parameters values of the fitted model. }
-\item{\code{betaValues}}{ vector of the beta values of the fitted model. }
-\item{\code{covMatrix}}{ covariance matrix of the fitted model. }
-\item{\code{predictions}}{ 2-column matrix containing the predicted values and the kriging variance. }
+\item{\code{ssn.object}}{ updated \link[SSN]{SpatialStreamNetwork-class} object, with predicted values included. }
+\item{\code{modelParam}}{ vector of the parameters values of the fitted model. }
+\item{\code{modelBeta}}{ vector of the beta values of the fitted model. }
 }
 \description{
 Given a \link[SSN]{SpatialStreamNetwork-class} object, fits a linear model using a variance component approach. Then it makes predictions using universal kriging.
