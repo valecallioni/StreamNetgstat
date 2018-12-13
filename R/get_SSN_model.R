@@ -5,12 +5,12 @@
 #' @param weightVar a string indicating the name of the variable to compute the spatial weights.
 #' @param CorModels a vector of strings, the names of the covariance models.
 #' @param useNugget If \code{FALSE} the nugget effect is not included in the model. Default to \code{TRUE}.
+#' @param singleNet an interger, indicating the network ID that is to be analysed. Default to \code{NULL}, so that the analysis is carried on the entire dataset.
 #' @param matrices a vector of matrices, containing the flow-connection binary matrix, the hydrologic distance matrix and, not necessarily, the Euclidean distance matrix, returned by the function \link[StreamNetgstat]{get_plots}.  These matrices consider the relationships between observed points.
 #' @param bounds a vector of doubles, representing the bounds for the parsills of the models considered. If a bound is required, all the models should have one. The highest can be set at 1e+04.
 #' @return A list with the following fields:
-#' \item{\code{optTheta}}{ vector of the parameters values of the fitted model. }
-#' \item{\code{betaValues}}{ vector of the beta values of the fitted model. }
-#' \item{\code{covMatrix}}{ covariance matrix of the fitted model. }
+#' \item{\code{modelParam}}{ vector of the parameters values of the fitted model. }
+#' \item{\code{modelBeta}}{ vector of the beta values of the fitted model. }
 #' @description Given a \link[SSN]{SpatialStreamNetwork-class} object, fits a linear model using a variance component approach.
 #' @details This function works on objects of \link[SSN]{SpatialStreamNetwork-class} to fit generalized linear models with spatially autocorrelated errors using normal likelihood methods.
 #' @references 
@@ -21,7 +21,7 @@
 #' @useDynLib StreamNetgstat
 #' @export
 
-get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE, matrices = NULL, bounds = NULL){
+get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE, singleNet = NULL, matrices = NULL, bounds = NULL){
  
   # Check to see whether distance folder exists...
   if (!file.exists(file.path(ssn@path, "distance"))) {
@@ -52,6 +52,13 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE, 
   # Preprocessing of the data
 
   net_num = as.numeric(levels(ssn@network.line.coords[,"NetworkID"]))
+  
+  if (!is.null(singleNet)){
+    if (!is.element(singleNet, net_num))
+      stop("Network selected not valid")
+    else
+      net_num = singleNet
+  }
 
   # Create a list for the binaryId tables (one per network)
   bin_tables = list()
@@ -71,34 +78,37 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE, 
   }
 
   # Create a data.frame for the segments attributes
-  network_data = ssn@network.line.coords
+  network_data = ssn@network.line.coords  
+  if (!is.null(singleNet)) network_data = network_data[which(network_data$NetworkID == singleNet),]
   indx <- sapply(network_data, is.factor)
   network_data[indx] <- lapply(network_data[indx], function(x) as.numeric(as.character(x)))
   network_data = data.matrix(network_data[order(network_data$NetworkID, network_data$SegmentID),])
 
 
-
   # Create a data.frame for the observed points attributes
   obs_points = cbind(ssn@obspoints@SSNPoints[[1]]@network.point.coords,
                          ssn@obspoints@SSNPoints[[1]]@point.coords)
+  if (!is.null(singleNet)) obs_points = obs_points[which(obs_points$NetworkID == singleNet),]
   indx <- sapply(obs_points, is.factor)
   obs_points[indx] <- lapply(obs_points[indx], function(x) as.numeric(as.character(x)))
   obs_points = data.matrix(obs_points[order(obs_points$NetworkID),])
 
   # Create a data.frame for the observed points data
-  obs_data = ssn@obspoints@SSNPoints[[1]]@point.data
+  if (!is.null(singleNet)) obs_data = ssn@obspoints@SSNPoints[[1]]@point.data[which(ssn@obspoints@SSNPoints[[1]]@point.data$netID == singleNet),]
+  else obs_data = ssn@obspoints@SSNPoints[[1]]@point.data
   indx <- sapply(obs_data, is.factor)
   obs_data[indx] <- lapply(obs_data[indx], function(x) as.numeric(as.character(x)))
   obs_data = data.matrix(obs_data[order(obs_data$netID, obs_data$pid),c(varNames, weightVar)])
   
-  
-  # Pass bin_table, network_data, obs_points, pred_points, obs_data, pred_data, c(varNames, weightVar), CorModels
-  # to the C++ function
-  
-  result = .Call("getSSNModel", net_num, bin_tables, network_data,
+  if (!is.null(singleNet))
+    result = .Call("getSSNModel_SingleNet", bin.table, network_data,
+                   obs_points, obs_data, c(varNames, weightVar), CorModels, useNugget, matrices, bounds)
+  else
+    result = .Call("getSSNModel_MultipleNets", net_num, bin_tables, network_data,
                  obs_points, obs_data, c(varNames, weightVar), CorModels, useNugget, matrices, bounds)
-  return (result)
   
+  return (list(modelParam = result$optTheta,
+               modelBeta = result$betaValues))
   
   # colnames(bin_table) = list of vectors (one per network) of binaryIDs
   # colnames(network_data) = c("NetworkID", SegmentID", "DistanceUpstream")
