@@ -37,19 +37,6 @@ void Points::computeDistances(bool geo, const std::map<std::string, StreamSegmen
             k++;
 
         if (k == n1 || k == n2) { // flow-connection
-
-          if (i == 0 && j == 2){
-            std::cout << "p1 = ";
-            for (auto c: p1)
-              std::cout << c;
-            std::cout << ", n1 = " << n1 << std::endl;
-            std::cout << "p2 = ";
-            for (auto c: p2)
-              std::cout << c;
-            std::cout << ", n2 = " << n2 << std::endl;
-            std::cout << "k = " << k << std::endl;
-          }
-
             flowMat(i,j) = 1;
             flowMat(j,i) = 1;
             if (n2 == n1){
@@ -81,8 +68,6 @@ void Points::computeDistances(bool geo, const std::map<std::string, StreamSegmen
         }
       }
   }
-
-  std::cout << "distHydro: \n" << distHydro << std::endl;
 
 }
 

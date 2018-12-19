@@ -110,7 +110,8 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE, 
                    CorModels, useNugget, matrices, bounds)
   
   return (list(modelParam = result$optTheta,
-               modelBeta = result$betaValues))
+               modelBeta = result$betaValues,
+               modelCovariance = result$covMatrix))
   
   # colnames(bin_table) = list of vectors (one per network) of binaryIDs
   # colnames(network_data) = c("NetworkID", SegmentID", "DistanceUpstream")
