@@ -74,7 +74,7 @@ emp_semivario_and_torg = function(ssn, ResponseName,
   obs_data = data.matrix(obs_data[order(obs_data$netID, obs_data$pid),ResponseName])
   
   
-  matrices = .Call("createDistanceMatrices", net_num, bin_tables, network_data, obs_points)
+  matrices = .Call("createDistanceMatrices_MultipleNets", net_num, bin_tables, network_data, obs_points)
 
   #----------------------
   # TORGEGRAM

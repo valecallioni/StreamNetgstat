@@ -63,7 +63,7 @@ torgegram = function(ssn, ResponseName, maxlag = NULL, nlag = 6,
   obs_data = obs_data[order(obs_data$netID, obs_data$pid),ResponseName]
   
   
-  matrices = .Call("createHydroDistanceMatrices", net_num, bin_tables, network_data, obs_points)
+  matrices = .Call("createHydroDistanceMatrices_MultipleNets", net_num, bin_tables, network_data, obs_points)
   
   Dif2s = NULL
   sqrtDifs = NULL

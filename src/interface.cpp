@@ -1086,7 +1086,7 @@ RcppExport SEXP doSSNKriging_SingleNet (SEXP bin_table, SEXP network_data, SEXP 
     Rcpp::Nullable<std::vector<Eigen::MatrixXd>> vecMatrices(dist_matrices);
     std::vector<Eigen::MatrixXd> distMatrices;
     // Network creation
-    Network network(0, obsPoints, segments);
+    Network network(0, obsPoints, predPoints, segments);
     obsPoints.clear();
     segments.clear();
     if(vecMatrices.isNotNull()){
@@ -1159,8 +1159,10 @@ RcppExport SEXP getSSNModelKriging_SingleNet (SEXP bin_table, SEXP network_data,
 
     BEGIN_RCPP
 
+
     // Creation of the factories related to the covariance models chosen
     std::vector<std::string> corModels = Rcpp::as<std::vector<std::string>> (model_names);
+
     tailup_factory::TailUpFactory& tailup_fac (tailup_factory::TailUpFactory::Instance());
     std::unique_ptr<TailUpModel> tmp_tailUpModel;
     taildown_factory::TailDownFactory& taildown_fac (taildown_factory::TailDownFactory::Instance());
@@ -1194,6 +1196,7 @@ RcppExport SEXP getSSNModelKriging_SingleNet (SEXP bin_table, SEXP network_data,
 
     // Stream segments storage
     Eigen::MatrixXd networkData = Rcpp::as<Eigen::MatrixXd> (network_data);
+
     std::vector<std::string> binTable = Rcpp::as<std::vector<std::string>> (bin_table);
     std::map<unsigned int, std::string> segmentsMap;
     std::vector<StreamSegment> segments;
@@ -1217,6 +1220,7 @@ RcppExport SEXP getSSNModelKriging_SingleNet (SEXP bin_table, SEXP network_data,
       p.setCoordinates(obsPointsMat(j,3), obsPointsMat(j,4));
       auto it = segmentsMap.find(obsPointsMat(j,1));
       p.setBinaryID(it->second);
+      std::cout << "j = " << j << ", binID = " << it->second << std::endl;
       obsPoints.push_back(p);
     }
     obsPointsMat.resize(0,0);

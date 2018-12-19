@@ -87,13 +87,6 @@ void Kriging::predict(){
     lambda = (*invV)*(Vpred.col(i) + (*Xobs)*invXVX*r);
 
     predData(i,0) = lambda.transpose() * (*z);
-
-    if ((parsill - lambda.transpose()*Vpred.col(i) + m.transpose()*(Xpred->row(i)).transpose()) < 0.0){
-      std::cout << "SE non valid. \n parsill = " << parsill << ", lambda*V = " << lambda.transpose()*Vpred.col(i);
-      std::cout << ", r*XVX*Xpred = " << m.transpose()*(Xpred->row(i)).transpose() << std::endl;
-      std::cout << "Vpred(i): \n " << Vpred.col(i) << std::endl;
-      std::cout << "r: \n" << r << std::endl;
-    }
     predData(i,1) = std::sqrt(parsill - lambda.transpose()*Vpred.col(i) + m.transpose()*(Xpred->row(i)).transpose());
   }
 
