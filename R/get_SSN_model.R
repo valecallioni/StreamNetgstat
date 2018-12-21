@@ -11,6 +11,7 @@
 #' @return A list with the following fields:
 #' \item{\code{modelParam}}{ vector of the parameters values of the fitted model. }
 #' \item{\code{modelBeta}}{ vector of the beta values of the fitted model. }
+#' \item{\code{modelCovariance}}{ covariance matrix of the fitted model. }
 #' @description Given a \link[SSN]{SpatialStreamNetwork-class} object, fits a linear model using a variance component approach.
 #' @details This function works on objects of \link[SSN]{SpatialStreamNetwork-class} to fit generalized linear models with spatially autocorrelated errors using normal likelihood methods.
 #' @references 
