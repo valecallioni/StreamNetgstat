@@ -97,7 +97,7 @@ do_SSN_kriging = function(ssn, varNames, weightVar, predpts, CorModels, useNugge
     pred_data[indx] <- lapply(pred_data[indx], function(x) as.numeric(as.character(x)))
     # locID_cpp = pred_data$locID
     order_data = order(pred_data$netID, pred_data$rid)
-    pred_data = pred_data[order(pred_data$netID, pred_data$rid),c(varNames[-1], weightVar)]
+    pred_data = pred_data[order_data,c(varNames[-1], weightVar)]
   }
   
   if (!is.null(singleNet)) {

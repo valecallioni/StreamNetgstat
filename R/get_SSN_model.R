@@ -101,14 +101,15 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE, 
   obs_data[indx] <- lapply(obs_data[indx], function(x) as.numeric(as.character(x)))
   obs_data = obs_data[order(obs_data$netID, obs_data$pid),c(varNames, weightVar)]
   
-  if (!is.null(singleNet))
+  if (!is.null(singleNet)) {
     result = .Call("getSSNModel_SingleNet", bin.table, data.matrix(network_data),
                    data.matrix(obs_points), data.matrix(obs_data), c(varNames, weightVar), 
-                   CorModels, useNugget, matrices, bounds)
-  else
+                   CorModels, useNugget, matrices, bounds) 
+  } else {
     result = .Call("getSSNModel_MultipleNets", net_num, bin_tables, data.matrix(network_data),
                    data.matrix(obs_points), data.matrix(obs_data), c(varNames, weightVar), 
-                   CorModels, useNugget, matrices, bounds)
+                   CorModels, useNugget, matrices, bounds) 
+  }
   
   return (list(modelParam = result$optTheta,
                modelBeta = result$betaValues,
