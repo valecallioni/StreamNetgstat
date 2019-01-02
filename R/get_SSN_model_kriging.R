@@ -160,8 +160,8 @@ get_SSN_model_kriging = function(ssn, varNames, weightVar, predpts, CorModels, u
                                                                    rep(NA,dim(ssn@predpoints@SSNPoints[[id_p]]@point.data)[1]),
                                                                    rep(NA,dim(ssn@predpoints@SSNPoints[[id_p]]@point.data)[1]))
   colnames(ssn@predpoints@SSNPoints[[id_p]]@point.data) = c(col_names, paste(varNames[1], "pred", sep="_"), paste(varNames[1], "SE", sep="_"))
-  ssn@predpoints@SSNPoints[[id_p]]@point.data[as.logical(id_rows), paste(varNames[1], "pred", sep="_")] = result$predictions[match(1:length(id_rows), order_data),1]
-  ssn@predpoints@SSNPoints[[id_p]]@point.data[as.logical(id_rows), paste(varNames[1], "se", sep="_")] = result$predictions[match(1:length(id_rows), order_data),2]
+  ssn@predpoints@SSNPoints[[id_p]]@point.data[id_rows, paste(varNames[1], "pred", sep="_")] = result$predictions[match(1:length(id_rows), order_data),1]
+  ssn@predpoints@SSNPoints[[id_p]]@point.data[id_rows, paste(varNames[1], "se", sep="_")] = result$predictions[match(1:length(id_rows), order_data),2]
     
   
   return (list(ssn.object = ssn, 
