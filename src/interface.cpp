@@ -1220,7 +1220,6 @@ RcppExport SEXP getSSNModelKriging_SingleNet (SEXP bin_table, SEXP network_data,
       p.setCoordinates(obsPointsMat(j,3), obsPointsMat(j,4));
       auto it = segmentsMap.find(obsPointsMat(j,1));
       p.setBinaryID(it->second);
-      std::cout << "j = " << j << ", binID = " << it->second << std::endl;
       obsPoints.push_back(p);
     }
     obsPointsMat.resize(0,0);
