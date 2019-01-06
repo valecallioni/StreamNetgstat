@@ -409,13 +409,13 @@ RcppExport SEXP doSSNKriging_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP n
     std::vector<std::vector<Point>> obsPoints(netNum);
     helpers::pointsStorage(segmentsMaps, obsPointsMat, obsPoints);
     obsPointsMat.resize(0,0);
-    cpp::Rcout << "ObsPoints stored. \n";
+    Rcpp::Rcout << "ObsPoints stored. \n";
 
     // Predicted points (points for prediction) storage
     Eigen::MatrixXd predPointsMat = Rcpp::as<Eigen::MatrixXd> (pred_points);
     std::vector<std::vector<Point>> predPoints(netNum);
     helpers::pointsStorage(segmentsMaps, predPointsMat, predPoints);
-    cpp::Rcout << "PredPoints stored. \n";
+    Rcpp::Rcout << "PredPoints stored. \n";
     predPointsMat.resize(0,0);
     segmentsMaps.clear();
 
