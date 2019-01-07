@@ -59,11 +59,11 @@ plot.predictions <-
     }
     if(!is.null(VariableName)) {
       VarPlot <- "Predictions"
-      zcol <- paste(varNames[1], "pred", sep="_")
+      zcol <- paste(VariableName, "pred", sep="_")
     } else {
       return("VariableName must be specified")
     }
-    zSEcol <- paste(varNames[1], "se", sep="_")
+    zSEcol <- paste(VariableName, "se", sep="_")
     zcolplot <- zcol
     if(VarPlot == "Standard Errors") zcolplot <- zSEcol
     if(add == FALSE) {
