@@ -40,9 +40,9 @@ result.Exp.up.down.R = funSSNPackage(ssn, formula = STREAM_AUG ~ ELEV, predname 
 library(benchr)
 benchmark(
   times = 1,
-  cppPackage = get_SSN_model(ssn, varNames = c("STREAM_AUG", "ELEV"), weightVar = "afvArea",
-                             CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid")),
-  RPackage = funSSNPackage(ssn, formula = STREAM_AUG ~ ELEV, predname = NULL)
+  cppPackage = get_SSN_model_kriging(ssn, varNames = c("STREAM_AUG", "ELEV"), weightVar = "afvArea",
+                             CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), predpts = "preds"),
+  RPackage = funSSNPackage(ssn, formula = STREAM_AUG ~ ELEV, predname = "preds")
 )
 
 

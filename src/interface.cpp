@@ -326,6 +326,8 @@ RcppExport SEXP doSSNKriging_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP n
 
     BEGIN_RCPP
 
+    Rcpp::Rcout << "Entered function. \n";
+
     // Creation of the factories related to the covariance models chosen
     std::vector<std::string> corModels = Rcpp::as<std::vector<std::string>> (model_names);
     tailup_factory::TailUpFactory& tailup_fac (tailup_factory::TailUpFactory::Instance());
@@ -377,11 +379,13 @@ RcppExport SEXP doSSNKriging_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP n
 
     // Stream segments storage
     std::vector<int> nets = Rcpp::as<std::vector<int>> (net_num);
+    Rcpp::Rcout << "Qui 1 \n";
     int netNum = nets.size();
     Eigen::MatrixXd networkDataTot = Rcpp::as<Eigen::MatrixXd> (network_data);
     std::list<std::vector<std::string>> binTables = Rcpp::as<std::list<std::vector<std::string>>> (bin_tables);
     std::vector<std::vector<StreamSegment>> segments(netNum);
     std::vector<std::map<unsigned int, std::string>> segmentsMaps(netNum);
+    Rcpp::Rcout << "Qui 2 \n";
     j = 0;
     for (unsigned int k=0; k<netNum; k++){
         unsigned int currentNet = nets[k];

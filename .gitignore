@@ -4,6 +4,7 @@
 .DS_Store
 /mydev
 main
+main_RDD
 /data/topsecret
 *.Rhistory
 .idea
