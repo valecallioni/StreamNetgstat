@@ -104,14 +104,14 @@ get_SSN_model_kriging = function(ssn, varNames, weightVar, predpts, CorModels, u
     if (!is.null(singleNet)) obs_points = obs_points[which(obs_points$NetworkID == singleNet),]
     indx <- sapply(obs_points, is.factor)
     obs_points[indx] <- lapply(obs_points[indx], function(x) as.numeric(as.character(x)))
-    obs_points = obs_points[order(obs_points$NetworkID),]
+    obs_points = obs_points[order(obs_points$NetworkID, obs_points$SegmentID),]
 
     # Create a data.frame for the observed points data
     obs_data = ssn@obspoints@SSNPoints[[1]]@point.data
     if (!is.null(singleNet)) obs_data = obs_data[which(obs_data$netID == singleNet),]
     indx <- sapply(obs_data, is.factor)
     obs_data[indx] <- lapply(obs_data[indx], function(x) as.numeric(as.character(x)))
-    obs_data = obs_data[order(obs_data$netID, obs_data$pid),c(varNames, weightVar)]
+    obs_data = obs_data[order(obs_data$netID, obs_data$rid),c(varNames, weightVar)]
     
     # Create a data.frame for the prediction points attributes and data
     pred_points = NULL
@@ -129,7 +129,7 @@ get_SSN_model_kriging = function(ssn, varNames, weightVar, predpts, CorModels, u
       if (!is.null(singleNet)) pred_points = pred_points[which(pred_points$NetworkID == singleNet),]
       indx <- sapply(pred_points, is.factor)
       pred_points[indx] <- lapply(pred_points[indx], function(x) as.numeric(as.character(x)))
-      pred_points = pred_points[order(pred_points$NetworkID),]
+      pred_points = pred_points[order(pred_points$NetworkID, pred_points$SegmentID),]
 
       if (!is.null(singleNet)) pred_data = pred_data[which(pred_data$netID == singleNet),]
       indx <- sapply(pred_data, is.factor)

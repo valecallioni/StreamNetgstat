@@ -92,14 +92,14 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE, 
   if (!is.null(singleNet)) obs_points = obs_points[which(obs_points$NetworkID == singleNet),]
   indx <- sapply(obs_points, is.factor)
   obs_points[indx] <- lapply(obs_points[indx], function(x) as.numeric(as.character(x)))
-  obs_points = obs_points[order(obs_points$NetworkID),]
+  obs_points = obs_points[order(obs_points$NetworkID, obs_points$SegmentID),]
 
   # Create a data.frame for the observed points data
   obs_data = ssn@obspoints@SSNPoints[[1]]@point.data
   if (!is.null(singleNet)) obs_data = obs_data[which(obs_data$netID == singleNet),]
   indx <- sapply(obs_data, is.factor)
   obs_data[indx] <- lapply(obs_data[indx], function(x) as.numeric(as.character(x)))
-  obs_data = obs_data[order(obs_data$netID, obs_data$pid),c(varNames, weightVar)]
+  obs_data = obs_data[order(obs_data$netID, obs_data$rid),c(varNames, weightVar)]
   
   if (!is.null(singleNet)) {
     result = .Call("getSSNModel_SingleNet", bin.table, data.matrix(network_data),
