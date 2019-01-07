@@ -54,7 +54,7 @@ torgegram = function(ssn, ResponseName, maxlag = NULL, nlag = 6,
                      ssn@obspoints@SSNPoints[[1]]@point.coords)
   indx = sapply(obs_points, is.factor)
   obs_points[indx] = lapply(obs_points[indx], function(x) as.numeric(as.character(x)))
-  obs_points = data.matrix(obs_points[order(obs_points$NetworkID),])
+  obs_points = data.matrix(obs_points[order(obs_points$NetworkID, ssn@obspoints@SSNPoints[[1]]@point.data$pid),])
   
   # Create a data.frame for the observed points data
   obs_data = ssn@obspoints@SSNPoints[[1]]@point.data
