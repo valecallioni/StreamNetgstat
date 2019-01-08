@@ -102,7 +102,7 @@ plot.Torg <- function(x, sp.relationship = c("fc", "fu"),
              y = 2*min(ev$gam.connect,ev$gam.unconnect),
              legend = c("Flow-connected", "Flow-unconnected"), bty = "n",
              pch = plch,
-             col = c(colr[1], colr[2]), y.intersp = 0.3)
+             col = c(colr[1], colr[2]))
   } else if(length(sp.relationship)==1){
     if(sp.relationship == "fc") {
       if(is.null(as.list(match.call()[-1])$main)) {
