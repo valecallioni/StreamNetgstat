@@ -58,14 +58,15 @@ plot.predictions <-
       return("predpts must be specified")
     }
     if(!is.null(VariableName)) {
-      VarPlot <- "Predictions"
       zcol <- paste(VariableName, "pred", sep="_")
     } else {
       return("VariableName must be specified")
     }
     zSEcol <- paste(VariableName, "se", sep="_")
     zcolplot <- zcol
-    if(VarPlot == "Standard Errors") zcolplot <- zSEcol
+    if(VarPlot == "Standard Errors") {
+      zcolplot <- zSEcol
+    }
     if(add == FALSE) {
       layout(matrix(1:2, nrow = 1), widths = c(4,1))
       par(mar = c(5,5,3,0))
