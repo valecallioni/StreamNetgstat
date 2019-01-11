@@ -176,20 +176,20 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
   if (euclidModel) V += euclidModel->computeMatCov(*distGeo);
   if (useNugget) V += Eigen::MatrixXd::Identity(n,n)*std::exp(theta(theta.size()-1));
 
-  Eigen::LLT<Eigen::MatrixXd> solver(n);
+  Eigen::LDLT<Eigen::MatrixXd> solver(n);
   solver.compute(V);
 
   Eigen::HouseholderQR<Eigen::MatrixXd> qrV(n,n);
   qrV.compute(V);
 
-  // if (!solver.isPositive())
-  //   throw std::domain_error("Covariance matrix not positive definite");
+  if (!solver.isPositive())
+    throw std::domain_error("Covariance matrix not positive definite");
 
   Eigen::MatrixXd Id(n,n);
   Id.setIdentity();
   Eigen::MatrixXd invV(solver.solve(Id));
 
-  solver = Eigen::LLT<Eigen::MatrixXd>(p+1);
+  solver = Eigen::LDLT<Eigen::MatrixXd>(p+1);
   solver.compute(X->transpose()*invV*(*X));
   Id.resize(p+1,p+1);
   Id.setIdentity();
