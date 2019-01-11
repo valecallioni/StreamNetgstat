@@ -176,7 +176,7 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
   if (euclidModel) V += euclidModel->computeMatCov(*distGeo);
   if (useNugget) V += Eigen::MatrixXd::Identity(n,n)*std::exp(theta(theta.size()-1));
 
-  Eigen::LDLT<Eigen::MatrixXd> solver(n);
+  Eigen::LLT<Eigen::MatrixXd> solver(n);
   solver.compute(V);
 
   Eigen::HouseholderQR<Eigen::MatrixXd> qrV(n,n);
@@ -189,7 +189,7 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
   Id.setIdentity();
   Eigen::MatrixXd invV(solver.solve(Id));
 
-  solver = Eigen::LDLT<Eigen::MatrixXd>(p+1);
+  solver = Eigen::LLT<Eigen::MatrixXd>(p+1);
   solver.compute(X->transpose()*invV*(*X));
   Id.resize(p+1,p+1);
   Id.setIdentity();
