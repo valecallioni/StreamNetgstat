@@ -182,8 +182,8 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
   Eigen::HouseholderQR<Eigen::MatrixXd> qrV(n,n);
   qrV.compute(V);
 
-  if (!solver.isPositive())
-    throw std::domain_error("Covariance matrix not positive definite");
+  // if (!solver.isPositive())
+  //   throw std::domain_error("Covariance matrix not positive definite");
 
   Eigen::MatrixXd Id(n,n);
   Id.setIdentity();
