@@ -71,7 +71,7 @@ Kriging::Kriging(const Eigen::MatrixXd& dMatPred, const Eigen::MatrixXd& dMatObs
     if (tailUpModel) Vpred += tailUpModel->computeMatCov(*weightMat, *distHydroOP, *distHydroPO);
     if (tailDownModel) Vpred += tailDownModel->computeMatCov(*flowMat, *distHydroOP, *distHydroPO);
     if (euclidModel) Vpred += euclidModel->computeMatCov(*distGeo);
-    if (useNugget) Vpred += Eigen::MatrixXd::Identity(nObs,nPred)*std::exp(theta(theta.size()-1));
+    if (useNugget) Vpred += Eigen::MatrixXd::Identity(nObs,nPred)*std::exp((*theta)(theta->size()-1));
 
     //Compute XV and invXVX
     XV = Xobs->transpose() * (*invV);
