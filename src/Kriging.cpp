@@ -71,7 +71,7 @@ Kriging::Kriging(const Eigen::MatrixXd& dMatPred, const Eigen::MatrixXd& dMatObs
     if (tailUpModel) Vpred += tailUpModel->computeMatCov(*weightMat, *distHydroOP, *distHydroPO);
     if (tailDownModel) Vpred += tailDownModel->computeMatCov(*flowMat, *distHydroOP, *distHydroPO);
     if (euclidModel) Vpred += euclidModel->computeMatCov(*distGeo);
-    if (useNugget) Vpred += Eigen::MatrixXd::Identity(nObs,nPred)*std::exp((*theta)(theta->size()-1));
+    if (useNugget) Vpred += Eigen::MatrixXd::Identity(nObs,nPred)*(*theta)(theta->size()-1);
 
     //Compute XV and invXVX
     XV = Xobs->transpose() * (*invV);
@@ -84,17 +84,11 @@ Kriging::Kriging(const Eigen::MatrixXd& dMatPred, const Eigen::MatrixXd& dMatObs
       invXVX = solver.solve(Id);
     }
     else {
-      Eigen::HouseholderQR<Eigen::MatrixXd> solver(p+1,p+1);
-      solver.compute(XVX);
-      invXVX = solver.solve(Id);
+      Eigen::HouseholderQR<Eigen::MatrixXd> solver2(p+1,p+1);
+      solver2.compute(XVX);
+      invXVX = solver2.solve(Id);
     }
 
-    // Eigen::LDLT<Eigen::MatrixXd> solver(p+1);
-    // Eigen::HouseholderQR<Eigen::MatrixXd> solver(p+1, p+1);
-    // solver.compute(Xobs->transpose()*(*invV)*(*Xobs));
-    // Id.resize(p+1,p+1);
-    // Id.setIdentity();
-    // invXVX = solver.solve(Id);
 }
 
 void Kriging::predict(){
@@ -103,25 +97,14 @@ void Kriging::predict(){
   Eigen::VectorXd lambda(nObs);
 
   for (unsigned int i=0; i<nPred; i++){
-    // if (i==0)
-    //   std::cout << "Point = " << i+1 << ":" << std::endl;
 
     r = (Xpred->row(i)).transpose() - XV*Vpred.col(i);
     m = invXVX*r;
 
-    // if (i==0){
-    //   std::cout << "r: \n" << r << std::endl;
-    //   std::cout << "m: \n" << m << std::endl;
-    // }
-
     lambda = (*invV)*(Vpred.col(i) + (*Xobs)*invXVX*r);
 
-    // if (i==0)
-    //   std::cout << "lambda: \n" << lambda << std::endl;
-    // std::cout << "z: \n" << *z << std::endl;
-
     predData(i,0) = lambda.transpose() * (*z);
-    // std::cout << predData(i,0) << std::endl;
+    std::cout << predData(i,0) << std::endl;
     predData(i,1) = std::sqrt(parsill - lambda.transpose()*Vpred.col(i) + m.transpose()*(Xpred->row(i)).transpose());
   }
 
