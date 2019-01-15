@@ -187,8 +187,11 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
 
   Eigen::MatrixXd Id(n,n);
   Id.setIdentity();
-  Eigen::MatrixXd invV(solver.solve(Id));
-
+  Eigen::MatrixXd invV(n,n);
+  if (V.determinant() > 1e-3)
+    invV = solver.solve(Id);
+  else
+    invV = qrV.solve(Id);
   solver = Eigen::LDLT<Eigen::MatrixXd>(p+1);
   solver.compute(X->transpose()*invV*(*X));
   Id.resize(p+1,p+1);
@@ -501,13 +504,21 @@ void Optimizer::glmssn() {
   if (euclidModel) covMat += euclidModel->computeMatCov(*distGeo);
   if (useNugget) covMat += Eigen::MatrixXd::Identity(n,n)*optimTheta(optimTheta.size()-1);
 
-  Eigen::LDLT<Eigen::MatrixXd> solver(n);
-  solver.compute(covMat);
+  Eigen::MatrixXd invV(n,n);
   Eigen::MatrixXd Id(n,n);
   Id.setIdentity();
-  Eigen::MatrixXd invV(solver.solve(Id));
+  if (covMat.determinant()>1e-3){
+    Eigen::LDLT<Eigen::MatrixXd> solver(n);
+    solver.compute(covMat);
+    invV = solver.solve(Id);
+  }
+  else {
+    Eigen::HouseholderQR<Eigen::MatrixXd> solver(n, n);
+    solver.compute(covMat);
+    invV = solver.solve(Id);
+  }
 
-  solver = Eigen::LDLT<Eigen::MatrixXd>(p);
+  Eigen::LDLT<Eigen::MatrixXd> solver(p);
   solver.compute(X->transpose()*invV*(*X));
   Id.resize(p+1,p+1);
   Id.setIdentity();
@@ -527,13 +538,21 @@ void Optimizer::glmssn(Eigen::VectorXd& thetaOpt) {
   if (euclidModel) covMat += euclidModel->computeMatCov(*distGeo);
   if (useNugget) covMat += Eigen::MatrixXd::Identity(n,n)*optimTheta(optimTheta.size()-1);
 
-  Eigen::LDLT<Eigen::MatrixXd> solver(n);
-  solver.compute(covMat);
+  Eigen::MatrixXd invV(n,n);
   Eigen::MatrixXd Id(n,n);
   Id.setIdentity();
-  Eigen::MatrixXd invV(solver.solve(Id));
+  if (covMat.determinant()>1e-3){
+    Eigen::LDLT<Eigen::MatrixXd> solver(n);
+    solver.compute(covMat);
+    invV = solver.solve(Id);
+  }
+  else {
+    Eigen::HouseholderQR<Eigen::MatrixXd> solver(n, n);
+    solver.compute(covMat);
+    invV = solver.solve(Id);
+  }
 
-  solver = Eigen::LDLT<Eigen::MatrixXd>(p);
+  Eigen::LDLT<Eigen::MatrixXd> solver(p);
   solver.compute(X->transpose()*invV*(*X));
   Id.resize(p+1,p+1);
   Id.setIdentity();

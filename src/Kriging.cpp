@@ -15,6 +15,7 @@ Kriging::Kriging(const Eigen::MatrixXd& dMatPred, const Eigen::MatrixXd& dMatObs
 
     z = std::make_shared<Eigen::VectorXd>(y);
     theta = std::make_shared<Eigen::VectorXd>(param);
+    std::cout << "theta: \n" << *theta << std::endl;
     nModels = nMod;
     useNugget = useNugg;
     tailUpModel = std::move(tailup_ptr);
@@ -25,11 +26,18 @@ Kriging::Kriging(const Eigen::MatrixXd& dMatPred, const Eigen::MatrixXd& dMatObs
     nPred = dMatPred.rows();
     p = dMatPred.cols() - 1;
 
-    Eigen::LDLT<Eigen::MatrixXd> solver(nObs);
-    solver.compute(V);
     Eigen::MatrixXd Id(nObs,nObs);
     Id.setIdentity();
-    invV = std::make_shared<Eigen::MatrixXd>(solver.solve(Id));
+    if (V.determinant()>1e-3){
+      Eigen::LDLT<Eigen::MatrixXd> solver(nObs);
+      solver.compute(V);
+      invV = std::make_shared<Eigen::MatrixXd>(solver.solve(Id));
+    }
+    else {
+      Eigen::HouseholderQR<Eigen::MatrixXd> solver(nObs, nObs);
+      solver.compute(V);
+      invV = std::make_shared<Eigen::MatrixXd>(solver.solve(Id));
+    }
 
     Vpred.resize(nObs, nPred);
     Vpred.fill(0.0);
@@ -64,10 +72,12 @@ Kriging::Kriging(const Eigen::MatrixXd& dMatPred, const Eigen::MatrixXd& dMatObs
     if (tailUpModel) Vpred += tailUpModel->computeMatCov(*weightMat, *distHydroOP, *distHydroPO);
     if (tailDownModel) Vpred += tailDownModel->computeMatCov(*flowMat, *distHydroOP, *distHydroPO);
     if (euclidModel) Vpred += euclidModel->computeMatCov(*distGeo);
+    std::cout << "Vpred \n" << Vpred.block(0,0,10,10) << std::endl;
 
     //Compute XV and invXVX
     XV = Xobs->transpose() * (*invV);
-    solver = Eigen::LDLT<Eigen::MatrixXd>(p+1);
+    Eigen::LDLT<Eigen::MatrixXd> solver (p+1);
+    // Eigen::HouseholderQR<Eigen::MatrixXd> solver(p+1, p+1);
     solver.compute(Xobs->transpose()*(*invV)*(*Xobs));
     Id.resize(p+1,p+1);
     Id.setIdentity();
@@ -75,18 +85,30 @@ Kriging::Kriging(const Eigen::MatrixXd& dMatPred, const Eigen::MatrixXd& dMatObs
 }
 
 void Kriging::predict(){
-
   Eigen::VectorXd r(p+1);
   Eigen::VectorXd m(p+1);
   Eigen::VectorXd lambda(nObs);
 
   for (unsigned int i=0; i<nPred; i++){
+    // if (i==0)
+    //   std::cout << "Point = " << i+1 << ":" << std::endl;
+
     r = (Xpred->row(i)).transpose() - XV*Vpred.col(i);
     m = invXVX*r;
 
+    // if (i==0){
+    //   std::cout << "r: \n" << r << std::endl;
+    //   std::cout << "m: \n" << m << std::endl;
+    // }
+
     lambda = (*invV)*(Vpred.col(i) + (*Xobs)*invXVX*r);
 
+    // if (i==0)
+    //   std::cout << "lambda: \n" << lambda << std::endl;
+    // std::cout << "z: \n" << *z << std::endl;
+
     predData(i,0) = lambda.transpose() * (*z);
+    std::cout << predData(i,0) << std::endl;
     predData(i,1) = std::sqrt(parsill - lambda.transpose()*Vpred.col(i) + m.transpose()*(Xpred->row(i)).transpose());
   }
 

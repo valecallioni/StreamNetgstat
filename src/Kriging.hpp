@@ -6,6 +6,7 @@
 #include <Eigen/Dense>
 #include <Eigen/SVD>
 #include <Eigen/QR>
+#include <Eigen/Eigenvalues>
 #include <cmath>
 #include "Dataframe.hpp"
 #include "Network.hpp"
