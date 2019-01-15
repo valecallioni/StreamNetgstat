@@ -349,7 +349,8 @@ void Optimizer::computeThetaWiki(){
     crit4 = max > tolTheta;
 
   }
-
+  std::cout << "Final theta: \n" << simplex[0].second.array().exp() << std::endl;
+  
   if (iter > maxIter) std::cerr << "Reached max number of iterations" << std::endl;
   optimTheta = simplex[0].second.array().exp();
 

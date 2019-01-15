@@ -111,7 +111,7 @@ do_SSN_kriging = function(ssn, varNames, weightVar, predpts, CorModels, useNugge
   }
 
   if (!is.null(singleNet)) {
-    id_rows = which(ssn@predpoints@SSNPoints[[id_p]]@network.point.coord$NetworkID == singleNet)
+    id_rows = which(ssn@predpoints@SSNPoints[[id_p]]@network.point.coords$NetworkID == singleNet)
   } else {
     id_rows = rep(1, dim(ssn@predpoints@SSNPoints[[id_p]]@point.data)[1])
   }

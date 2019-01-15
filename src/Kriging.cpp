@@ -15,7 +15,6 @@ Kriging::Kriging(const Eigen::MatrixXd& dMatPred, const Eigen::MatrixXd& dMatObs
 
     z = std::make_shared<Eigen::VectorXd>(y);
     theta = std::make_shared<Eigen::VectorXd>(param);
-    std::cout << "theta: \n" << *theta << std::endl;
     nModels = nMod;
     useNugget = useNugg;
     tailUpModel = std::move(tailup_ptr);
@@ -72,7 +71,7 @@ Kriging::Kriging(const Eigen::MatrixXd& dMatPred, const Eigen::MatrixXd& dMatObs
     if (tailUpModel) Vpred += tailUpModel->computeMatCov(*weightMat, *distHydroOP, *distHydroPO);
     if (tailDownModel) Vpred += tailDownModel->computeMatCov(*flowMat, *distHydroOP, *distHydroPO);
     if (euclidModel) Vpred += euclidModel->computeMatCov(*distGeo);
-    std::cout << "Vpred \n" << Vpred.block(0,0,10,10) << std::endl;
+    if (useNugget) Vpred += Eigen::MatrixXd::Identity(nObs,nPred)*std::exp(theta(theta.size()-1));
 
     //Compute XV and invXVX
     XV = Xobs->transpose() * (*invV);
