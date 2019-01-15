@@ -9,6 +9,7 @@
 #include <Eigen/Eigenvalues>
 #include <cmath>
 #include <stdexcept>
+#include <Rcpp.h>
 #include "Factory.hpp"
 #include "FactoryHelpers.hpp"
 #include "Helpers.hpp"

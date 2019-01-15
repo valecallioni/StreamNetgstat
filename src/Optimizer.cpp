@@ -188,15 +188,29 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
   Eigen::MatrixXd Id(n,n);
   Id.setIdentity();
   Eigen::MatrixXd invV(n,n);
-  if (V.determinant() > 1e-3)
+  double det(V.determinant());
+  if (det >= 1e-3){
     invV = solver.solve(Id);
-  else
+  }
+  else {
     invV = qrV.solve(Id);
-  solver = Eigen::LDLT<Eigen::MatrixXd>(p+1);
-  solver.compute(X->transpose()*invV*(*X));
+    Rcpp::warning("Covariance matrix ill-conditioned. QR decomposition needed.\n");
+  }
+
+  Eigen::MatrixXd XVX(X->transpose()*invV*(*X));
+  Eigen::MatrixXd invXVX(p+1,p+1);
   Id.resize(p+1,p+1);
   Id.setIdentity();
-  Eigen::MatrixXd invXVX(solver.solve(Id));
+  if (XVX.determinant() >= 1e-3){
+    Eigen::LDLT<Eigen::MatrixXd> ldlt(p+1);
+    ldlt.compute(XVX);
+    invXVX = ldlt.solve(Id);
+  }
+  else {
+    Eigen::HouseholderQR<Eigen::MatrixXd> qr(p+1, p+1);
+    qr.compute(XVX);
+    invXVX = qr.solve(Id);
+  }
 
   Eigen::VectorXd beta(invXVX*X->transpose()*invV*(*z));
   Eigen::VectorXd r(*z - (*X)*beta);
@@ -518,11 +532,20 @@ void Optimizer::glmssn() {
     invV = solver.solve(Id);
   }
 
-  Eigen::LDLT<Eigen::MatrixXd> solver(p);
-  solver.compute(X->transpose()*invV*(*X));
+  Eigen::MatrixXd XVX(X->transpose()*invV*(*X));
+  Eigen::MatrixXd invXVX(p+1,p+1);
   Id.resize(p+1,p+1);
   Id.setIdentity();
-  Eigen::MatrixXd invXVX(solver.solve(Id));
+  if (XVX.determinant() >= 1e-3){
+    Eigen::LDLT<Eigen::MatrixXd> solver(p+1);
+    solver.compute(XVX);
+    invXVX = solver.solve(Id);
+  }
+  else {
+    Eigen::HouseholderQR<Eigen::MatrixXd> solver(p+1,p+1);
+    solver.compute(XVX);
+    invXVX = solver.solve(Id);
+  }
 
   betaValues = invXVX*X->transpose()*invV*(*z);
 }
@@ -552,11 +575,20 @@ void Optimizer::glmssn(Eigen::VectorXd& thetaOpt) {
     invV = solver.solve(Id);
   }
 
-  Eigen::LDLT<Eigen::MatrixXd> solver(p);
-  solver.compute(X->transpose()*invV*(*X));
+  Eigen::MatrixXd XVX(X->transpose()*invV*(*X));
+  Eigen::MatrixXd invXVX(p+1,p+1);
   Id.resize(p+1,p+1);
   Id.setIdentity();
-  Eigen::MatrixXd invXVX(solver.solve(Id));
+  if (XVX.determinant() >= 1e-3){
+    Eigen::LDLT<Eigen::MatrixXd> solver(p+1);
+    solver.compute(XVX);
+    invXVX = solver.solve(Id);
+  }
+  else {
+    Eigen::HouseholderQR<Eigen::MatrixXd> solver(p+1, p+1);
+    solver.compute(XVX);
+    invXVX = solver.solve(Id);
+  }
 
   betaValues = invXVX*X->transpose()*invV*(*z);
 }

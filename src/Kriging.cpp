@@ -76,12 +76,26 @@ Kriging::Kriging(const Eigen::MatrixXd& dMatPred, const Eigen::MatrixXd& dMatObs
 
     //Compute XV and invXVX
     XV = Xobs->transpose() * (*invV);
-    Eigen::LDLT<Eigen::MatrixXd> solver (p+1);
-    // Eigen::HouseholderQR<Eigen::MatrixXd> solver(p+1, p+1);
-    solver.compute(Xobs->transpose()*(*invV)*(*Xobs));
+    Eigen::MatrixXd XVX(XV * (*Xobs));
     Id.resize(p+1,p+1);
     Id.setIdentity();
-    invXVX = solver.solve(Id);
+    if (XVX.determinant() >= 1e-3){
+      Eigen::LDLT<Eigen::MatrixXd> solver(p+1);
+      solver.compute(XVX);
+      invXVX = solver.solve(Id);
+    }
+    else {
+      Eigen::HouseholderQR<Eigen::MatrixXd> solver(p+1,p+1);
+      solver.compute(XVX);
+      invXVX = solver.solve(Id);
+    }
+
+    // Eigen::LDLT<Eigen::MatrixXd> solver(p+1);
+    // Eigen::HouseholderQR<Eigen::MatrixXd> solver(p+1, p+1);
+    // solver.compute(Xobs->transpose()*(*invV)*(*Xobs));
+    // Id.resize(p+1,p+1);
+    // Id.setIdentity();
+    // invXVX = solver.solve(Id);
 }
 
 void Kriging::predict(){
@@ -108,7 +122,7 @@ void Kriging::predict(){
     // std::cout << "z: \n" << *z << std::endl;
 
     predData(i,0) = lambda.transpose() * (*z);
-    std::cout << predData(i,0) << std::endl;
+    // std::cout << predData(i,0) << std::endl;
     predData(i,1) = std::sqrt(parsill - lambda.transpose()*Vpred.col(i) + m.transpose()*(Xpred->row(i)).transpose());
   }
 
