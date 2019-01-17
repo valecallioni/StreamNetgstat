@@ -74,10 +74,10 @@ public:
   double computeLogL(const Eigen::VectorXd& theta);
   std::vector<std::pair<double, Eigen::VectorXd>> simplexInit(const Eigen::VectorXd& theta0, const double tau);
 
-  void computeThetaPaper();
-  void computeThetaWiki();
+  //void computeThetaPaper();
+  void computeTheta();
   void glmssn();
-  void glmssn(Eigen::VectorXd& thetaOpt);
+  //void glmssn(Eigen::VectorXd& thetaOpt);
 
 };
 
