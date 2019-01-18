@@ -5,7 +5,8 @@
 \title{Fit a variance component model for a Spatial Stream Network object}
 \usage{
 get_SSN_model(ssn, varNames, weightVar, CorModels, useNugget = TRUE,
-  singleNet = NULL, matrices = NULL, bounds = NULL)
+  singleNet = NULL, matrices = NULL, bounds = NULL,
+  useCholeskyDec = FALSE)
 }
 \arguments{
 \item{ssn}{a \link[SSN]{SpatialStreamNetwork-class} object.}
@@ -23,6 +24,8 @@ get_SSN_model(ssn, varNames, weightVar, CorModels, useNugget = TRUE,
 \item{matrices}{a vector of matrices, containing the flow-connection binary matrix, the hydrologic distance matrix and, not necessarily, the Euclidean distance matrix, returned by the function \link[StreamNetgstat]{get_plots}.  These matrices consider the relationships between observed points.}
 
 \item{bounds}{a vector of doubles, representing the bounds for the parsills of the models considered. If a bound is required, all the models should have one. The highest can be set at 1e+04.}
+
+\item{useCholeskyDec}{If \code{TRUE} the Cholesky decomposition for inverting positive definite matrices is used in the optimization algorithm (quickest version, at the expense of accuracy). Default to \code{FALSE}.}
 }
 \value{
 A list with the following fields:
