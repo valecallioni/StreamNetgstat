@@ -8,6 +8,7 @@
 #' @param singleNet an interger, indicating the network ID that is to be analysed. Default to \code{NULL}, so that the analysis is carried on the entire dataset.
 #' @param matrices a vector of matrices, containing the flow-connection binary matrix, the hydrologic distance matrix and, not necessarily, the Euclidean distance matrix, returned by the function \link[StreamNetgstat]{get_plots}.  These matrices consider the relationships between observed points.
 #' @param bounds a vector of doubles, representing the bounds for the parsills of the models considered. If a bound is required, all the models should have one. The highest can be set at 1e+04.
+#' @param useCholeskyDec If \code{TRUE} the Cholesky decomposition for inverting positive definite matrices is used in the optimization algorithm (quickest version, at the expense of accuracy). Default to \code{FALSE}.
 #' @return A list with the following fields:
 #' \item{\code{modelParam}}{ vector of the parameters values of the fitted model. }
 #' \item{\code{modelBeta}}{ vector of the beta values of the fitted model. }
@@ -22,7 +23,7 @@
 #' @useDynLib StreamNetgstat
 #' @export
 
-get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE, singleNet = NULL, matrices = NULL, bounds = NULL){
+get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE, singleNet = NULL, matrices = NULL, bounds = NULL, useCholeskyDec = FALSE){
  
   # Check to see whether distance folder exists...
   if (!file.exists(file.path(ssn@path, "distance"))) {
@@ -104,11 +105,11 @@ get_SSN_model = function(ssn, varNames, weightVar, CorModels, useNugget = TRUE, 
   if (!is.null(singleNet)) {
     result = .Call("getSSNModel_SingleNet", bin.table, data.matrix(network_data),
                    data.matrix(obs_points), data.matrix(obs_data), c(varNames, weightVar), 
-                   CorModels, useNugget, matrices, bounds) 
+                   CorModels, useNugget, matrices, bounds, useCholeskyDec) 
   } else {
     result = .Call("getSSNModel_MultipleNets", net_num, bin_tables, data.matrix(network_data),
                    data.matrix(obs_points), data.matrix(obs_data), c(varNames, weightVar), 
-                   CorModels, useNugget, matrices, bounds) 
+                   CorModels, useNugget, matrices, bounds, useCholeskyDec) 
   }
   
   return (list(modelParam = result$optTheta,

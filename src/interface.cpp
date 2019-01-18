@@ -155,7 +155,7 @@ RcppExport SEXP createDistanceMatrices_MultipleNets (SEXP net_num, SEXP bin_tabl
 // CREATE MODEL
 RcppExport SEXP getSSNModel_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP network_data,
   SEXP obs_points, SEXP obs_data, SEXP var_names, SEXP model_names, SEXP nugg,
-  SEXP dist_matrices, SEXP model_bounds) {
+  SEXP dist_matrices, SEXP model_bounds, SEXP use_cholesky) {
 
     BEGIN_RCPP
 
@@ -297,8 +297,9 @@ RcppExport SEXP getSSNModel_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP ne
 
     // -------------------------------------------------------------------------
     // MODEL FITTING
+    bool useCholesky = Rcpp::as<bool> (use_cholesky);
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, nuggetEffect, up+down+euclid,
-      dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>());
+      dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>(), useCholesky);
 
     Rcpp::Nullable<std::vector<double>> vecBounds(model_bounds);
     std::vector<double> bounds;
@@ -514,7 +515,7 @@ RcppExport SEXP doSSNKriging_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP n
 
 // CREATE MODEL and DO KRIGING
 RcppExport SEXP getSSNModelKriging_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP obs_points, SEXP pred_points,
-  SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names, SEXP nugg, SEXP dist_matrices, SEXP model_bounds) {
+  SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names, SEXP nugg, SEXP dist_matrices, SEXP model_bounds, SEXP use_cholesky) {
 
     BEGIN_RCPP
 
@@ -697,8 +698,9 @@ RcppExport SEXP getSSNModelKriging_MultipleNets (SEXP net_num, SEXP bin_tables, 
 
     // -------------------------------------------------------------------------
     // MODEL FITTING
+    bool useCholesky = Rcpp::as<bool> (use_cholesky);
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, nuggetEffect, up+down+euclid,
-      dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>());
+      dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>(), useCholesky);
 
     Rcpp::Nullable<std::vector<double>> vecBounds(model_bounds);
     std::vector<double> bounds;
@@ -861,7 +863,7 @@ RcppExport SEXP createDistanceMatrices_SingleNet (SEXP net_num, SEXP bin_table, 
 // CREATE MODEL
 RcppExport SEXP getSSNModel_SingleNet (SEXP bin_table, SEXP network_data,
   SEXP obs_points, SEXP obs_data, SEXP var_names, SEXP model_names, SEXP nugg,
-  SEXP dist_matrices, SEXP model_bounds) {
+  SEXP dist_matrices, SEXP model_bounds, SEXP use_cholesky) {
 
     BEGIN_RCPP
 
@@ -969,8 +971,9 @@ RcppExport SEXP getSSNModel_SingleNet (SEXP bin_table, SEXP network_data,
 
     // -------------------------------------------------------------------------
     // MODEL FITTING
+    bool useCholesky = Rcpp::as<bool> (use_cholesky);
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, nuggetEffect, up+down+euclid,
-      dataObs[varNames[0]], designMat, network.getDistHydroOO(), network.getDistGeoOO(), weightMatOO, network.getFlowMatOO());
+      dataObs[varNames[0]], designMat, network.getDistHydroOO(), network.getDistGeoOO(), weightMatOO, network.getFlowMatOO(), useCholesky);
 
     Rcpp::Nullable<std::vector<double>> vecBounds(model_bounds);
     std::vector<double> bounds;
@@ -1153,7 +1156,7 @@ RcppExport SEXP doSSNKriging_SingleNet (SEXP bin_table, SEXP network_data, SEXP 
 
 // CREATE MODEL and DO KRIGING
 RcppExport SEXP getSSNModelKriging_SingleNet (SEXP bin_table, SEXP network_data, SEXP obs_points, SEXP pred_points,
-  SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names, SEXP nugg, SEXP dist_matrices, SEXP model_bounds) {
+  SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names, SEXP nugg, SEXP dist_matrices, SEXP model_bounds, SEXP use_cholesky) {
 
     BEGIN_RCPP
 
@@ -1290,8 +1293,9 @@ RcppExport SEXP getSSNModelKriging_SingleNet (SEXP bin_table, SEXP network_data,
 
     // -------------------------------------------------------------------------
     // MODEL FITTING
+    bool useCholesky = Rcpp::as<bool> (use_cholesky);
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, nuggetEffect, up+down+euclid,
-      dataObs[varNames[0]], designMat, network.getDistHydroOO(), network.getDistGeoOO(), weightMatOO, network.getFlowMatOO());
+      dataObs[varNames[0]], designMat, network.getDistHydroOO(), network.getDistGeoOO(), weightMatOO, network.getFlowMatOO(), useCholesky);
 
     Rcpp::Nullable<std::vector<double>> vecBounds(model_bounds);
     std::vector<double> bounds;

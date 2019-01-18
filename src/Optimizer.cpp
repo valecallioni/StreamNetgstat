@@ -1,8 +1,8 @@
 #include "Optimizer.hpp"
 
 Optimizer::Optimizer(std::unique_ptr<TailUpModel>& tailup_ptr, std::unique_ptr<TailDownModel>& taildown_ptr, std::unique_ptr<EuclideanModel>& euclid_ptr, bool useNugg,
-  int n_models, const Eigen::VectorXd& y, const Eigen::MatrixXd& designMat, const Eigen::MatrixXd& N, const Eigen::MatrixXd& D, const Eigen::MatrixXd& wMat, const Eigen::MatrixXi& connMat):
-useNugget(useNugg), nModels(n_models){
+  int n_models, const Eigen::VectorXd& y, const Eigen::MatrixXd& designMat, const Eigen::MatrixXd& N, const Eigen::MatrixXd& D, const Eigen::MatrixXd& wMat, const Eigen::MatrixXi& connMat, bool cholesky):
+useNugget(useNugg), nModels(n_models), useLDLT(cholesky){
 
   z = std::make_shared<Eigen::VectorXd>(y);
   X = std::make_shared<Eigen::MatrixXd>(designMat);
@@ -28,8 +28,8 @@ useNugget(useNugg), nModels(n_models){
 }
 
 Optimizer::Optimizer(std::unique_ptr<TailUpModel>& tailup_ptr, std::unique_ptr<TailDownModel>& taildown_ptr, std::unique_ptr<EuclideanModel>& euclid_ptr, bool useNugg, const std::vector<double>& bounds,
-  int n_models, const Eigen::VectorXd& y, const Eigen::MatrixXd& designMat, const Eigen::MatrixXd& N, const Eigen::MatrixXd& D, const Eigen::MatrixXd& wMat, const Eigen::MatrixXi& connMat):
-useNugget(useNugg), nModels(n_models){
+  int n_models, const Eigen::VectorXd& y, const Eigen::MatrixXd& designMat, const Eigen::MatrixXd& N, const Eigen::MatrixXd& D, const Eigen::MatrixXd& wMat, const Eigen::MatrixXi& connMat, bool cholesky):
+useNugget(useNugg), nModels(n_models), useLDLT(cholesky){
 
   z = std::make_shared<Eigen::VectorXd>(y);
   X = std::make_shared<Eigen::MatrixXd>(designMat);
@@ -189,7 +189,10 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
   Id.setIdentity();
   Eigen::MatrixXd invV(n,n);
   double det(V.determinant());
-  if (det >= 1e-3){
+  if (useLDLT){
+    invV = solver.solve(Id);
+  }
+  else if (det >= 1e-3){
     invV = solver.solve(Id);
   }
   else {
@@ -201,7 +204,12 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
   Eigen::MatrixXd invXVX(p+1,p+1);
   Id.resize(p+1,p+1);
   Id.setIdentity();
-  if (XVX.determinant() >= 1e-3){
+  if (useLDLT){
+    Eigen::LDLT<Eigen::MatrixXd> ldlt(p+1);
+    solver.compute(XVX);
+    invXVX = ldlt.solve(Id);
+  }
+  else if (XVX.determinant() >= 1e-3){
     Eigen::LDLT<Eigen::MatrixXd> ldlt(p+1);
     ldlt.compute(XVX);
     invXVX = ldlt.solve(Id);
@@ -363,7 +371,12 @@ void Optimizer::glmssn() {
   Eigen::MatrixXd invV(n,n);
   Eigen::MatrixXd Id(n,n);
   Id.setIdentity();
-  if (covMat.determinant()>1e-3){
+  if (useLDLT){
+    Eigen::LDLT<Eigen::MatrixXd> solver(n);
+    solver.compute(covMat);
+    invV = solver.solve(Id);
+  }
+  else if (covMat.determinant()>1e-3){
     Eigen::LDLT<Eigen::MatrixXd> solver(n);
     solver.compute(covMat);
     invV = solver.solve(Id);
@@ -378,7 +391,12 @@ void Optimizer::glmssn() {
   Eigen::MatrixXd invXVX(p+1,p+1);
   Id.resize(p+1,p+1);
   Id.setIdentity();
-  if (XVX.determinant() >= 1e-3){
+  if (useLDLT){
+    Eigen::LDLT<Eigen::MatrixXd> solver(p+1);
+    solver.compute(XVX);
+    invXVX = solver.solve(Id);
+  }
+  else if (XVX.determinant() >= 1e-3){
     Eigen::LDLT<Eigen::MatrixXd> solver(p+1);
     solver.compute(XVX);
     invXVX = solver.solve(Id);
