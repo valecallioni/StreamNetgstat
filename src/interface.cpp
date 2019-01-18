@@ -159,6 +159,8 @@ RcppExport SEXP getSSNModel_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP ne
 
     BEGIN_RCPP
 
+    Rcpp::Rcout << "In getSSNModel_MultipleNets. \n";
+
     // Creation of the factories related to the covariance models chosen
     std::vector<std::string> corModels = Rcpp::as<std::vector<std::string>> (model_names);
     tailup_factory::TailUpFactory& tailup_fac (tailup_factory::TailUpFactory::Instance());
@@ -298,6 +300,7 @@ RcppExport SEXP getSSNModel_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP ne
     // -------------------------------------------------------------------------
     // MODEL FITTING
     bool useCholesky = Rcpp::as<bool> (use_cholesky);
+    Rcpp::Rcout << "useCholesky = " << useCholesky << ".\n";
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, nuggetEffect, up+down+euclid,
       dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>(), useCholesky);
 
