@@ -12,20 +12,7 @@
 #' @param dec.dig the number of decimal places to print in the legend.  Default is 2.
 #' @param add Logical value indicating whether the predictions should be added to an existing plot, such as a plot of colored values for observed data. Default is FALSE.
 #' @param \dots Arguments to be passed to methods, such as graphical parameters (see \code{\link{par}}).
-#' @details The \command{plot.glmssn.predict} function creates a map showing color-coded predictions or prediction standard error values. When VarPlot = "Both", predictions values are colored according to breaks.  The size of the points is inversely proportional to the
-#' prediction standard errors. If SE is the standard error for a prediction, then the
-#' size of the plotted point will be SEcex.max - (SEcex.max - SEcex.min)*(SE - min(SE))/(max(SE) - min(SE)),
-#' where mins and maxs are over all SEs in the prediction set.  This is simply a
-#' linear interpolator between SEcex.max and SEcex.min, specified by the user, with
-#' larger points for smaller standard errors. So large points reflect the fact that
-#' you have more confidence in those values and small points reflect the fact that
-#' you have less confidence in the values. Two plot legends are included in this
-#' case - one based on size and one on colour.
-#' If the predictions are added to an existing plot, the printing of a second legend
-#' is suppressed, but the minimum predicted value is added as text to the top of
-#' the legend area, and the maximum predicted value is added as text to the bottom
-#' of the legend area.  This option only makes sense if the breaks are matched to
-#' those when plotting the observed values.  See the example below.
+#' @details The \command{plot.predictions} function creates a map showing color-coded predictions or prediction standard error values. When VarPlot = "Both", predictions values are colored according to breaks.  The size of the points is inversely proportional to the prediction standard errors.
 #' @return Maps of stream networks with prediction and prediction standard error values.
 
 #' @references 
