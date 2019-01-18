@@ -206,7 +206,7 @@ double Optimizer::computeLogL(const Eigen::VectorXd& theta){
   Id.setIdentity();
   if (useLDLT){
     Eigen::LDLT<Eigen::MatrixXd> ldlt(p+1);
-    solver.compute(XVX);
+    ldlt.compute(XVX);
     invXVX = ldlt.solve(Id);
   }
   else if (XVX.determinant() >= 1e-3){
