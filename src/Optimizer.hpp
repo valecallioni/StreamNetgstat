@@ -45,10 +45,15 @@ private:
   Eigen::VectorXd betaValues;
   Eigen::MatrixXd covMat;
 
+  const double a = 1.0;
+  const double c = 2.0;
+  const double r = 0.5;
+  const double s = 0.5;
+
   unsigned int iter = 0;
-  unsigned int maxIter = 1e3;
+  const unsigned int maxIter = 1e3;
   unsigned int funEvals = 0;
-  unsigned int maxFunEvals = 1e6;
+  const unsigned int maxFunEvals = 1e6;
   double tolTheta = 1e-3;
   double tolFun = 1e-3;
 
