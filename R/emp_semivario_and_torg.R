@@ -16,13 +16,13 @@
 #' @return A list with the following fields:
 #' \item{\code{EmpSemiVar}}{ object of class \link[SSN]{EmpiricalSemivariogram}. }
 #' \item{\code{Torg}}{ object of class \link[SSN]{Torgegram}. }
-#' \item{\code{distMatrices}}{ list of distance-matrices. }
+#' \item{\code{distMatrices}}{ a vector of matrices, containing the flow-connection binary matrix, the hydrologic distance matrix and, not necessarily, the Euclidean distance matrix. These matrices consider the relationships between observed points. }
 #' @description Given a \link[SSN]{SpatialStreamNetwork-class} object, computes the Torgegram (empirical semivariogram from the data based on hydrologic distance) and the empirical semivariogram from the data based on the Euclidean distance.
 #' @details Given a \link[SSN]{SpatialStreamNetwork-class} object, the function creates a list of hydrologic distances and Euclidean distances and empirical semivariogram values for both, along with number of pairs of points in each bin, for flow-connected and flow-unconnected sites when considering the hydrologic distance. Flow-connected locations lie on the same stream network (share a common downstream junction) and water flows from one location to the other. Flow-unconnected locations also lie on the same stream network, but do not share flow. The output is a list, containing an object of class \link[SSN]{Torgegram}, an object of class \link[SSN]{EmpiricalSemivariogram} and a list containing the distance-matrices.
 #' @references 
 #' Peterson, E.E. and Ver Hoef, J.M. (2010) A mixed-model moving-average approach to geostatistical modeling in stream networks. Ecology 91(3), 644–651.
 #' 
-#' Ver Hoef, J.M. and Peterson, E.E. (2010) A moving average approach for spatial statistical models of stream networks (with discussion). Journal of the American Statistical Association 105, 6–18. DOI: 10.1198/jasa.2009.ap08248. Rejoinder pgs. 22–24.
+#' Ver Hoef, J.M. and Peterson, E.E. (2010) A moving average approach for spatial statistical models of stream networks (with discussion). Journal of the American Statistical Association 105, 6–18.
 #' @useDynLib StreamNetgstat
 #' @export
 

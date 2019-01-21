@@ -8,17 +8,17 @@
 #' @param main Title for plot.
 #' @param ylab Label for y-axis.
 #' @param xlab Label for x-axis.
-#' @return Plot of empirical semivariogram values
-#' @description \code{plot}.Torgegram is a generic plot function that has been adapted for Torgegram objects, which are created using the Torgegram function. A Torgegram object stores information used to construct an empirical semivariogram based on hydrologic distance. The \code{plot.Torgegram} function allows the results to be presented separately for flow-connected and flow-unconnected sites.
-#' @details The \code{Torgegram} function creates a list of distances and empirical semivariogram values, along with number of pairs of points in each bin, for both flow-connected and flow-unconnected sites. Flow-connected locations lie on the same stream network (share a common downstream junction) and water flows from one location to the other. Flow-unconnected locations also lie on the same stream network, but do not share flow. The output is of class Torgegram. This is the default plotting method for this class.
+#' @return Plot of empirical semivariogram values.
+#' @description \code{plot}.Torg is a generic plot function that has been adapted for \link[SSN]{Torgegram} objects, which are created using the \link[StreamNetgstat]{torgegram} function. 
+#' @details This function provides the plot of the empirical semivariogram based on stream distance. The results are presented separately for flow-connected and flow-unconnected sites.
 #' @references 
 #' Peterson, E.E. and Ver Hoef, J.M. (2010) A mixed-model moving-average approach to geostatistical modeling in stream networks. Ecology 91(3), 644–651.
 #' 
-#' Ver Hoef, J.M. and Peterson, E.E. (2010) A moving average approach for spatial statistical models of stream networks (with discussion). Journal of the American Statistical Association 105, 6–18. DOI: 10.1198/jasa.2009.ap08248. Rejoinder pgs. 22–24.
+#' Ver Hoef, J.M. and Peterson, E.E. (2010) A moving average approach for spatial statistical models of stream networks (with discussion). Journal of the American Statistical Association 105, 6–18.
 #' @useDynLib StreamNetgstat
 #' @export
 
-plot.Torg <- function(x, sp.relationship = c("fc", "fu"),
+plot.torg <- function(x, sp.relationship = c("fc", "fu"),
                            min.cex = 1.5, max.cex = 6, leg.auto = TRUE, main = "", ylab = "",
                            xlab = "Stream Distance")
 {
