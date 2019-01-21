@@ -97,8 +97,10 @@ brks = plot(sim.ssn, "Sim_Values", lwdLineCol = "addfunccol", lwdLineEx = 15,
             lineCol = "black", xlab = "x-coordinate (m)", ylab= "y-coordinate (m)")
 dev.off()
 
-x11()
+pdf(file = "Torg_EmpSemivar.pdf",width=10,height=6,paper="special") 
 dist_matrices = get_plots(sim.ssn, "Sim_Values", T)
+dev.off()
+
 model = get_SSN_model(ssn = sim.ssn, varNames = c("Sim_Values", "X1", "X2"), weightVar = "addfunccol", CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), matrices = dist_matrices, bounds = NULL, useCholeskyDec = T)
 kriging = do_SSN_kriging(sim.ssn, varNames = c("Sim_Values", "X1", "X2"), weightVar = "addfunccol", predpts = "preds", CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), theta = model$modelParam, covMat = model$modelCovariance, matrices = dist_matrices)
 
@@ -129,8 +131,8 @@ dev.off()
 
 library(benchr)
 benchmark(
-  times = 10,
+  times = 5,
   cppPackage = get_SSN_model_kriging(sim.ssn, varNames = c("Sim_Values", "X1", "X2"), weightVar = "addfunccol",
-                                     CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), predpts = "preds"),
+                                     CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), predpts = "preds", singleNet = 1),
   RPackage = funSSNPackage(sim.ssn, formula = Sim_Values ~ X1 + X2, predname = "preds")
 )

@@ -99,10 +99,10 @@ plot.Torg <- function(x, sp.relationship = c("fc", "fu"),
     }
     if(leg.auto)
       legend(x = (2/5)*max(ev$distance.connect,ev$distance.unconnect),
-             y = 2*min(ev$gam.connect,ev$gam.unconnect),
+             y = min(ev$gam.connect,ev$gam.unconnect),
              legend = c("Flow-connected", "Flow-unconnected"), bty = "n",
              pch = plch,
-             col = c(colr[1], colr[2]), y.intersp = 0.2)
+             col = c(colr[1], colr[2]), y.intersp = 1.5)
   } else if(length(sp.relationship)==1){
     if(sp.relationship == "fc") {
       if(is.null(as.list(match.call()[-1])$main)) {

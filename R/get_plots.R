@@ -36,7 +36,14 @@ get_plots = function(ssn, ResponseName, Euclidean = FALSE,
                                    maxlag_EmpVar = maxlag_EmpVar, nlag_EmpVar = nlag_EmpVar, inc_EmpVar = inc_EmpVar, nlagcutoff_EmpVar = nlagcutoff_EmpVar, 
                                    directions = directions, tolerance = tolerance, EmpVarMeth = EmpVarMeth)
    par(mfrow=c(1,2))
-   plot.Torg(result$Torg, main = "Torgegram", ylab = "") 
+   plot.Torg(result$Torg, main = "Torgegram", ylab = "", leg.auto = FALSE)
+   colr = c("blue","green2")
+   plch = c(19,19)
+   legend(x = (2/5)*max(result$Torg$distance.connect,result$Torg$distance.unconnect),
+          y = min(result$Torg$gam.connect,result$Torg$gam.unconnect),
+          legend = c("Flow-connected", "Flow-unconnected"), bty = "n",
+          pch = plch,
+          col = c(colr[1], colr[2]), y.intersp = 1.5)
    plot(c(0, max(result$EmpSemiVar$distance)), c(0, max(result$EmpSemiVar$gamma)),
         type = "n", xlab = "Euclidean Distance", ylab = "",
         main = "Empirical Semivariogram")

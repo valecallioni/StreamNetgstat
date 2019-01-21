@@ -4,11 +4,9 @@
 .DS_Store
 /mydev
 main
-main_RDD
 /data/topsecret
 *.Rhistory
 .idea
 cmake-build-debug
 *.pdf
 *.dll
-covMat.txt
