@@ -149,3 +149,4 @@ plot.torg <- function(x, sp.relationship = c("fc", "fu"),
     } else return("sp.relationship mis-specified")
   }
 }
+
