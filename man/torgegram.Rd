@@ -26,7 +26,7 @@ torgegram(ssn, ResponseName, maxlag = NULL, nlag = 6, inc = 0,
 A list.
 }
 \description{
-\code{Torgegram} computes the empirical semivariogram from the data based on hydrologic distance. The results are presented separately for flow-connected and flow-unconnected sites.
+\code{torgegram} computes the empirical semivariogram from the data based on hydrologic distance. The results are presented separately for flow-connected and flow-unconnected sites.
 }
 \details{
 The \code{torgegram} function creates a list of hydrologic distances and empirical semivariogram values, along with number of pairs of points in each bin, for both flow-connected and flow-unconnected sites. Flow-connected locations lie on the same stream network (share a common downstream junction) and water flows from one location to the other. Flow-unconnected locations also lie on the same stream network, but do not share flow. The output is of class \link[SSN]{Torgegram}.
@@ -34,5 +34,5 @@ The \code{torgegram} function creates a list of hydrologic distances and empiric
 \references{
 Peterson, E.E. and Ver Hoef, J.M. (2010) A mixed-model moving-average approach to geostatistical modeling in stream networks. Ecology 91(3), 644–651.
 
-Ver Hoef, J.M. and Peterson, E.E. (2010) A moving average approach for spatial statistical models of stream networks (with discussion). Journal of the American Statistical Association 105, 6–18. DOI: 10.1198/jasa.2009.ap08248. Rejoinder pgs. 22–24.
+Ver Hoef, J.M. and Peterson, E.E. (2010) A moving average approach for spatial statistical models of stream networks (with discussion). Journal of the American Statistical Association 105, 6–18.
 }
