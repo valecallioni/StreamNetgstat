@@ -59,7 +59,7 @@ plot.predictions <-
       par(mar = c(5,5,3,0))
       plot(ssn.object@bbox[1,],ssn.object@bbox[2,], type = "n",
            xlab = "x-coordinate", ylab = "y-coordinate",
-           main = paste("Prediction Variable = ", zcol, ":  Plotting", VarPlot), ...)
+           main = paste("Plotting", zcolplot, "values"), ...)
       for(i in 1:length(ssn.object@lines))
         for(j in 1:length(ssn.object@lines[[i]]))
           lines((ssn.object@lines[[i]]@Lines[[j]]@coords), ...)
@@ -157,8 +157,8 @@ plot.predictions <-
         min(datap[,zcolplot])*10^dec.dig))/10^dec.dig)
       up <- as.character(as.numeric(as.integer(
         max(datap[,zcolplot])*10^dec.dig))/10^dec.dig)
-      text(0, 1.3, paste("lowest pred =", lp), cex = .8)
-      text(0, .7, paste("highest pred =", up), cex = .8)
+      #text(0, 1.3, paste("lowest pred =", lp), cex = .8)
+      #text(0, .7, paste("highest pred =", up), cex = .8)
       par(par.orig)
     }
     

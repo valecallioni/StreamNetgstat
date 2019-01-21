@@ -25,7 +25,7 @@ get_SSN_model(ssn, varNames, weightVar, CorModels, useNugget = TRUE,
 
 \item{bounds}{a vector of doubles, representing the bounds for the parsills of the models considered. If a bound is required, all the models should have one. The highest can be set at 1e+04.}
 
-\item{useCholeskyDec}{If \code{TRUE} the Cholesky decomposition for inverting positive definite matrices is used in the optimization algorithm (quickest version, at the expense of accuracy). Default to \code{FALSE}.}
+\item{useCholeskyDec}{If \code{TRUE} the Cholesky decomposition for inverting positive definite matrices is always used in the optimization algorithm (quickest version, at the expense of accuracy). Default to \code{FALSE}.}
 }
 \value{
 A list with the following fields:
