@@ -496,9 +496,6 @@ RcppExport SEXP doSSNKriging_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP n
       designMatPred.col(i) = dataPred[varNames[i]];
     }
 
-    Rcpp::Rcout << "distHydroOP: \n" << distHydroOP.block(0,0,5,5) << "\n distHydroPO: \n" << distHydroPO.block(0,0,5,5) << "\n";
-    Rcpp::Rcout << "distGeoOP: \n" << distGeoOP.block(0,0,5,5) << "\n weightMatOP: \n" << weightMatOP.block(0,0,5,5) << "\n";
-
 
     Kriging universalKriging(designMatPred, designMat, covMatrix, distHydroOP, distHydroPO, distGeoOP,
       weightMatOP, flowMatOP.cast<int>(), optParam, dataObs[varNames[0]],
@@ -510,7 +507,6 @@ RcppExport SEXP doSSNKriging_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP n
 
 
     Rcpp::List result = Rcpp::List::create(Rcpp::Named("predictions") = universalKriging.getPredictions());
-    Rcpp::Rcout << "Result: \n" << universalKriging.getPredictions() << "\n";
 
     return Rcpp::wrap(result);
     END_RCPP
@@ -727,8 +723,6 @@ RcppExport SEXP getSSNModelKriging_MultipleNets (SEXP net_num, SEXP bin_tables, 
       designMatPred.col(i) = dataPred[varNames[i]];
     }
 
-    Rcpp::Rcout << "distHydroOP: \n" << distHydroOP.block(0,0,5,5) << "\n distHydroPO: \n" << distHydroPO.block(0,0,5,5) << "\n";
-    Rcpp::Rcout << "distGeoOP: \n" << distGeoOP.block(0,0,5,5) << " \n weightMatOP: \n" << weightMatOP.block(0,0,5,5) << "\n";
 
     Kriging universalKriging(designMatPred, designMat, solver.getCovMat(), distHydroOP, distHydroPO, distGeoOP,
       weightMatOP, flowMatOP.cast<int>(), solver.getOptimTheta(), dataObs[varNames[0]],
@@ -743,7 +737,6 @@ RcppExport SEXP getSSNModelKriging_MultipleNets (SEXP net_num, SEXP bin_tables, 
                                            Rcpp::Named("betaValues") = solver.getBeta(),
                                            Rcpp::Named("covMatrix") = solver.getCovMat(),
                                            Rcpp::Named("predictions") = universalKriging.getPredictions());
-    Rcpp::Rcout << "Result: \n" << universalKriging.getPredictions() << "\n";
 
 
     return Rcpp::wrap(result);
