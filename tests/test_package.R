@@ -61,6 +61,9 @@ simulated.ssn = createSSN(n = c(50,60), obsDesign = binomialDesign(c(70,85)), pr
 setwd("~/Desktop/OneDrive - Politecnico di Milano/PACS/Programming/PACSProject/Data")
 simulated.ssn = importSSN("SimNetwork_Results.ssn", predpts = "preds")
 
+setwd("~/Desktop/OneDrive - Politecnico di Milano/Tesi/RDD/Data")
+simulated.ssn = importSSN("SimNetwork_systematicDesign_02_preds.ssn", predpts = "preds")
+
 setwd("~/Desktop/OneDrive - Politecnico di Milano/PACS/Programming/PACSProject/Report/img")
 pdf(file = "Networks.pdf",width=7,height=6,paper="special") 
 plot(simulated.ssn, lwdLineCol = "addfunccol", lwdLineEx = 8, lineCol = "blue", pch = 1, 
@@ -80,7 +83,7 @@ set.seed(102)
 sim.out = SimulateOnSSN(simulated.ssn, ObsSimDF = DFobs, PredSimDF = DFpred, PredID = "preds",
                         formula = ~ X1 + X2, coefficients = c(2, 4, 0), 
                         CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), 
-                        use.nugget = T, CorParms = c(3, 8, 2, 10, 4, 12, 0.1), addfunccol = "addfunccol")
+                        use.nugget = T, CorParms = c(5, 8, 4, 10, 2, 9, 0.1), addfunccol = "addfunccol")
 sim.ssn = sim.out$ssn.object
 simDFobs = getSSNdata.frame(sim.ssn, "Obs")
 simDFpred = getSSNdata.frame(sim.ssn, "preds")
@@ -94,21 +97,39 @@ brks = plot(sim.ssn, "Sim_Values", lwdLineCol = "addfunccol", lwdLineEx = 15,
             lineCol = "black", xlab = "x-coordinate (m)", ylab= "y-coordinate (m)")
 dev.off()
 
-dist_matrices = get_plots(sim.ssn, "Sim_Values", T, nlag_Torg = 4)
-model = get_SSN_model(sim.ssn, varNames = c("Sim_Values", "X1", "X2"), weightVar = "addfunccol", CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), matrices = dist_matrices)
-kriging = do_SSN_kriging(sim.ssn, varNames = c("Sim_Values", "X1", "X2"), weightVar = "addfunccol", predpts = "preds", CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), theta = model$optTheta, covMat = model$covMatrix, matrices = dist_matrices)
+x11()
+dist_matrices = get_plots(sim.ssn, "Sim_Values", T)
+model = get_SSN_model(ssn = sim.ssn, varNames = c("Sim_Values", "X1", "X2"), weightVar = "addfunccol", CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), matrices = dist_matrices, bounds = NULL, useCholeskyDec = T)
+kriging = do_SSN_kriging(sim.ssn, varNames = c("Sim_Values", "X1", "X2"), weightVar = "addfunccol", predpts = "preds", CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), theta = model$modelParam, covMat = model$modelCovariance, matrices = dist_matrices)
 
-analysis = get_SSN_model_kriging(ssn = sim.ssn, varNames = c("Sim_Values", "X1", "X2"),
-                                 weightVar = "addfunccol", predpts = "preds",
-                                 CorModels = c("Exponential.tailup", "Exponential.taildown"))
+sim.obs = sim.ssn
+sim.obs@predpoints@SSNPoints[[1]]@network.point.coords = sim.obs@obspoints@SSNPoints[[1]]@network.point.coords
+sim.obs@predpoints@SSNPoints[[1]]@point.coords = sim.obs@obspoints@SSNPoints[[1]]@point.coords
+sim.obs@predpoints@SSNPoints[[1]]@point.data = sim.obs@obspoints@SSNPoints[[1]]@point.data
+sim.obs@predpoints@SSNPoints[[1]]@points.bbox = sim.obs@obspoints@SSNPoints[[1]]@points.bbox
 
-pdf(file = "Predictions.pdf",width=7,height=6,paper="special") 
-plot.predictions(analysis$ssn.object, VariableName = "Sim_Values", predpts = "preds", SEcex.max = 1, SEcex.min = 0.5/3*2, breaktype = "user", brks = brks)
+kriging_obs = do_SSN_kriging(sim.obs, varNames = c("Sim_Values", "X1", "X2"), weightVar = "addfunccol", predpts = "preds", CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), theta = model$modelParam, covMat = model$modelCovariance, matrices = dist_matrices)
+kriging_obs@predpoints@SSNPoints[[1]]@point.data = cbind.data.frame(kriging_obs@predpoints@SSNPoints[[1]]@point.data,
+                                                                            abs(sim.obs@obspoints@SSNPoints[[1]]@point.data["Sim_Values"] - kriging_obs@predpoints@SSNPoints[[1]]@point.data["Sim_Values_pred"]))
+colnames(kriging_obs@predpoints@SSNPoints[[1]]@point.data)[length(colnames(analysis$ssn.object@predpoints@SSNPoints[[1]]@point.data))] = "Diff_values_pred"
+plot.predictions(kriging_obs, "Diff_values", predpts = "preds", VarPlot = "Predictions", nclasses = 1)
+
+pdf(file = "Predictions_new.pdf",width=7,height=6,paper="special") 
+plot.predictions(kriging, VariableName = "Sim_Values", predpts = "preds", SEcex.max = 1, SEcex.min = 0.5/3*2, breaktype = "user", brks = brks)
+plot.predictions(kriging_obs, "Diff_values", predpts = "preds", VarPlot = "Predictions", nclasses = 1, color.palette = c("black"), add=T, SEcex.min = 0.2, SEcex.max = 0.2)
 dev.off()
+
+kriging@predpoints@SSNPoints[[1]]@point.data = cbind.data.frame(kriging@predpoints@SSNPoints[[1]]@point.data,
+                                                                abs(simpreds - kriging@predpoints@SSNPoints[[1]]@point.data["Sim_Values_pred"]))
+colnames(kriging@predpoints@SSNPoints[[1]]@point.data)[length(colnames(analysis$ssn.object@predpoints@SSNPoints[[1]]@point.data))] = "Diff_values_pred"
+pdf(file = "Prediction_error.pdf",width=7,height=6,paper="special") 
+plot.predictions(kriging, "Diff_values", predpts = "preds", VarPlot = "Predictions", nclasses = 4)
+dev.off()
+
 
 library(benchr)
 benchmark(
-  times = 5,
+  times = 10,
   cppPackage = get_SSN_model_kriging(sim.ssn, varNames = c("Sim_Values", "X1", "X2"), weightVar = "addfunccol",
                                      CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), predpts = "preds"),
   RPackage = funSSNPackage(sim.ssn, formula = Sim_Values ~ X1 + X2, predname = "preds")
