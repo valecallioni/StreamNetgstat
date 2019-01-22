@@ -34,7 +34,7 @@ namespace helpers {
 
   /**
   * Store a group of points, with all their attributes, belonging to different networks
-  * @param segmentsMap vector of maps, one per each network, that associates to each segmentID the StreamSegment object
+  * @param segmentsMaps vector of maps, one per each network, that associates to each segmentID the StreamSegment object
   * @param pointsMat matrix containing the attributes of the points
   * @param storage vector of vectors, one per each network, of Point objects, to be filled
   */

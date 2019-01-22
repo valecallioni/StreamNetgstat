@@ -60,7 +60,7 @@ public:
     void setNetworkID(const unsigned int netID) {networkID = netID;};
 
     /**
-    * @param rid, ID of the segment
+    * @param segID ID of the segment
     */
     void setSegmentID(const unsigned int segID) {segmentID = segID;};
 

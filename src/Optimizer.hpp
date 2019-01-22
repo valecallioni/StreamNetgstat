@@ -163,6 +163,7 @@ public:
   /**
   * Compute the initial simplex for the Nelder Mead algorithm
   * @param theta0 vector with the current values of the covariance parameters
+  * @param tau double added to component $i$ of theta0 to obtain the $i$th initial point of the simplex
   * @return TRUE if the current values of the covariance paramteres are within the bounds, FALSE otherwise
   */
   std::vector<std::pair<double, Eigen::VectorXd>> simplexInit(const Eigen::VectorXd& theta0, const double tau);

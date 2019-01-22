@@ -35,9 +35,9 @@ public:
 
   /**
   * A pure virtual member function to compute the covariance between two points
-  * @param h Euclidean distance between the points
+  * @param d Euclidean distance between the points
   */
-  virtual double computeCov(double h) = 0;
+  virtual double computeCov(double d) = 0;
 
   /**
   * Computes the covariance matrix from a distance matrix
@@ -80,7 +80,7 @@ public:
 
   /**
   * Compute the covariance between two points
-  * @param h Euclidean distance between the points
+  * @param d Euclidean distance between the points
   */
   double computeCov(double d) override;
 };
@@ -97,7 +97,7 @@ public:
 
   /**
   * Compute the covariance between two points
-  * @param h Euclidean distance between the points
+  * @param d Euclidean distance between the points
   */
   double computeCov(double d) override;
 };
@@ -114,7 +114,7 @@ public:
 
   /**
   * Compute the covariance between two points
-  * @param h Euclidean distance between the points
+  * @param d Euclidean distance between the points
   */
   double computeCov(double d) override;
 };
@@ -131,7 +131,7 @@ public:
 
   /**
   * Compute the covariance between two points
-  * @param h Euclidean distance between the points
+  * @param d Euclidean distance between the points
   */
   double computeCov(double d) override;
 };
