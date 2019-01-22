@@ -15,7 +15,24 @@ extern "C"{
 // ---------------------------------------------------------------------------------------------------------------------------
 // MULTIPLE NETWORKS FUNCTIONS
 
+/**
+* Functions to create distance matrices, fit a spatial linear model and perform Universal kriging on a spatial stream network
+* object, which has multiple networks.
+*/
+
 // COMPUTE HYDROLOGICAL DISTANCES
+/**
+* Compute the hydrological distances between observed points, as well as the flow-connection/unconnection binary matrix
+* @param net_num vector containing the networkID per each network of the data set
+* @param bin_tables list of vectors of strings, one vector per each network, containing the binaryIDs of the stream segments of
+* each network
+* @param network_data matrix whose columns correspond to the following attributes of the stream segments: networkID, segmentID, distance upstream
+* @param obs_points matrix whose columns correspond to the following attributes of the observed points: networkID, segmentID, distance upstream,
+* first coordinate, second coordinate
+* @return A list with the following fields:
+*   - 'flowMat' flow-connection/unconnection binary matrix
+*   - 'distHydro' hydrological distance matrix
+*/
 RcppExport SEXP createHydroDistanceMatrices_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP network_data,
   SEXP obs_points){
 
@@ -84,6 +101,19 @@ RcppExport SEXP createHydroDistanceMatrices_MultipleNets (SEXP net_num, SEXP bin
 }
 
 // COMPUTE HYDROLOGICAL AND EUCLIDEAN DISTANCES
+/**
+* Compute the hydrological and Euclidean distances between observed points, as well as the flow-connection/unconnection binary matrix
+* @param net_num vector containing the networkID per each network of the data set
+* @param bin_tables list of vectors of strings, one vector per each network, containing the binaryIDs of the stream segments of
+* each network
+* @param network_data matrix whose columns correspond to the following attributes of the stream segments: networkID, segmentID, distance upstream
+* @param obs_points matrix whose columns correspond to the following attributes of the observed points: networkID, segmentID, distance upstream,
+* first coordinate, second coordinate
+* @return A list with the following fields:
+*   - 'flowMat' flow-connection/unconnection binary matrix
+*   - 'distHydro' hydrological distance matrix
+*   - 'distGeo' Euclidean distance matrix
+*/
 RcppExport SEXP createDistanceMatrices_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP network_data,
   SEXP obs_points){
 
@@ -153,6 +183,26 @@ RcppExport SEXP createDistanceMatrices_MultipleNets (SEXP net_num, SEXP bin_tabl
 }
 
 // CREATE MODEL
+/**
+* Fit a spatial linear model on a spatial stream network
+* @param net_num vector containing the networkID per each network of the data set
+* @param bin_tables list of vector of strings, one vector per each network, containing the binaryIDs of the stream segments of
+* each network
+* @param network_data matrix whose columns correspond to the following attributes of the stream segments: networkID, segmentID, distance upstream
+* @param obs_points matrix whose columns correspond to the following attributes of the observed points: networkID, segmentID, distance upstream,
+* first coordinate, second coordinate
+* @param obs_data matrix whose columns correspond to the values of the responde variable and model covariates of the observed points
+* @param var_names vector of strings indicating first the name of the response variable and then the name of the covariates
+* @param model_names vector of strings indicating the covariance models selected
+* @param nugg boolean indicating if the nugget effect is to be considered in the mixed model
+* @param dist_matrices vector of distance matrices between observed points. It can be also NULL
+* @param model_bounds vector of upper bounds for the parsills of the covariance models. It can be also NULL
+* @param use_cholesky boolean indicating if the Cholesky decomposition is to be always preferred for computing the inverse of positive definite matrices
+* @return A list with the following fields:
+*   - 'optTheta' vector with the optimal values of the covariance parameters found through the model fitting
+*   - 'betaValues' vector with the coefficients of the linear model
+*   - 'covMatrix' covariance matrix computed using the optimal values of the covariance parameters
+*/
 RcppExport SEXP getSSNModel_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP network_data,
   SEXP obs_points, SEXP obs_data, SEXP var_names, SEXP model_names, SEXP nugg,
   SEXP dist_matrices, SEXP model_bounds, SEXP use_cholesky) {
@@ -322,6 +372,27 @@ RcppExport SEXP getSSNModel_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP ne
 }
 
 // DO KRIGING
+/**
+* Perform Universal kriging on a spatial stream network object
+* @param net_num vector containing the networkID per each network of the data set
+* @param bin_tables list of vector of strings, one vector per each network, containing the binaryIDs of the stream segments of
+* each network
+* @param network_data matrix whose columns correspond to the following attributes of the stream segments: networkID, segmentID, distance upstream
+* @param obs_points matrix whose columns correspond to the following attributes of the observed points: networkID, segmentID, distance upstream,
+* first coordinate, second coordinate
+* @param pred_points matrix whose columns correspond to the following attributes of the prediction points: networkID, segmentID, distance upstream,
+* first coordinate, second coordinate
+* @param obs_data matrix whose columns correspond to the values of the responde variable and model covariates of the observed points
+* @param pred_data matrix whose columns correspond to the values of the responde variable and model covariates of the prediction points
+* @param var_names vector of strings indicating first the name of the response variable and then the name of the covariates
+* @param model_names vector of strings indicating the covariance models selected
+* @param nugg boolean indicating if the nugget effect is to be considered in the mixed model
+* @param vector with the optimal values of the covariance parameters found through the model fitting
+* @param covariance matrix computed using the optimal values of the covariance parameters
+* @param dist_matrices vector of distance matrices between observed points. It can be also NULL
+* @return A list with the following fields:
+*   - 'predictions' 2-column matrix containing the predicted values and kriging variance of each prediction point
+*/
 RcppExport SEXP doSSNKriging_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP obs_points, SEXP pred_points,
   SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names, SEXP nugg, SEXP param, SEXP cov_mat, SEXP dist_matrices) {
 
@@ -514,6 +585,30 @@ RcppExport SEXP doSSNKriging_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP n
 }
 
 // CREATE MODEL and DO KRIGING
+/**
+* Fit a spatial linear model on a spatial stream network and perform Universal kriging
+* @param net_num vector containing the networkID per each network of the data set
+* @param bin_tables list of vector of strings, one vector per each network, containing the binaryIDs of the stream segments of
+* each network
+* @param network_data matrix whose columns correspond to the following attributes of the stream segments: networkID, segmentID, distance upstream
+* @param obs_points matrix whose columns correspond to the following attributes of the observed points: networkID, segmentID, distance upstream,
+* first coordinate, second coordinate
+* @param pred_points matrix whose columns correspond to the following attributes of the prediction points: networkID, segmentID, distance upstream,
+* first coordinate, second coordinate
+* @param obs_data matrix whose columns correspond to the values of the responde variable and model covariates of the observed points
+* @param pred_data matrix whose columns correspond to the values of the responde variable and model covariates of the prediction points
+* @param var_names vector of strings indicating first the name of the response variable and then the name of the covariates
+* @param model_names vector of strings indicating the covariance models selected
+* @param nugg boolean indicating if the nugget effect is to be considered in the mixed model
+* @param dist_matrices vector of distance matrices between observed points. It can be also NULL
+* @param model_bounds vector of upper bounds for the parsills of the covariance models. It can be also NULL
+* @param use_cholesky boolean indicating if the Cholesky decomposition is to be always preferred for computing the inverse of positive definite matrices
+* @return A list with the following fields:
+*   - 'optTheta' vector with the optimal values of the covariance parameters found through the model fitting
+*   - 'betaValues' vector with the coefficients of the linear model
+*   - 'covMatrix' covariance matrix computed using the optimal values of the covariance parameters
+*   - 'predictions' 2-column matrix containing the predicted values and kriging variance of each prediction point
+*/
 RcppExport SEXP getSSNModelKriging_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP network_data, SEXP obs_points, SEXP pred_points,
   SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names, SEXP nugg, SEXP dist_matrices, SEXP model_bounds, SEXP use_cholesky) {
 
@@ -750,8 +845,23 @@ RcppExport SEXP getSSNModelKriging_MultipleNets (SEXP net_num, SEXP bin_tables, 
 // ---------------------------------------------------------------------------------------------------------------------------
 // SINGLE NETWORK FUNCTIONS
 
+/**
+* Functions to create distance matrices, fit a spatial linear model and perform Universal kriging on a spatial stream network
+* object, which has one single network.
+*/
+
 // COMPUTE HYDROLOGICAL DISTANCES
-RcppExport SEXP createHydroDistanceMatrices_SingleNet (SEXP net_num, SEXP bin_table, SEXP network_data,
+/**
+* Compute the hydrological distances between observed points, as well as the flow-connection/unconnection binary matrix
+* @param bin_table vector of strings containing the binaryIDs of the stream segments of the network
+* @param network_data matrix whose columns correspond to the following attributes of the stream segments: networkID, segmentID, distance upstream
+* @param obs_points matrix whose columns correspond to the following attributes of the observed points: networkID, segmentID, distance upstream,
+* first coordinate, second coordinate
+* @return A list with the following fields:
+*   - 'flowMat' flow-connection/unconnection binary matrix
+*   - 'distHydro' hydrological distance matrix
+*/
+RcppExport SEXP createHydroDistanceMatrices_SingleNet (SEXP bin_table, SEXP network_data,
   SEXP obs_points){
 
   BEGIN_RCPP
@@ -806,7 +916,18 @@ RcppExport SEXP createHydroDistanceMatrices_SingleNet (SEXP net_num, SEXP bin_ta
 }
 
 // COMPUTE HYDROLOGICAL AND EUCLIDEAN DISTANCES
-RcppExport SEXP createDistanceMatrices_SingleNet (SEXP net_num, SEXP bin_table, SEXP network_data,
+/**
+* Compute the hydrological and Euclidean distances between observed points, as well as the flow-connection/unconnection binary matrix
+* @param bin_table vector of strings containing the binaryIDs of the stream segments of the network
+* @param network_data matrix whose columns correspond to the following attributes of the stream segments: networkID, segmentID, distance upstream
+* @param obs_points matrix whose columns correspond to the following attributes of the observed points: networkID, segmentID, distance upstream,
+* first coordinate, second coordinate
+* @return A list with the following fields:
+*   - 'flowMat' flow-connection/unconnection binary matrix
+*   - 'distHydro' hydrological distance matrix
+*   - 'distGeo' Euclidean distance matrix
+*/
+RcppExport SEXP createDistanceMatrices_SingleNet (SEXP bin_table, SEXP network_data,
   SEXP obs_points){
 
   BEGIN_RCPP
@@ -862,6 +983,24 @@ RcppExport SEXP createDistanceMatrices_SingleNet (SEXP net_num, SEXP bin_table, 
 }
 
 // CREATE MODEL
+/**
+* Fit a spatial linear model on a spatial stream network
+* @param bin_table vector of strings containing the binaryIDs of the stream segments of the network
+* @param network_data matrix whose columns correspond to the following attributes of the stream segments: networkID, segmentID, distance upstream
+* @param obs_points matrix whose columns correspond to the following attributes of the observed points: networkID, segmentID, distance upstream,
+* first coordinate, second coordinate
+* @param obs_data matrix whose columns correspond to the values of the responde variable and model covariates of the observed points
+* @param var_names vector of strings indicating first the name of the response variable and then the name of the covariates
+* @param model_names vector of strings indicating the covariance models selected
+* @param nugg boolean indicating if the nugget effect is to be considered in the mixed model
+* @param dist_matrices vector of distance matrices between observed points. It can be also NULL
+* @param model_bounds vector of upper bounds for the parsills of the covariance models. It can be also NULL
+* @param use_cholesky boolean indicating if the Cholesky decomposition is to be always preferred for computing the inverse of positive definite matrices
+* @return A list with the following fields:
+*   - 'optTheta' vector with the optimal values of the covariance parameters found through the model fitting
+*   - 'betaValues' vector with the coefficients of the linear model
+*   - 'covMatrix' covariance matrix computed using the optimal values of the covariance parameters
+*/
 RcppExport SEXP getSSNModel_SingleNet (SEXP bin_table, SEXP network_data,
   SEXP obs_points, SEXP obs_data, SEXP var_names, SEXP model_names, SEXP nugg,
   SEXP dist_matrices, SEXP model_bounds, SEXP use_cholesky) {
@@ -997,6 +1136,25 @@ RcppExport SEXP getSSNModel_SingleNet (SEXP bin_table, SEXP network_data,
 }
 
 // DO KRIGING
+/**
+* Perform Universal kriging on a spatial stream network object
+* @param bin_table vector of strings containing the binaryIDs of the stream segments of the network
+* @param network_data matrix whose columns correspond to the following attributes of the stream segments: networkID, segmentID, distance upstream
+* @param obs_points matrix whose columns correspond to the following attributes of the observed points: networkID, segmentID, distance upstream,
+* first coordinate, second coordinate
+* @param pred_points matrix whose columns correspond to the following attributes of the prediction points: networkID, segmentID, distance upstream,
+* first coordinate, second coordinate
+* @param obs_data matrix whose columns correspond to the values of the responde variable and model covariates of the observed points
+* @param pred_data matrix whose columns correspond to the values of the responde variable and model covariates of the prediction points
+* @param var_names vector of strings indicating first the name of the response variable and then the name of the covariates
+* @param model_names vector of strings indicating the covariance models selected
+* @param nugg boolean indicating if the nugget effect is to be considered in the mixed model
+* @param vector with the optimal values of the covariance parameters found through the model fitting
+* @param covariance matrix computed using the optimal values of the covariance parameters
+* @param dist_matrices vector of distance matrices between observed points. It can be also NULL
+* @return A list with the following fields:
+*   - 'predictions' 2-column matrix containing the predicted values and kriging variance of each prediction point
+*/
 RcppExport SEXP doSSNKriging_SingleNet (SEXP bin_table, SEXP network_data, SEXP obs_points, SEXP pred_points,
   SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names, SEXP nugg, SEXP param, SEXP cov_mat, SEXP dist_matrices) {
 
@@ -1156,6 +1314,28 @@ RcppExport SEXP doSSNKriging_SingleNet (SEXP bin_table, SEXP network_data, SEXP 
 }
 
 // CREATE MODEL and DO KRIGING
+/**
+* Fit a spatial linear model on a spatial stream network and perform Universal kriging
+* @param bin_table vector of strings containing the binaryIDs of the stream segments of the network
+* @param network_data matrix whose columns correspond to the following attributes of the stream segments: networkID, segmentID, distance upstream
+* @param obs_points matrix whose columns correspond to the following attributes of the observed points: networkID, segmentID, distance upstream,
+* first coordinate, second coordinate
+* @param pred_points matrix whose columns correspond to the following attributes of the prediction points: networkID, segmentID, distance upstream,
+* first coordinate, second coordinate
+* @param obs_data matrix whose columns correspond to the values of the responde variable and model covariates of the observed points
+* @param pred_data matrix whose columns correspond to the values of the responde variable and model covariates of the prediction points
+* @param var_names vector of strings indicating first the name of the response variable and then the name of the covariates
+* @param model_names vector of strings indicating the covariance models selected
+* @param nugg boolean indicating if the nugget effect is to be considered in the mixed model
+* @param dist_matrices vector of distance matrices between observed points. It can be also NULL
+* @param model_bounds vector of upper bounds for the parsills of the covariance models. It can be also NULL
+* @param use_cholesky boolean indicating if the Cholesky decomposition is to be always preferred for computing the inverse of positive definite matrices
+* @return A list with the following fields:
+*   - 'optTheta' vector with the optimal values of the covariance parameters found through the model fitting
+*   - 'betaValues' vector with the coefficients of the linear model
+*   - 'covMatrix' covariance matrix computed using the optimal values of the covariance parameters
+*   - 'predictions' 2-column matrix containing the predicted values and kriging variance of each prediction point
+*/
 RcppExport SEXP getSSNModelKriging_SingleNet (SEXP bin_table, SEXP network_data, SEXP obs_points, SEXP pred_points,
   SEXP obs_data, SEXP pred_data, SEXP var_names, SEXP model_names, SEXP nugg, SEXP dist_matrices, SEXP model_bounds, SEXP use_cholesky) {
 
