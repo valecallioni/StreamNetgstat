@@ -3,6 +3,7 @@
 #' @param ssn a \link[SSN]{SpatialStreamNetwork-class} object.
 #' @param ResponseName the name of the response variable.
 #' @param Euclidean If \code{TRUE} the Empirical Semivariogram based on Euclidean distances is also plotted.
+#' @param singleNet an interger, indicating the network ID that is to be analysed. Default to \code{NULL}, so that the analysis is carried on the entire dataset.
 #' @param maxlag_Torg the maximum lag distance to consider when binning pairs of locations by the hydrologic distance that separates them. The default is the median distance between all pairs of locations.
 #' @param nlag_Torg the number of lag bins to create for computing the Torgegram. The hydrologic distance between endpoints that define a bin will have equal lengths for all bins. The bin sizes are then determined from the minimum lag in the data, and the specification of maxlag_Torg.
 #' @param inc_Torg the bin hydrologic distance between endpoints. It is possible to specify the bin distance rather than nlag_Torg. In this case, the number of bins is determined by the bin distance and the hydrologic distance between the mininum and maximum (maxlag_Torg) lag in the data. 
@@ -24,14 +25,14 @@
 #' @export
 
 
-get_plots = function(ssn, ResponseName, Euclidean = FALSE, 
+get_plots = function(ssn, ResponseName, Euclidean = FALSE, singleNet = NULL,
                      maxlag_Torg = NULL, nlag_Torg = 6, inc_Torg = 0, nlagcutoff_Torg = 15, 
                      maxlag_EmpVar = 1e32, nlag_EmpVar = 20, inc_EmpVar = 0, nlagcutoff_EmpVar = 1, 
                      directions = c(0,45,90,135), tolerance = 22.5, EmpVarMeth = "MethMoment")
 {
   
   if(Euclidean){
-   result = emp_semivario_and_torg(ssn = ssn, ResponseName = ResponseName, 
+   result = emp_semivario_and_torg(ssn = ssn, ResponseName = ResponseName, singleNet = singleNet,
                                    maxlag_Torg = maxlag_Torg, nlag_Torg = nlag_Torg, inc_Torg = inc_Torg, nlagcutoff_Torg = nlagcutoff_Torg, 
                                    maxlag_EmpVar = maxlag_EmpVar, nlag_EmpVar = nlag_EmpVar, inc_EmpVar = inc_EmpVar, nlagcutoff_EmpVar = nlagcutoff_EmpVar, 
                                    directions = directions, tolerance = tolerance, EmpVarMeth = EmpVarMeth)
@@ -62,7 +63,7 @@ get_plots = function(ssn, ResponseName, Euclidean = FALSE,
   }
   
   else {
-    result = torgegram(ssn = ssn, ResponseName, maxlag = maxlag_Torg, nlag = nlag_Torg, 
+    result = torgegram(ssn = ssn, ResponseName, singleNet = singleNet, maxlag = maxlag_Torg, nlag = nlag_Torg, 
                        inc = inc_Torg, nlagcutoff = nlagcutoff_Torg, EmpVarMeth = "MethMoment")
     plot(result$Torg, main = "Torgegram") 
   }
