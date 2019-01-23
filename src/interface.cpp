@@ -838,7 +838,6 @@ RcppExport SEXP getSSNModelKriging_MultipleNets (SEXP net_num, SEXP bin_tables, 
                                            Rcpp::Named("covMatrix") = solver.getCovMat(),
                                            Rcpp::Named("predictions") = universalKriging.getPredictions());
 
-
     return Rcpp::wrap(result);
     END_RCPP
 

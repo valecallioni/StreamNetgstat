@@ -7,7 +7,7 @@ library(RcppEigen)
 dyn.load("/vagrant/PACSProject/StreamNetgstat/src/interface.so")
 # load("/vagrant/PACSProject/Data/middlefork_singleNet2.RData")
 # load("/vagrant/PACSProject/Data/matrices_missouri.RData")
-load("/vagrant/PACSProject/Data/Rdata_kriging.RData")
+load("/vagrant/PACSProject/Data/Rdata_model_kriging.RData")
 
 
 # result = get_SSN_model(c("STREAM_AUG", "ELEV"), "afvArea",
@@ -50,10 +50,10 @@ load("/vagrant/PACSProject/Data/Rdata_kriging.RData")
 # print(dim(matrices$distGeo))
 
 
-# result = .Call("getSSNModelKriging_MultipleNets", net_num, bin_tables, data.matrix(network_data),
-#                data.matrix(obs_points), data.matrix(pred_points), data.matrix(obs_data), data.matrix(pred_data), 
-#                c(varNames, weightVar), CorModels, useNugget, matrices, bounds, useCholeskyDec)
+result = .Call("getSSNModelKriging_MultipleNets", net_num, bin_tables, data.matrix(network_data),
+               data.matrix(obs_points), data.matrix(pred_points), data.matrix(obs_data), data.matrix(pred_data),
+               c(varNames, weightVar), CorModels, useNugget, matrices, bounds, useCholeskyDec)
 
-result = .Call("doSSNKriging_MultipleNets", net_num, bin_tables, data.matrix(network_data),
-               data.matrix(obs_points), data.matrix(pred_points), data.matrix(obs_data), data.matrix(pred_data), 
-               c(varNames, weightVar), CorModels, useNugget, theta, covMat, matrices)
+# result = .Call("doSSNKriging_MultipleNets", net_num, bin_tables, data.matrix(network_data),
+#                data.matrix(obs_points), data.matrix(pred_points), data.matrix(obs_data), data.matrix(pred_data), 
+#                c(varNames, weightVar), CorModels, useNugget, theta, covMat, matrices)

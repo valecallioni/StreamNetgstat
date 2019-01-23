@@ -133,6 +133,6 @@ library(benchr)
 benchmark(
   times = 5,
   cppPackage = get_SSN_model_kriging(sim.ssn, varNames = c("Sim_Values", "X1", "X2"), weightVar = "addfunccol",
-                                     CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), predpts = "preds", singleNet = 1),
+                                     CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), predpts = "preds"),
   RPackage = funSSNPackage(sim.ssn, formula = Sim_Values ~ X1 + X2, predname = "preds")
 )
