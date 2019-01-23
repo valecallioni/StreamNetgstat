@@ -7,10 +7,6 @@
 #include "Factory.hpp"
 #include "Proxy.hpp"
 
-/**
- * Typedefs for the factory
-*/
-
 namespace tailup_factory {
   /**
   * \var typedef generic_factory::Factory<TailUpModel, std::string> TailUpFactory;

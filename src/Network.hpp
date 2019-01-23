@@ -79,7 +79,7 @@ public:
     const Eigen::MatrixXi& getFlowMatOO() const {return obspoints.getFlowMat();};
 
     /**
-    * @return the flow-connection/unconnection binary matrix between observed points and prediction points
+    * @return the flow-connection/unconnection binary matrix observed-prediction points
     */
     const Eigen::MatrixXi& getFlowMatOP() const {return flowMatOP;};
 
@@ -94,7 +94,7 @@ public:
     const Eigen::MatrixXd& getDistGeoOO() const {return obspoints.getDistGeo();};
 
     /**
-    * @return the Euclidean distance matrix between observed points and prediction points
+    * @return the Euclidean distance matrix observed-prediction points
     */
     const Eigen::MatrixXd& getDistGeoOP() const {return distGeoOP;};
 
@@ -109,12 +109,12 @@ public:
     const Eigen::MatrixXd& getDistHydroOO() const {return obspoints.getDistHydro();};
 
     /**
-    * @return the hydrological distance matrix between observed points and prediction points
+    * @return the hydrological distance matrix between observed-prediction points
     */
     const Eigen::MatrixXd& getDistHydroOP() const {return distHydroOP;};
 
     /**
-    * @return the hydrological distance matrix between prediction points and observed points
+    * @return the hydrological distance matrix between prediction-observed points
     */
     const Eigen::MatrixXd& getDistHydroPO() const {return distHydroPO;};
 
@@ -141,7 +141,7 @@ public:
 
     /**
     * Set the distance matrices regarding the relationships between the observed points and
-    * then compute the distance matrices whose rows represent the observed points and whose columns representing the predicion points
+    * then compute the distance matrices whose rows represent the observed points and whose columns represent the predicion points
     * @param geo boolean, indicating if the Euclidean distances have to be computed
     * @param matrices vector of matrices regarding the group of observed points
     */

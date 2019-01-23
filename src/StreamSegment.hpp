@@ -19,7 +19,7 @@ private:
 
 public:
     /**
-    * Default constructor.
+    * Default constructor
     */
     StreamSegment() = default;
 

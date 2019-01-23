@@ -11,7 +11,7 @@
 
 /**
 * Points class, representing a group of points, observed or prediction ones.
-* Each group has three matrices used in computing the covariance matrix: the
+* Each group has three matrices that will be used in computing the covariance matrix: the
 * flow-connection/unconnection binary matrix, the hydrological and Euclidean distance matrices.
 */
 
@@ -26,12 +26,12 @@ private:
 
 public:
   /**
-  * Default constructor.
+  * Default constructor
   */
   Points() = default;
 
   /**
-  * Constructor.
+  * Constructor
   * @param p vector containing the Point-objects
   */
   Points(const std::vector<Point>& p);

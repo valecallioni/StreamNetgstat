@@ -24,12 +24,12 @@ protected:
 
 public:
     /**
-    * Default constructor.
+    * Default constructor
     */
     Point() = default;
 
     /**
-    * Constructor for an observed point.
+    * Constructor for an observed point
     * @param r ID of the segment
     * @param binID binaryID of the segment
     * @param dist distance upstream
@@ -41,7 +41,7 @@ public:
             const double coord1, const double coord2);
 
     /**
-    * Constructor for a prediction point.
+    * Constructor for a prediction point
     * @param r ID of the segment
     * @param binID binaryID of the segment
     * @param dist distance upstream
@@ -104,7 +104,7 @@ public:
     void setDistUpstream(const double distUp) {distUpstream = distUp;};
 
     /**
-    * @param binID binaryID of the segment, to be decomposed into a vector of characters;
+    * @param binID binaryID of the segment, to be decomposed into a vector of characters
     */
     void setBinaryID(const std::string& binID);
 

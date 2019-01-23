@@ -46,7 +46,7 @@ public:
 
     /**
     * Operator to extract a column of the data frame
-    * @param key constant string indicating the name of the variable whose column is to be extracted
+    * @param key string indicating the name of the variable whose column is to be extracted
     * @return The column of the data frame corresponding to the variable selected
     */
     const Eigen::VectorXd& operator[](const std::string& key) const;

@@ -20,7 +20,7 @@
 
 /**
 * Kriging class, for performing universal kriging.
-* It calculates prediction values and kriging variance for prediction sites based on the results of a linear model.
+* It calculates prediction values and kriging variance for prediction sites based on the results of a linear model fitting.
 * The matrices, used for computing the covariance, describe relationships between observed and prediction points.
 */
 
@@ -71,7 +71,7 @@ public:
   * @param D Euclidean distance matrix
   * @param wMat weight matrix for tail-up model
   * @param connMat flow-connection/unconnection binary matrix
-  * @param param
+  * @param param vector with the covariance parameters values
   * @param y vector of the response variable values
   * @param tailup_ptr pointer to the tail-up model selected
   * @param taildown_ptr pointer to the tail-down model selected
