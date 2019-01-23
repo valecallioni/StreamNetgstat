@@ -72,7 +72,7 @@ torgegram = function(ssn, ResponseName, singleNet = NULL, maxlag = NULL, nlag = 
   indx <- sapply(obs_data, is.factor)
   obs_data[indx] <- lapply(obs_data[indx], function(x) as.numeric(as.character(x)))
   obs_points = obs_points[order(obs_points$NetworkID, obs_data$pid),]
-  obs_data = obs_data[order(obs_data$netID, obs_data$pid),c(varNames, weightVar)]
+  obs_data = obs_data[order(obs_data$netID, obs_data$pid),ResponseName]
   
   if (!is.null(singleNet)) {
     matrices = .Call("createDistanceMatrices_SingleNets", bin.table, data.matrix(network_data), data.matrix(obs_points))
