@@ -4,19 +4,21 @@
 \alias{torgegram}
 \title{Compute the Torgegram for a Spatial Stream Network object}
 \usage{
-torgegram(ssn, ResponseName, maxlag = NULL, nlag = 6, inc = 0,
-  nlagcutoff = 15, EmpVarMeth = "MethMoment")
+torgegram(ssn, ResponseName, singleNet = NULL, maxlag = NULL,
+  nlag = 6, inc = 0, nlagcutoff = 15, EmpVarMeth = "MethMoment")
 }
 \arguments{
 \item{ssn}{a \link[SSN]{SpatialStreamNetwork-class} object.}
 
 \item{ResponseName}{the name of the response variable.}
 
-\item{maxlag}{the maximum lag distance to consider when binning pairs of locations by the hydrologic distance that separates them. The default is the median distance between all pairs of locations.}
+\item{singleNet}{an interger, indicating the network ID that is to be analysed. Default to \code{NULL}, so that the analysis is carried on the entire dataset.}
 
-\item{nlag}{the number of lag bins to create for computing the Torgegram. The hydrologic distance between endpoints that define a bin will have equal lengths for all bins. The bin sizes are then determined from the minimum lag in the data, and the specification of maxlag_Torg.}
+\item{maxlag}{the maximum lag distance to consider when binning pairs of locations by the hydrological distance that separates them. The default is the median distance between all pairs of locations.}
 
-\item{inc}{the bin hydrologic distance between endpoints. It is possible to specify the bin distance rather than nlag_Torg. In this case, the number of bins is determined by the bin distance and the hydrologic distance between the mininum and maximum (maxlag_Torg) lag in the data.}
+\item{nlag}{the number of lag bins to create for computing the Torgegram. The hydrological distance between endpoints that define a bin will have equal lengths for all bins. The bin sizes are then determined from the minimum lag in the data, and the specification of maxlag_Torg.}
+
+\item{inc}{the bin hydrological distance between endpoints. It is possible to specify the bin distance rather than nlag_Torg. In this case, the number of bins is determined by the bin distance and the hydrological distance between the mininum and maximum (maxlag_Torg) lag in the data.}
 
 \item{nlagcutoff}{the minimum number of pairs needed to estimate the semivariance for a bin in the Torgegram computation. If the sample sizes is less than this value, the semivariance for the bin is not calculated.}
 
@@ -26,10 +28,10 @@ torgegram(ssn, ResponseName, maxlag = NULL, nlag = 6, inc = 0,
 A list.
 }
 \description{
-\code{torgegram} computes the empirical semivariogram from the data based on hydrologic distance. The results are presented separately for flow-connected and flow-unconnected sites.
+\code{torgegram} computes the empirical semivariogram from the data based on hydrological distance. The results are presented separately for flow-connected and flow-unconnected sites.
 }
 \details{
-The \code{torgegram} function creates a list of hydrologic distances and empirical semivariogram values, along with number of pairs of points in each bin, for both flow-connected and flow-unconnected sites. Flow-connected locations lie on the same stream network (share a common downstream junction) and water flows from one location to the other. Flow-unconnected locations also lie on the same stream network, but do not share flow. The output is of class \link[SSN]{Torgegram}.
+The \code{torgegram} function creates a list of hydrological distances and empirical semivariogram values, along with number of pairs of points in each bin, for both flow-connected and flow-unconnected sites. Flow-connected locations lie on the same stream network (share a common downstream junction) and water flows from one location to the other. Flow-unconnected locations also lie on the same stream network, but do not share flow. The output is of class \link[SSN]{Torgegram}.
 }
 \references{
 Peterson, E.E. and Ver Hoef, J.M. (2010) A mixed-model moving-average approach to geostatistical modeling in stream networks. Ecology 91(3), 644–651.

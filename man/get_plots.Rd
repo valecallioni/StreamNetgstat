@@ -4,11 +4,11 @@
 \alias{get_plots}
 \title{Plot the Torgegram and the Empirical Semivariogram for a Spatial Stream Network object}
 \usage{
-get_plots(ssn, ResponseName, Euclidean = FALSE, maxlag_Torg = NULL,
-  nlag_Torg = 6, inc_Torg = 0, nlagcutoff_Torg = 15,
-  maxlag_EmpVar = 1e+32, nlag_EmpVar = 20, inc_EmpVar = 0,
-  nlagcutoff_EmpVar = 1, directions = c(0, 45, 90, 135),
-  tolerance = 22.5, EmpVarMeth = "MethMoment")
+get_plots(ssn, ResponseName, Euclidean = FALSE, singleNet = NULL,
+  maxlag_Torg = NULL, nlag_Torg = 6, inc_Torg = 0,
+  nlagcutoff_Torg = 15, maxlag_EmpVar = 1e+32, nlag_EmpVar = 20,
+  inc_EmpVar = 0, nlagcutoff_EmpVar = 1, directions = c(0, 45, 90,
+  135), tolerance = 22.5, EmpVarMeth = "MethMoment")
 }
 \arguments{
 \item{ssn}{a \link[SSN]{SpatialStreamNetwork-class} object.}
@@ -17,11 +17,13 @@ get_plots(ssn, ResponseName, Euclidean = FALSE, maxlag_Torg = NULL,
 
 \item{Euclidean}{If \code{TRUE} the Empirical Semivariogram based on Euclidean distances is also plotted.}
 
-\item{maxlag_Torg}{the maximum lag distance to consider when binning pairs of locations by the hydrologic distance that separates them. The default is the median distance between all pairs of locations.}
+\item{singleNet}{an interger, indicating the network ID that is to be analysed. Default to \code{NULL}, so that the analysis is carried on the entire dataset.}
 
-\item{nlag_Torg}{the number of lag bins to create for computing the Torgegram. The hydrologic distance between endpoints that define a bin will have equal lengths for all bins. The bin sizes are then determined from the minimum lag in the data, and the specification of maxlag_Torg.}
+\item{maxlag_Torg}{the maximum lag distance to consider when binning pairs of locations by the hydrological distance that separates them. The default is the median distance between all pairs of locations.}
 
-\item{inc_Torg}{the bin hydrologic distance between endpoints. It is possible to specify the bin distance rather than nlag_Torg. In this case, the number of bins is determined by the bin distance and the hydrologic distance between the mininum and maximum (maxlag_Torg) lag in the data.}
+\item{nlag_Torg}{the number of lag bins to create for computing the Torgegram. The hydrological distance between endpoints that define a bin will have equal lengths for all bins. The bin sizes are then determined from the minimum lag in the data, and the specification of maxlag_Torg.}
+
+\item{inc_Torg}{the bin hydrological distance between endpoints. It is possible to specify the bin distance rather than nlag_Torg. In this case, the number of bins is determined by the bin distance and the hydrological distance between the mininum and maximum (maxlag_Torg) lag in the data.}
 
 \item{nlagcutoff_Torg}{the minimum number of pairs needed to estimate the semivariance for a bin in the Torgegram computation. If the sample sizes is less than this value, the semivariance for the bin is not calculated.}
 
@@ -40,10 +42,10 @@ get_plots(ssn, ResponseName, Euclidean = FALSE, maxlag_Torg = NULL,
 \item{EmpVarMeth}{method for computing semivariances. The default is "MethMoment", the classical method of moments, which is just the average difference-squared within bin classes. "Covariance" computes covariance rather than semivariance, but may be more biased because it subtracts off the simple mean of the response variable. "RobustMedian" and "RobustMean" are robust estimators proposed by Cressie and Hawkins (1980). If v is a vector of all pairwise square-roots of absolute differences within a bin class, then RobustMedian computes median(v)^4/.457. "RobustMean" computes mean(v)^4/(.457 + .494/length(v)).}
 }
 \value{
-A list of distance matrices, containing the flow-connection binary matrix, the hydrologic distance matrix and, not necessarily, the Euclidean distance matrix. These matrices consider the relationships between observed points..
+A list of distance matrices, containing the flow-connection binary matrix, the hydrological distance matrix and, not necessarily, the Euclidean distance matrix. These matrices consider the relationships between observed points..
 }
 \description{
-Given a \link[SSN]{SpatialStreamNetwork-class} object, computes the Torgegram (empirical semivariogram from the data based on hydrologic distance) and the empirical semivariogram from the data based on the Euclidean distance. It provides the plots, useful for a complete spatial analysis of a stream network.
+Given a \link[SSN]{SpatialStreamNetwork-class} object, computes the Torgegram (empirical semivariogram from the data based on hydrological distance) and the empirical semivariogram from the data based on the Euclidean distance. It provides the plots, useful for a complete spatial analysis of a stream network.
 }
 \references{
 Peterson, E.E. and Ver Hoef, J.M. (2010) A mixed-model moving-average approach to geostatistical modeling in stream networks. Ecology 91(3), 644–651.

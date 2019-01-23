@@ -24,7 +24,7 @@ get_SSN_model_kriging(ssn, varNames, weightVar, predpts, CorModels,
 
 \item{singleNet}{an interger, indicating the network ID that is to be analysed. Default to \code{NULL}, so that the analysis is carried on the entire dataset.}
 
-\item{matrices}{a vector of matrices, containing the flow-connection binary matrix, the hydrologic distance matrix and, not necessarily, the Euclidean distance matrix, returned by the function \link[StreamNetgstat]{get_plots}. These matrices consider the relationships between observed points.}
+\item{matrices}{a vector of matrices, containing the flow-connection binary matrix, the hydrological distance matrix and, not necessarily, the Euclidean distance matrix, returned by the function \link[StreamNetgstat]{get_plots}. These matrices consider the relationships between observed points.}
 
 \item{bounds}{a vector of doubles, representing the bounds for the parsills of the models considered. If a bound is required, all the models should have one. The highest can be set at 1e+04.}
 

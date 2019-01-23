@@ -26,7 +26,7 @@ do_SSN_kriging(ssn, varNames, weightVar, predpts, CorModels,
 
 \item{singleNet}{an interger, indicating the network ID that is to be analysed. Default to \code{NULL}, so that the analysis is carried on the entire dataset.}
 
-\item{matrices}{a vector of matrices, containing the flow-connection binary matrix, the hydrologic distance matrix and, not necessarily, the Euclidean distance matrix, returned by the function \link[StreamNetgstat]{get_plots}. These matrices consider the relationships between observed points.}
+\item{matrices}{a vector of matrices, containing the flow-connection binary matrix, the hydrological distance matrix and, not necessarily, the Euclidean distance matrix, returned by the function \link[StreamNetgstat]{get_plots}. These matrices consider the relationships between observed points.}
 }
 \value{
 A \code{ssn.object}{ (updated \link[SSN]{SpatialStreamNetwork-class} object), with predicted values included }
