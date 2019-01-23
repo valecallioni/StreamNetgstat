@@ -9,7 +9,7 @@
 #include <iostream>
 #include <cmath>
 
-/**
+/*! \file
 * Dataframe class, representing a dataframe as a matrix with labeled columns.
 * Labels are the names of the variables.
 */

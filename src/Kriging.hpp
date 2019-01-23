@@ -18,7 +18,7 @@
 #include "TailDownModel.hpp"
 #include "EuclideanModel.hpp"
 
-/**
+/*! \file
 * Kriging class, for performing universal kriging.
 * It calculates prediction values and kriging variance for prediction sites based on the results of a linear model fitting.
 * The matrices, used for computing the covariance, describe relationships between observed and prediction points.

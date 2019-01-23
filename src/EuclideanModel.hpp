@@ -5,7 +5,7 @@
 #include <cmath>
 #include <iostream>
 
-/**
+/*! \file
 * Abstract class for the Euclidean covariance model.
 */
 

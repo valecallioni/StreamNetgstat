@@ -18,7 +18,7 @@
 #include "TailDownModel.hpp"
 #include "EuclideanModel.hpp"
 
-/**
+/*! \file
 * Optimizer class, for fitting a spatial linear model with spatially autocorrelated errors using normal likelihood methods.
 * The optimization is performed via the Nelder-Mead algorithm.
 * It uses matrices regarding relationships between observed points.

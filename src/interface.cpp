@@ -10,6 +10,11 @@
 #include "Optimizer.hpp"
 #include "Kriging.hpp"
 
+/*! \file
+* Functions to create distance matrices, fit a spatial linear model and perform Universal kriging on a spatial stream network
+* object, when the data set has multiple networks or a single one.
+*/
+
 extern "C"{
 
 // ---------------------------------------------------------------------------------------------------------------------------
@@ -387,8 +392,8 @@ RcppExport SEXP getSSNModel_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP ne
 * @param var_names vector of strings indicating first the name of the response variable and then the name of the covariates
 * @param model_names vector of strings indicating the covariance models selected
 * @param nugg boolean indicating if the nugget effect is to be considered in the mixed model
-* @param vector with the optimal values of the covariance parameters found through the model fitting
-* @param covariance matrix computed using the optimal values of the covariance parameters
+* @param param vector with the optimal values of the covariance parameters found through the model fitting
+* @param cov_mat covariance matrix computed using the optimal values of the covariance parameters
 * @param dist_matrices vector of distance matrices between observed points. It can be also NULL
 * @return A list with the following fields:
 *   - 'predictions' 2-column matrix containing the predicted values and kriging variance of each prediction point
@@ -1149,8 +1154,8 @@ RcppExport SEXP getSSNModel_SingleNet (SEXP bin_table, SEXP network_data,
 * @param var_names vector of strings indicating first the name of the response variable and then the name of the covariates
 * @param model_names vector of strings indicating the covariance models selected
 * @param nugg boolean indicating if the nugget effect is to be considered in the mixed model
-* @param vector with the optimal values of the covariance parameters found through the model fitting
-* @param covariance matrix computed using the optimal values of the covariance parameters
+* @param param vector with the optimal values of the covariance parameters found through the model fitting
+* @param cov_mat covariance matrix computed using the optimal values of the covariance parameters
 * @param dist_matrices vector of distance matrices between observed points. It can be also NULL
 * @return A list with the following fields:
 *   - 'predictions' 2-column matrix containing the predicted values and kriging variance of each prediction point

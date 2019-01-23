@@ -9,7 +9,7 @@
 #include <type_traits>
 #include <Rcpp.h>
 
-/**
+/*! \file
 * Factory class
 */
 

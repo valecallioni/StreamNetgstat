@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 
-/**
+/*! \file
 * StreamSegment class, representing a segment of a stream network as a continuous line.
 * Each segment has an ID (rid) and a binaryID representing the position in the network.
 */

@@ -8,7 +8,7 @@
 #include "Points.hpp"
 #include "Helpers.hpp"
 
-/**
+/*! \file
 * Network class, representing a single network of the data set.
 */
 

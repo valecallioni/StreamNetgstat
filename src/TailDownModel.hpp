@@ -5,7 +5,7 @@
 #include <Eigen/Dense>
 #include <iostream>
 
-/**
+/*! \file
 * Abstract class for the tail-down covariance model.
 */
 
@@ -17,12 +17,12 @@ protected:
 
 public:
   /**
-  * Default constructor.
+  * Default constructor
   */
   TailDownModel() = default;
 
   /**
-  * Default destructor.
+  * Default destructor
   */
   virtual ~TailDownModel() =  default;
 
@@ -92,7 +92,7 @@ public:
 class LinearWithSillTD : public TailDownModel{
 public:
   /**
-  * Default destructor.
+  * Default destructor
   */
   ~LinearWithSillTD() =  default;
 
@@ -116,7 +116,7 @@ public:
 class SphericalTD : public TailDownModel{
 public:
   /**
-  * Default destructor.
+  * Default destructor
   */
   ~SphericalTD() =  default;
 

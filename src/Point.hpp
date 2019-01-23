@@ -5,7 +5,7 @@
 #include <vector>
 #include <iostream>
 
-/**
+/*! \file
 * Point class, representing a single point, observed or for prediction.
 * Each point has information about the binaryID and the rid of the segment it lies on,
 * its upstream distance and its coordinates.

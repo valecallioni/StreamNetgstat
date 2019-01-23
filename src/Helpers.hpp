@@ -8,7 +8,7 @@
 
 class Network;
 
-/**
+/*! \file
 * Helpers functions.
 */
 

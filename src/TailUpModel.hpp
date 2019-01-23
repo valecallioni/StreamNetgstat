@@ -5,7 +5,7 @@
 #include <Eigen/Dense>
 #include <iostream>
 
-/**
+/*! \file
 * Abstract class for the tail-up covariance model.
 */
 

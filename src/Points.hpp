@@ -9,7 +9,7 @@
 #include "Point.hpp"
 #include "StreamSegment.hpp"
 
-/**
+/*! \file
 * Points class, representing a group of points, observed or prediction ones.
 * Each group has three matrices that will be used in computing the covariance matrix: the
 * flow-connection/unconnection binary matrix, the hydrological and Euclidean distance matrices.

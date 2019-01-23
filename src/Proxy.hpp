@@ -5,7 +5,7 @@
 #include <iostream>
 #include <type_traits>
 
-/**
+/*! \file
 * Proxy class
 */
 
