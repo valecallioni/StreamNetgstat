@@ -8,7 +8,7 @@
 #' @param CorModels a vector of strings, the names of the covariance models.
 #' @param useNugget If \code{FALSE} the nugget effect is not included in the model. Default to \code{TRUE}.
 #' @param singleNet an interger, indicating the network ID that is to be analysed. Default to \code{NULL}, so that the analysis is carried on the entire dataset.
-#' @param matrices a vector of matrices, containing the flow-connection binary matrix, the hydrologic distance matrix and, not necessarily, the Euclidean distance matrix, returned by the function \link[StreamNetgstat]{get_plots}. These matrices consider the relationships between observed points. 
+#' @param matrices a vector of matrices, containing the flow-connection binary matrix, the hydrological distance matrix and, not necessarily, the Euclidean distance matrix, returned by the function \link[StreamNetgstat]{get_plots}. These matrices consider the relationships between observed points. 
 #' @param bounds a vector of doubles, representing the bounds for the parsills of the models considered. If a bound is required, all the models should have one. The highest can be set at 1e+04.
 #' @param useCholeskyDec If \code{TRUE} the Cholesky decomposition for inverting positive definite matrices is always used in the optimization algorithm (quickest version, at the expense of accuracy). Default to \code{FALSE}.
 #' @return A list with the following fields:
