@@ -75,9 +75,9 @@ torgegram = function(ssn, ResponseName, singleNet = NULL, maxlag = NULL, nlag = 
   obs_data = obs_data[order(obs_data$netID, obs_data$pid),ResponseName]
   
   if (!is.null(singleNet)) {
-    matrices = .Call("createDistanceMatrices_SingleNets", bin.table, data.matrix(network_data), data.matrix(obs_points))
+    matrices = .Call("createHydroDistanceMatrices_SingleNet", bin.table, data.matrix(network_data), data.matrix(obs_points))
   } else {
-    matrices = .Call("createDistanceMatrices_MultipleNets", net_num, bin_tables, data.matrix(network_data), data.matrix(obs_points))
+    matrices = .Call("createHydroDistanceMatrices_MultipleNets", net_num, bin_tables, data.matrix(network_data), data.matrix(obs_points))
   }
   
   Dif2s = NULL
@@ -87,7 +87,7 @@ torgegram = function(ssn, ResponseName, singleNet = NULL, maxlag = NULL, nlag = 
   Covp = NULL
   mnz = mean(obs_data, na.rm = TRUE)
   nsofar = 0
-  nObs = table(network_data[,"NetworkID"])
+  nObs = table(obs_points[,"NetworkID"])
   for (i in 1:length(nObs)){
     Ds = t(matrices$distHydro[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])]) + matrices$distHydro[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])]
     FCs = matrices$flowMat[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])] + diag(1, nObs[i])

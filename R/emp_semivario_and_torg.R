@@ -101,7 +101,7 @@ emp_semivario_and_torg = function(ssn, ResponseName, singleNet = NULL,
   Covp = NULL
   mnz = mean(obs_data, na.rm = TRUE)
   nsofar = 0
-  nObs = table(network_data[,"NetworkID"])
+  nObs = table(obs_points[,"NetworkID"])
   for (i in 1:length(nObs)){
     Ds = t(matrices$distHydro[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])]) + matrices$distHydro[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])]
     FCs = matrices$flowMat[(nsofar+1):(nsofar + nObs[i]), (nsofar+1):(nsofar + nObs[i])] + diag(1, nObs[i])
