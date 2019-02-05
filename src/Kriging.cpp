@@ -1,40 +1,41 @@
 #include "Kriging.hpp"
 
-Kriging::Kriging(const Eigen::MatrixXd& dMatPred, const Eigen::MatrixXd& dMatObs, const Eigen::MatrixXd& V,
-  const Eigen::MatrixXd& Nop, const Eigen::MatrixXd& Npo, const Eigen::MatrixXd& D, const Eigen::MatrixXd& wMat, const Eigen::MatrixXi& connMat,
-  const Eigen::VectorXd& param, const Eigen::VectorXd& y, std::unique_ptr<TailUpModel>& tailup_ptr,
+Kriging::Kriging(std::shared_ptr<Eigen::MatrixXd> dMatPred, std::shared_ptr<Eigen::MatrixXd> dMatObs, std::shared_ptr<Eigen::MatrixXd> V,
+  std::shared_ptr<Eigen::MatrixXd> Nop, std::shared_ptr<Eigen::MatrixXd> Npo, std::shared_ptr<Eigen::MatrixXd> D, std::shared_ptr<Eigen::MatrixXd> wMat, std::shared_ptr<Eigen::MatrixXi> connMat,
+  std::shared_ptr<Eigen::VectorXd> param, std::shared_ptr<Eigen::VectorXd> y, std::unique_ptr<TailUpModel>& tailup_ptr,
   std::unique_ptr<TailDownModel>& taildown_ptr, std::unique_ptr<EuclideanModel>& euclid_ptr, int nMod, bool useNugg){
 
-    Xpred = std::make_shared<Eigen::MatrixXd>(dMatPred);
-    Xobs = std::make_shared<Eigen::MatrixXd>(dMatObs);
-    distHydroOP = std::make_shared<Eigen::MatrixXd>(Nop);
-    distHydroPO = std::make_shared<Eigen::MatrixXd>(Npo);
-    if (D.rows() > 0) distGeo = std::make_shared<Eigen::MatrixXd>(D);
-    weightMat = std::make_shared<Eigen::MatrixXd>(wMat);
-    flowMat = std::make_shared<Eigen::MatrixXi>(connMat);
+    Xpred = dMatPred;
+    Xobs = dMatObs;
+    distHydroOP = Nop;
+    distHydroPO = Npo;
+    if (D->rows() > 0) distGeo = D;
+    weightMat = wMat;
+    flowMat = connMat;
 
-    z = std::make_shared<Eigen::VectorXd>(y);
-    theta = std::make_shared<Eigen::VectorXd>(param);
+    z = y;
+    theta = param;
     nModels = nMod;
     useNugget = useNugg;
     tailUpModel = std::move(tailup_ptr);
     tailDownModel = std::move(taildown_ptr);
     euclidModel = std::move(euclid_ptr);
 
-    nObs = dMatObs.rows();
-    nPred = dMatPred.rows();
-    p = dMatPred.cols() - 1;
+    nObs = dMatObs->rows();
+    nPred = dMatPred->rows();
+    p = dMatPred->cols() - 1;
 
     Eigen::MatrixXd Id(nObs,nObs);
     Id.setIdentity();
-    if (V.determinant()>1e-3){
+    if (V->determinant()>1e-3){
       Eigen::LDLT<Eigen::MatrixXd> solver(nObs);
-      solver.compute(V);
+      solver.compute(*V);
       invV = std::make_shared<Eigen::MatrixXd>(solver.solve(Id));
+      solver.setZero();
     }
     else {
       Eigen::HouseholderQR<Eigen::MatrixXd> solver(nObs, nObs);
-      solver.compute(V);
+      solver.compute(*V);
       invV = std::make_shared<Eigen::MatrixXd>(solver.solve(Id));
     }
 
@@ -82,6 +83,7 @@ Kriging::Kriging(const Eigen::MatrixXd& dMatPred, const Eigen::MatrixXd& dMatObs
       Eigen::LDLT<Eigen::MatrixXd> solver(p+1);
       solver.compute(XVX);
       invXVX = solver.solve(Id);
+      solver.setZero();
     }
     else {
       Eigen::HouseholderQR<Eigen::MatrixXd> solver2(p+1,p+1);

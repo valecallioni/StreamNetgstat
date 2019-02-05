@@ -79,9 +79,9 @@ public:
   * @param nMod number of covariance models
   * @param useNugg boolean, indicating if the nuggect effects is to be considered in the mixed model
   */
-  Kriging(const Eigen::MatrixXd& dMatPred, const Eigen::MatrixXd& dMatObs, const Eigen::MatrixXd& V,
-    const Eigen::MatrixXd& Nop, const Eigen::MatrixXd& Npo, const Eigen::MatrixXd& D, const Eigen::MatrixXd& wMat, const Eigen::MatrixXi& connMat,
-    const Eigen::VectorXd& param, const Eigen::VectorXd& y, std::unique_ptr<TailUpModel>& tailup_ptr,
+  Kriging(std::shared_ptr<Eigen::MatrixXd> dMatPred, std::shared_ptr<Eigen::MatrixXd> dMatObs, std::shared_ptr<Eigen::MatrixXd> V,
+    std::shared_ptr<Eigen::MatrixXd> Nop, std::shared_ptr<Eigen::MatrixXd> Npo, std::shared_ptr<Eigen::MatrixXd> D, std::shared_ptr<Eigen::MatrixXd>wMat, std::shared_ptr<Eigen::MatrixXi> connMat,
+    std::shared_ptr<Eigen::VectorXd> param, std::shared_ptr<Eigen::VectorXd> y, std::unique_ptr<TailUpModel>& tailup_ptr,
     std::unique_ptr<TailDownModel>& taildown_ptr, std::unique_ptr<EuclideanModel>& euclid_ptr, int nMod, bool useNugg);
 
   /**

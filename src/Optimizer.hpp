@@ -85,7 +85,7 @@ public:
   * @param cholesky boolean, indicating if the user wants to always use the Cholesky decomposition when inverting positive definite matrices
   */
   Optimizer(std::unique_ptr<TailUpModel>& tailup_ptr, std::unique_ptr<TailDownModel>& taildown_ptr, std::unique_ptr<EuclideanModel>& euclid_ptr, bool useNugg, int n_models,
-    const Eigen::VectorXd& y, const Eigen::MatrixXd& designMat, const Eigen::MatrixXd& N, const Eigen::MatrixXd& D, const Eigen::MatrixXd& wMat, const Eigen::MatrixXi& connMat, bool cholesky);
+    std::shared_ptr<Eigen::VectorXd> y, std::shared_ptr<Eigen::MatrixXd> designMat, std::shared_ptr<Eigen::MatrixXd> N, std::shared_ptr<Eigen::MatrixXd> D, std::shared_ptr<Eigen::MatrixXd> wMat, std::shared_ptr<Eigen::MatrixXi> connMat, bool cholesky);
 
   /**
   * Constructor.
@@ -104,7 +104,7 @@ public:
   * @param cholesky boolean, indicating if the user wants to always use the Cholesky decomposition when inverting positive definite matrices
   */
   Optimizer(std::unique_ptr<TailUpModel>& tailup_ptr, std::unique_ptr<TailDownModel>& taildown_ptr, std::unique_ptr<EuclideanModel>& euclid_ptr, bool useNugg, const std::vector<double>& bounds,
-    int n_models, const Eigen::VectorXd& y, const Eigen::MatrixXd& designMat, const Eigen::MatrixXd& N, const Eigen::MatrixXd& D, const Eigen::MatrixXd& wMat, const Eigen::MatrixXi& connMat, bool cholesky);
+    int n_models, std::shared_ptr<Eigen::VectorXd> y, std::shared_ptr<Eigen::MatrixXd> designMat, std::shared_ptr<Eigen::MatrixXd> N, std::shared_ptr<Eigen::MatrixXd> D, std::shared_ptr<Eigen::MatrixXd> wMat, std::shared_ptr<Eigen::MatrixXi> connMat, bool cholesky);
 
   /**
   * @return the vector with the optimal values found for the covariance models

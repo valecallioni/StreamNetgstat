@@ -354,7 +354,7 @@ RcppExport SEXP getSSNModel_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP ne
     // MODEL FITTING
     bool useCholesky = Rcpp::as<bool> (use_cholesky);
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, nuggetEffect, up+down+euclid,
-      dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>(), useCholesky);
+      std::make_shared<Eigen::VectorXd>(dataObs[varNames[0]]), std::make_shared<Eigen::MatrixXd>(designMat), std::make_shared<Eigen::MatrixXd>(distHydroOO), std::make_shared<Eigen::MatrixXd>(distGeoOO), std::make_shared<Eigen::MatrixXd>(weightMatOO), std::make_shared<Eigen::MatrixXi>(flowMatOO.cast<int>()), useCholesky);
 
     Rcpp::Nullable<std::vector<double>> vecBounds(model_bounds);
     std::vector<double> bounds;
@@ -573,8 +573,8 @@ RcppExport SEXP doSSNKriging_MultipleNets (SEXP net_num, SEXP bin_tables, SEXP n
     }
 
 
-    Kriging universalKriging(designMatPred, designMat, covMatrix, distHydroOP, distHydroPO, distGeoOP,
-      weightMatOP, flowMatOP.cast<int>(), optParam, dataObs[varNames[0]],
+    Kriging universalKriging(std::make_shared<Eigen::MatrixXd>(designMatPred), std::make_shared<Eigen::MatrixXd>(designMat), std::make_shared<Eigen::MatrixXd>(covMatrix), std::make_shared<Eigen::MatrixXd>(distHydroOP), std::make_shared<Eigen::MatrixXd>(distHydroPO), std::make_shared<Eigen::MatrixXd>(distGeoOP),
+      std::make_shared<Eigen::MatrixXd>(weightMatOP), std::make_shared<Eigen::MatrixXi>(flowMatOP.cast<int>()), std::make_shared<Eigen::VectorXd>(optParam), std::make_shared<Eigen::VectorXd>(dataObs[varNames[0]]),
       tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, up+down+euclid, nuggetEffect);
 
     Rcpp::Rcout << "Kriging \n";
@@ -800,7 +800,7 @@ RcppExport SEXP getSSNModelKriging_MultipleNets (SEXP net_num, SEXP bin_tables, 
     // MODEL FITTING
     bool useCholesky = Rcpp::as<bool> (use_cholesky);
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, nuggetEffect, up+down+euclid,
-      dataObs[varNames[0]], designMat, distHydroOO, distGeoOO, weightMatOO, flowMatOO.cast<int>(), useCholesky);
+      std::make_shared<Eigen::VectorXd>(dataObs[varNames[0]]), std::make_shared<Eigen::MatrixXd>(designMat), std::make_shared<Eigen::MatrixXd>(distHydroOO), std::make_shared<Eigen::MatrixXd>(distGeoOO), std::make_shared<Eigen::MatrixXd>(weightMatOO), std::make_shared<Eigen::MatrixXi>(flowMatOO.cast<int>()), useCholesky);
 
     Rcpp::Nullable<std::vector<double>> vecBounds(model_bounds);
     std::vector<double> bounds;
@@ -824,8 +824,8 @@ RcppExport SEXP getSSNModelKriging_MultipleNets (SEXP net_num, SEXP bin_tables, 
     }
 
 
-    Kriging universalKriging(designMatPred, designMat, solver.getCovMat(), distHydroOP, distHydroPO, distGeoOP,
-      weightMatOP, flowMatOP.cast<int>(), solver.getOptimTheta(), dataObs[varNames[0]],
+    Kriging universalKriging(std::make_shared<Eigen::MatrixXd>(designMatPred), std::make_shared<Eigen::MatrixXd>(designMat), std::make_shared<Eigen::MatrixXd>(solver.getCovMat()), std::make_shared<Eigen::MatrixXd>(distHydroOP), std::make_shared<Eigen::MatrixXd>(distHydroPO), std::make_shared<Eigen::MatrixXd>(distGeoOP),
+      std::make_shared<Eigen::MatrixXd>(weightMatOP), std::make_shared<Eigen::MatrixXi>(flowMatOP.cast<int>()), std::make_shared<Eigen::VectorXd>(solver.getOptimTheta()), std::make_shared<Eigen::VectorXd>(dataObs[varNames[0]]),
       solver.getTailUp(), solver.getTailDown(), solver.getEuclid(), up+down+euclid, nuggetEffect);
 
     Rcpp::Rcout << "Kriging \n";
@@ -1117,7 +1117,7 @@ RcppExport SEXP getSSNModel_SingleNet (SEXP bin_table, SEXP network_data,
     // MODEL FITTING
     bool useCholesky = Rcpp::as<bool> (use_cholesky);
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, nuggetEffect, up+down+euclid,
-      dataObs[varNames[0]], designMat, network.getDistHydroOO(), network.getDistGeoOO(), weightMatOO, network.getFlowMatOO(), useCholesky);
+      std::make_shared<Eigen::VectorXd>(dataObs[varNames[0]]), std::make_shared<Eigen::MatrixXd>(designMat), std::make_shared<Eigen::MatrixXd>(network.getDistHydroOO()), std::make_shared<Eigen::MatrixXd>(network.getDistGeoOO()), std::make_shared<Eigen::MatrixXd>(weightMatOO), std::make_shared<Eigen::MatrixXi>(network.getFlowMatOO()), useCholesky);
 
     Rcpp::Nullable<std::vector<double>> vecBounds(model_bounds);
     std::vector<double> bounds;
@@ -1300,8 +1300,8 @@ RcppExport SEXP doSSNKriging_SingleNet (SEXP bin_table, SEXP network_data, SEXP 
       designMatPred.col(i) = dataPred[varNames[i]];
     }
 
-    Kriging universalKriging(designMatPred, designMat, covMatrix, network.getDistHydroOP(), network.getDistHydroPO(), network.getDistGeoOP(),
-      weightMatOP, network.getFlowMatOP(), optParam, dataObs[varNames[0]],
+    Kriging universalKriging(std::make_shared<Eigen::MatrixXd>(designMatPred), std::make_shared<Eigen::MatrixXd>(designMat), std::make_shared<Eigen::MatrixXd>(covMatrix), std::make_shared<Eigen::MatrixXd>(network.getDistHydroOP()), std::make_shared<Eigen::MatrixXd>(network.getDistHydroPO()), std::make_shared<Eigen::MatrixXd>(network.getDistGeoOP()),
+      std::make_shared<Eigen::MatrixXd>(weightMatOP), std::make_shared<Eigen::MatrixXi>(network.getFlowMatOP()), std::make_shared<Eigen::VectorXd>(optParam), std::make_shared<Eigen::VectorXd>(dataObs[varNames[0]]),
       tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, up+down+euclid, nuggetEffect);
 
     Rcpp::Rcout << "Kriging \n";
@@ -1480,7 +1480,7 @@ RcppExport SEXP getSSNModelKriging_SingleNet (SEXP bin_table, SEXP network_data,
     // MODEL FITTING
     bool useCholesky = Rcpp::as<bool> (use_cholesky);
     Optimizer solver(tmp_tailUpModel, tmp_tailDownModel, tmp_euclidModel, nuggetEffect, up+down+euclid,
-      dataObs[varNames[0]], designMat, network.getDistHydroOO(), network.getDistGeoOO(), weightMatOO, network.getFlowMatOO(), useCholesky);
+      std::make_shared<Eigen::VectorXd>(dataObs[varNames[0]]), std::make_shared<Eigen::MatrixXd>(designMat), std::make_shared<Eigen::MatrixXd>(network.getDistHydroOO()), std::make_shared<Eigen::MatrixXd>(network.getDistGeoOO()), std::make_shared<Eigen::MatrixXd>(weightMatOO), std::make_shared<Eigen::MatrixXi>(network.getFlowMatOO()),useCholesky);
 
     Rcpp::Nullable<std::vector<double>> vecBounds(model_bounds);
     std::vector<double> bounds;
@@ -1502,8 +1502,8 @@ RcppExport SEXP getSSNModelKriging_SingleNet (SEXP bin_table, SEXP network_data,
       designMatPred.col(i) = dataPred[varNames[i]];
     }
 
-    Kriging universalKriging(designMatPred, designMat, solver.getCovMat(), network.getDistHydroOP(), network.getDistHydroPO(), network.getDistGeoOP(),
-      weightMatOP, network.getFlowMatOP(), solver.getOptimTheta(), dataObs[varNames[0]],
+    Kriging universalKriging(std::make_shared<Eigen::MatrixXd>(designMatPred), std::make_shared<Eigen::MatrixXd>(designMat), std::make_shared<Eigen::MatrixXd>(solver.getCovMat()), std::make_shared<Eigen::MatrixXd>(network.getDistHydroOP()), std::make_shared<Eigen::MatrixXd>(network.getDistHydroPO()), std::make_shared<Eigen::MatrixXd>(network.getDistGeoOP()),
+      std::make_shared<Eigen::MatrixXd>(weightMatOP), std::make_shared<Eigen::MatrixXi>(network.getFlowMatOP()), std::make_shared<Eigen::VectorXd>(solver.getOptimTheta()), std::make_shared<Eigen::VectorXd>(dataObs[varNames[0]]),
       solver.getTailUp(), solver.getTailDown(), solver.getEuclid(), up+down+euclid, nuggetEffect);
 
     Rcpp::Rcout << "Kriging \n";
