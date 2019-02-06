@@ -69,6 +69,8 @@ Kriging::Kriging(std::shared_ptr<Eigen::MatrixXd> dMatPred, std::shared_ptr<Eige
       j++;
     }
 
+    if (useNugget) parsill += (*theta)(j)
+
     if (tailUpModel) Vpred += tailUpModel->computeMatCov(*weightMat, *distHydroOP, *distHydroPO);
     if (tailDownModel) Vpred += tailDownModel->computeMatCov(*flowMat, *distHydroOP, *distHydroPO);
     if (euclidModel) Vpred += euclidModel->computeMatCov(*distGeo);
