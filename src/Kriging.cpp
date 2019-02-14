@@ -103,7 +103,7 @@ void Kriging::predict(){
     r = (Xpred->row(i)).transpose() - XV*Vpred.col(i);
     m = invXVX*r;
 
-    lambda = (*invV)*(Vpred.col(i) + (Xobs->transpose())*invXVX*r);
+    lambda = (*invV)*(Vpred.col(i) + (*Xobs)*invXVX*r);
 
     predData(i,0) = lambda.transpose() * (*z);
     predData(i,1) = std::sqrt(parsill - lambda.transpose()*Vpred.col(i) + m.transpose()*(Xpred->row(i)).transpose());
