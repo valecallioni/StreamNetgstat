@@ -7,7 +7,8 @@
 plot.predictions(ssn.object, VariableName = NULL, predpts = NULL,
   VarPlot = "Both", color.palette = rainbow(nclasses, start = 0.66, end
   = 0.99), nclasses = 10, breaktype = "quantile", dec.dig = 2,
-  SEcex.min = 0.5, SEcex.max = 2, brks = NULL, add = FALSE, ...)
+  SEcex.min = 0.5, SEcex.max = 2, brks = NULL, add = FALSE,
+  main = NULL, ...)
 }
 \arguments{
 \item{ssn.object}{a \link[SSN]{SpatialStreamNetwork-class} object.}
@@ -31,6 +32,8 @@ plot.predictions(ssn.object, VariableName = NULL, predpts = NULL,
 \item{brks}{if breaktype = "user", the break values must be specified here as a vector or matrix using c(...) or cbind(...). The sorted unique values are used as break points (together with the min and max of the variable being plotted if required)}
 
 \item{add}{Logical value indicating whether the predictions should be added to an existing plot, such as a plot of colored values for observed data. Default is FALSE.}
+
+\item{main}{String indicating the title desired, otherwise the name of the variable is used.}
 
 \item{\dots}{Arguments to be passed to methods, such as graphical parameters (see \code{\link{par}}).}
 }

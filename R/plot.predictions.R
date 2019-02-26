@@ -11,6 +11,7 @@
 #' @param SEcex.max if VarPlot = "both", the maximum cex value when making point sizes inversely proportional to the prediction standard errors. See \code{\link{par}} for more on cex.  Also see details below. Default is 3.
 #' @param dec.dig the number of decimal places to print in the legend.  Default is 2.
 #' @param add Logical value indicating whether the predictions should be added to an existing plot, such as a plot of colored values for observed data. Default is FALSE.
+#' @param main String indicating the title desired, otherwise the name of the variable is used. 
 #' @param \dots Arguments to be passed to methods, such as graphical parameters (see \code{\link{par}}).
 #' @details The \command{plot.predictions} function creates a map showing color-coded predictions or prediction standard error values. When VarPlot = "Both", predictions values are colored according to breaks.  The size of the points is inversely proportional to the prediction standard errors.
 #' @return Maps of stream networks with prediction and prediction standard error values.
@@ -28,7 +29,7 @@ plot.predictions <-
   function(ssn.object, VariableName = NULL, predpts = NULL, VarPlot = "Both",
            color.palette = rainbow(nclasses, start = .66, end = .99),
            nclasses = 10, breaktype = "quantile", dec.dig = 2,
-           SEcex.min = 0.5, SEcex.max = 2, brks = NULL, add = FALSE, ...)
+           SEcex.min = 0.5, SEcex.max = 2, brks = NULL, add = FALSE, main = NULL, ...)
   {
     par.orig <- par(no.readonly = TRUE)
     if(!any(VarPlot == c("Both", "Predictions", "Standard Errors")))
@@ -54,12 +55,13 @@ plot.predictions <-
     if(VarPlot == "Standard Errors") {
       zcolplot <- zSEcol
     }
+    if (is.null(main)) main = paste("Plotting", zcolplot, "values")
     if(add == FALSE) {
       layout(matrix(1:2, nrow = 1), widths = c(4,1))
       par(mar = c(5,5,3,0))
       plot(ssn.object@bbox[1,],ssn.object@bbox[2,], type = "n",
            xlab = "x-coordinate", ylab = "y-coordinate",
-           main = paste("Plotting", zcolplot, "values"), ...)
+           main = main, ...)
       for(i in 1:length(ssn.object@lines))
         for(j in 1:length(ssn.object@lines[[i]]))
           lines((ssn.object@lines[[i]]@Lines[[j]]@coords), ...)
