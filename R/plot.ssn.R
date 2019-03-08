@@ -11,7 +11,6 @@
 #' @param SEcex.max if VarPlot = "both", the maximum cex value when making point sizes inversely proportional to the prediction standard errors. See \code{\link{par}} for more on cex.  Also see details below. Default is 3.
 #' @param dec.dig the number of decimal places to print in the legend.  Default is 2.
 #' @param add Logical value indicating whether the predictions should be added to an existing plot, such as a plot of colored values for observed data. Default is FALSE.
-#' @param main String indicating the title desired, otherwise the name of the variable is used. 
 #' @param \dots Arguments to be passed to methods, such as graphical parameters (see \code{\link{par}}).
 #' @details The \command{plot.predictions} function creates a map showing color-coded predictions or prediction standard error values. When VarPlot = "Both", predictions values are colored according to breaks.  The size of the points is inversely proportional to the prediction standard errors.
 #' @return Maps of stream networks with prediction and prediction standard error values.
