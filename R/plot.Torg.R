@@ -16,7 +16,6 @@
 #' 
 #' Ver Hoef, J.M. and Peterson, E.E. (2010) A moving average approach for spatial statistical models of stream networks (with discussion). Journal of the American Statistical Association 105, 6–18.
 #' @useDynLib StreamNetgstat
-#' @export
 
 plot.torg <- function(x, sp.relationship = c("fc", "fu"),
                            min.cex = 1.5, max.cex = 6, leg.auto = TRUE, main = "", ylab = "",

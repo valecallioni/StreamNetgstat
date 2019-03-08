@@ -53,6 +53,7 @@ load("/vagrant/PACSProject/Data/Rdata_model_kriging.RData")
 result = .Call("getSSNModelKriging_MultipleNets", net_num, bin_tables, data.matrix(network_data),
                data.matrix(obs_points), data.matrix(pred_points), data.matrix(obs_data), data.matrix(pred_data),
                c(varNames, weightVar), CorModels, useNugget, matrices, bounds, useCholeskyDec)
+print(result$predictions)
 
 # result = .Call("doSSNKriging_MultipleNets", net_num, bin_tables, data.matrix(network_data),
 #                data.matrix(obs_points), data.matrix(pred_points), data.matrix(obs_data), data.matrix(pred_data), 

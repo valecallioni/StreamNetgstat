@@ -25,7 +25,6 @@
 #' 
 #' Ver Hoef, J.M. and Peterson, E.E. (2010) A moving average approach for spatial statistical models of stream networks (with discussion). Journal of the American Statistical Association 105, 6–18.
 #' @useDynLib StreamNetgstat
-#' @export
 
 emp_semivario_and_torg = function(ssn, ResponseName, singleNet = NULL,
                                   maxlag_Torg = NULL, nlag_Torg = 6, inc_Torg = 0, nlagcutoff_Torg = 15, 
