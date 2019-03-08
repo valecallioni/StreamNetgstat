@@ -21,6 +21,7 @@
 #' Ver Hoef, J.M. and Peterson, E.E. (2010) A moving average approach for spatial statistical models of stream networks (with discussion). Journal of the American Statistical Association 105, 6–18.
 
 #' @useDynLib StreamNetgstat
+#' @export
 
 plot.ssn <-
   function(x, VariableName = NULL, color.palette = NULL, nclasses = NULL,
