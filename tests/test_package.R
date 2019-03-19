@@ -82,8 +82,8 @@ DFpred[, "X2"] = rnorm(length(DFpred[,1]))
 set.seed(102)
 sim.out = SimulateOnSSN(simulated.ssn, ObsSimDF = DFobs, PredSimDF = DFpred, PredID = "preds",
                         formula = ~ X1 + X2, coefficients = c(2, 4, 0), 
-                        CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), 
-                        use.nugget = T, CorParms = c(5, 8, 4, 10, 2, 9, 0.1), addfunccol = "addfunccol")
+                        CorModels = c("Exponential.tailup", "Exponential.taildown"), 
+                        use.nugget = T, CorParms = c(5, 15, 4, 20, 0.1), addfunccol = "addfunccol")
 sim.ssn = sim.out$ssn.object
 simDFobs = getSSNdata.frame(sim.ssn, "Obs")
 simDFpred = getSSNdata.frame(sim.ssn, "preds")
@@ -131,8 +131,8 @@ dev.off()
 
 library(benchr)
 benchmark(
-  times = 5,
+  times = 10,
   cppPackage = get_SSN_model_kriging(sim.ssn, varNames = c("Sim_Values", "X1", "X2"), weightVar = "addfunccol",
-                                     CorModels = c("Exponential.tailup", "Exponential.taildown", "Exponential.Euclid"), predpts = "preds"),
+                                     CorModels = c("Exponential.tailup", "Exponential.taildown"), predpts = "preds"),
   RPackage = funSSNPackage(sim.ssn, formula = Sim_Values ~ X1 + X2, predname = "preds")
 )

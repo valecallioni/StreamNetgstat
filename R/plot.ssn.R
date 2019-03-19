@@ -2,18 +2,21 @@
 #' 
 #' @param ssn.object a \link[SSN]{SpatialStreamNetwork-class} object.
 #' @param VariableName name of variable to be plotted, it can be also a factor.
-#' @param VarPlot a character argument that must be one of "Both", "Predictions", or "Standard Errors". Default is "Both", which colors predictions by their values and makes their size inversely proportional to the prediction standard errors.
 #' @param breaktype the method for breaking the predictions (or standard errors) into classes for coloring while plotting. A character argument that must be one of "quantile" (default), "even", or "user".
+#' @param lb minimum value for the break values, otherwise computed as the minimum value according to the chosen method for breaking the predictions.
+#' @param ub maximum value for the break values, otherwise computed as the maximum value according to the chosen method for breaking the predictions.
 #' @param brks if breaktype = "user", the break values must be specified here as a vector or matrix using c(...) or cbind(...). The sorted unique values are used as break points (together with the min and max of the variable being plotted if required)
 #' @param nclasses the number of classes for coloring the predictions (or standard errors) according to their value.  The default is 10. If brks = c(...) is specified, then nclasses is automatically set to the number of breaks + 1.
 #' @param color.palette a color palette for plotting points. The default is rainbow(nclasses, start = .66, end = .99). The number of colors should equal to the number of classes. See \code{\link{palette}} for many ways to create palettes.
-#' @param SEcex.min if VarPlot = "both", the minimum cex value when making point sizes is inversely proportional to the prediction standard errors. See \code{\link{par}} for more on cex.  Also see details below. Default is 1.
-#' @param SEcex.max if VarPlot = "both", the maximum cex value when making point sizes inversely proportional to the prediction standard errors. See \code{\link{par}} for more on cex.  Also see details below. Default is 3.
-#' @param dec.dig the number of decimal places to print in the legend.  Default is 2.
+#' @param PredPointsID a string representing the internal name of the prediction sites data set, which will be added to the plot. Default is NULL.
 #' @param add Logical value indicating whether the predictions should be added to an existing plot, such as a plot of colored values for observed data. Default is FALSE.
+#' @param addWithLegend logical indicating whether the predictions should be added to an existing plot, such as a plot of colored values for observed data. Use this when there is a legend. Default is FALSE.
+#' @param lwdLineCol a column name in the lines data frame to be used for line width expansion. This will most likely be the name of the additive function column, but others could be used.
+#' @param lwdLineEx an expansion multiplier to create line widths for the values contained in lwdLineCol.
+#' @param lineCol a color for the lines forming the stream network. Default is "black".
 #' @param \dots Arguments to be passed to methods, such as graphical parameters (see \code{\link{par}}).
-#' @details The \command{plot.predictions} function creates a map showing color-coded predictions or prediction standard error values. When VarPlot = "Both", predictions values are colored according to breaks.  The size of the points is inversely proportional to the prediction standard errors.
-#' @return Maps of stream networks with prediction and prediction standard error values.
+#' @details The plot.ssn function creates a map showing data locations that can be color-coded according to the values of observed variables. Prediction locations can also be added to existing plots of observed values.
+#' @return MMaps of stream networks.
 
 #' @references 
 #' Peterson, E.E. and Ver Hoef, J.M. (2010) A mixed-model moving-average approach to geostatistical modeling in stream networks. Ecology 91(3), 644–651.
@@ -25,7 +28,8 @@
 
 plot.ssn <-
   function(x, VariableName = NULL, color.palette = NULL, nclasses = NULL,
-           breaktype = "quantile", brks = NULL, PredPointsID = NULL, add = FALSE,
+           breaktype = "quantile", brks = NULL, lb = NULL, ub= NULL, 
+           PredPointsID = NULL, add = FALSE,
            addWithLegend = FALSE, lwdLineCol = NULL, lwdLineEx = 1,
            lineCol = "black", ...)
   {
@@ -112,17 +116,27 @@ plot.ssn <-
         upper.breaks <- matrix(0, nrow = nclasses, ncol = 1)
         if (!is.factor(data[,VariableName])){
           if(breaktype == "quantile") {
-            brks <- quantile(data[,VariableName],
-                             probs = (1:(nclasses-1))/nclasses, na.rm = T)
-            lower.breaks <- c(min(data[,VariableName], na.rm = T), brks)
-            upper.breaks <- c(brks, max(data[,VariableName], na.rm = T))
+            brks <- quantile(min(data[,VariableName]):max(data[,VariableName]), probs = (1:(nclasses-1))/nclasses, na.rm = T)
+            if (is.null(lb) || is.null(ub)){
+              lower.breaks <- c(min(data[,VariableName], na.rm = T), brks)
+              upper.breaks <- c(brks, max(data[,VariableName], na.rm = T))
+            } else {
+              lower.breaks <- c(lb, brks)
+              upper.breaks <- c(brks, ub)
+            }
           }
           if(breaktype == "even") {
-            brks <- min(data[,VariableName]) +
-              (max(data[,VariableName]) - min(data[,VariableName])) *
-              (1:(nclasses-1))/nclasses
-            lower.breaks <- c(min(data[,VariableName], na.rm = T), brks)
-            upper.breaks <- c(brks, max(data[,VariableName], na.rm = T))
+            if (is.null(lb) || is.null(ub)){
+              brks <- min(data[,VariableName]) +
+                (max(data[,VariableName]) - min(data[,VariableName])) *
+                (1:(nclasses-1))/nclasses
+              lower.breaks <- c(min(data[,VariableName], na.rm = T), brks)
+              upper.breaks <- c(brks, max(data[,VariableName], na.rm = T))
+            } else {
+              brks <- lb + (ub - lb) *(1:(nclasses-1))/nclasses
+              lower.breaks <- c(lb, brks)
+              upper.breaks <- c(brks, ub)
+            }
           }
           if(breaktype == "user") {
             if(is.null(brks)) return("Must specify brks if breaktype = user")
@@ -150,7 +164,7 @@ plot.ssn <-
           par(mar = c(0,0,0,0))
           plot(c(0,0), c(1,1), type = "n", xaxt = "n", yaxt = "n",
                xlab = "", ylab ="", bty = "n")
-          legend(x = -1, y = 1.1, legend = leglabs, bty = "n",
+          legend(x = -1, y = 1.6, legend = leglabs, bty = "n",
                  pch = rep(plch, times = length(leglabs)),
                  col = color.palette, cex = .8)
         } else {
@@ -159,6 +173,7 @@ plot.ssn <-
             jmin <- lower.breaks[j]
             indj <- data[,VariableName] >= jmin &
               data[,VariableName] <= jmax
+            
             points(x@obspoints@SSNPoints[[1]]@point.coords[indj, , drop = F],
                    col = color.palette[j], pch = plch, cex = chex)
           }
@@ -171,7 +186,7 @@ plot.ssn <-
           par(mar = c(0,0,0,0))
           plot(c(0,0), c(1,1), type = "n", xaxt = "n", yaxt = "n",
                xlab = "", ylab ="", bty = "n")
-          legend(x = -1, y = 1.1, legend = leglabs, bty = "n",
+          legend(x = -1, y = 1.3, legend = leglabs, bty = "n",
                  pch = rep(plch, times = length(leglabs)),
                  col = color.palette, cex = .8)
         }
