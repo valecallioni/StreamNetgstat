@@ -15,7 +15,7 @@ get_SSN_model(ssn, varNames, weightVar, CorModels, useNugget = TRUE,
 
 \item{weightVar}{a string indicating the name of the variable to compute the spatial weights.}
 
-\item{CorModels}{a vector of strings, the names of the covariance models.}
+\item{CorModels}{a vector of strings, the names of the covariance models. The individual models should be of different "types" tail-up, tail-down, Euclidean. The tailup models include: "Exponential.tailup", "LinearSill.tailup", "Spherical.tailup", "Mariah.tailup" "Epanech.tailup"; tail-down models include: "Exponential.taildown", "LinearSill.taildown", "Spherical.taildown", "Mariah.taildown"; Euclidean distance models include: "Spherical.Euclid", "Gaussian.Euclid", "Exponential.Euclid", "Cauchy.Euclid". The first 4 tailup and taildown models are described in Ver Hoef and Peterson (2010), and the 4 Euclidean distance models are standard spatial covariance models.}
 
 \item{useNugget}{If \code{FALSE} the nugget effect is not included in the model. Default to \code{TRUE}.}
 

@@ -5,9 +5,10 @@
 \title{Plot the predicted values along a Spatial Stream Network object}
 \usage{
 plot.ssn(x, VariableName = NULL, color.palette = NULL,
-  nclasses = NULL, breaktype = "quantile", brks = NULL,
-  PredPointsID = NULL, add = FALSE, addWithLegend = FALSE,
-  lwdLineCol = NULL, lwdLineEx = 1, lineCol = "black", ...)
+  nclasses = NULL, breaktype = "quantile", brks = NULL, lb = NULL,
+  ub = NULL, PredPointsID = NULL, add = FALSE,
+  addWithLegend = FALSE, lwdLineCol = NULL, lwdLineEx = 1,
+  lineCol = "black", ...)
 }
 \arguments{
 \item{VariableName}{name of variable to be plotted, it can be also a factor.}
@@ -20,28 +21,34 @@ plot.ssn(x, VariableName = NULL, color.palette = NULL,
 
 \item{brks}{if breaktype = "user", the break values must be specified here as a vector or matrix using c(...) or cbind(...). The sorted unique values are used as break points (together with the min and max of the variable being plotted if required)}
 
+\item{lb}{minimum value for the break values, otherwise computed as the minimum value according to the chosen method for breaking the predictions.}
+
+\item{ub}{maximum value for the break values, otherwise computed as the maximum value according to the chosen method for breaking the predictions.}
+
+\item{PredPointsID}{a string representing the internal name of the prediction sites data set, which will be added to the plot. Default is NULL.}
+
 \item{add}{Logical value indicating whether the predictions should be added to an existing plot, such as a plot of colored values for observed data. Default is FALSE.}
+
+\item{addWithLegend}{logical indicating whether the predictions should be added to an existing plot, such as a plot of colored values for observed data. Use this when there is a legend. Default is FALSE.}
+
+\item{lwdLineCol}{a column name in the lines data frame to be used for line width expansion. This will most likely be the name of the additive function column, but others could be used.}
+
+\item{lwdLineEx}{an expansion multiplier to create line widths for the values contained in lwdLineCol.}
+
+\item{lineCol}{a color for the lines forming the stream network. Default is "black".}
 
 \item{\dots}{Arguments to be passed to methods, such as graphical parameters (see \code{\link{par}}).}
 
 \item{ssn.object}{a \link[SSN]{SpatialStreamNetwork-class} object.}
-
-\item{VarPlot}{a character argument that must be one of "Both", "Predictions", or "Standard Errors". Default is "Both", which colors predictions by their values and makes their size inversely proportional to the prediction standard errors.}
-
-\item{SEcex.min}{if VarPlot = "both", the minimum cex value when making point sizes is inversely proportional to the prediction standard errors. See \code{\link{par}} for more on cex.  Also see details below. Default is 1.}
-
-\item{SEcex.max}{if VarPlot = "both", the maximum cex value when making point sizes inversely proportional to the prediction standard errors. See \code{\link{par}} for more on cex.  Also see details below. Default is 3.}
-
-\item{dec.dig}{the number of decimal places to print in the legend.  Default is 2.}
 }
 \value{
-Maps of stream networks with prediction and prediction standard error values.
+MMaps of stream networks.
 }
 \description{
 Plot the predicted values along a Spatial Stream Network object
 }
 \details{
-The \command{plot.predictions} function creates a map showing color-coded predictions or prediction standard error values. When VarPlot = "Both", predictions values are colored according to breaks.  The size of the points is inversely proportional to the prediction standard errors.
+The plot.ssn function creates a map showing data locations that can be color-coded according to the values of observed variables. Prediction locations can also be added to existing plots of observed values.
 }
 \references{
 Peterson, E.E. and Ver Hoef, J.M. (2010) A mixed-model moving-average approach to geostatistical modeling in stream networks. Ecology 91(3), 644–651.
