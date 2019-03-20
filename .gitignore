@@ -12,3 +12,5 @@ cmake-build-debug
 /src/html
 /src/latex
 Doxygen_file
+*.pdf
+*.tex

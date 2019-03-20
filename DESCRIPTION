@@ -4,7 +4,9 @@ Title: Spatial stream networks analysis
 Version: 1.0.0
 Authors@R: c(person("Valeria", "Callioni", role = c("aut", "cre"),
 	email = "valeria.callioni@mail.polimi.it"))
-Description: This package provides a C++ implementation of functions that allow the user to fit a spatial linear model on a stream network, with the final goal to perform kriging. The data it can handle are the .ssn directories provided by the SSN package. 
+Description: This package provides a C++ implementation of functions that allow the user to fit a spatial
+						 linear model on a stream network, with the final goal to perform kriging. The data it can
+						 handle are the .ssn directories provided by the SSN package. 
 Depends: R (>= 3.2.0), Rcpp (>= 0.12.16), RcppEigen (>= 0.3.3.4.0), SSN, rlist
 LinkingTo: Rcpp, RcppEigen
 NeedsCompilation: yes
